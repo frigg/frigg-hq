@@ -21,9 +21,9 @@ class Project(models.Model):
         self._delete_tmp_folder()
 
     def _clone_repo(self):
-        self._run("rsync -av --exclude='.*' ~/code/balder.tind.io .")
-        #self._run("git clone %s" % self.repo_git)
-        #self._run("git checkout %s" % self.branch)
+        #self._run("rsync -av --exclude='.*' ~/code/balder.tind.io .")
+        self._run("git clone %s" % self.repo_git)
+        self._run("git checkout %s" % self.branch)
 
     def _run_tox(self):
         self._run("tox")
