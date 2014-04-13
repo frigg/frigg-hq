@@ -1,7 +1,10 @@
+import os
+
 from django.db import models
-from fabric.operations import run
+from fabric.operations import run, local
 from fabric.context_managers import cd
-from frigg.settings import PROJECT_TMP_DIRECTORY
+
+from django.conf import settings
 
 
 class Project(models.Model):
@@ -10,7 +13,6 @@ class Project(models.Model):
     branch = models.CharField(max_length=100, default="master")
 
     def run_tests(self):
-
         self._create_tmp_folder()
         self._clone_repo()
         self._run_tox()
@@ -19,8 +21,9 @@ class Project(models.Model):
         self._delete_tmp_folder()
 
     def _clone_repo(self):
-        self._run("git clone %s" % self.repo_git)
-        self._run("git checkout %s" % self.branch)
+        self._run("rsync -av --exclude='.*' ~/code/balder.tind.io .")
+        #self._run("git clone %s" % self.repo_git)
+        #self._run("git checkout %s" % self.branch)
 
     def _run_tox(self):
         self._run("tox")
@@ -29,6 +32,14 @@ class Project(models.Model):
         self._run("flake8")
 
     def _run(self, command):
-        with cd(PROJECT_TMP_DIRECTORY + self.id):
-            run(command)
+        with cd(self.working_directory()):
+            local(command)
 
+    def _create_tmp_folder(self):
+        self._run("mkdir -p %s" % self.working_directory())
+
+    def _delete_tmp_folder(self):
+        self._run("rm -rf %s" % self.working_directory())
+
+    def working_directory(self):
+        return os.path.join(settings.PROJECT_TMP_DIRECTORY, "frigg_working_dir", str(self.id))
