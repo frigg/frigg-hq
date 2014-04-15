@@ -85,6 +85,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+PROJECT_TMP_DIRECTORY = "/Users/frecar/tmp/"
 
+GITHUB_CLIENT_ID = "e7490e339fb4c446dcfc"
+GITHUB_CLIENT_SECRET = "13b8481e18765fea963caec430a2bcee421ce3d6"
 
-PROJECT_TMP_DIRECTORY = "/tmp/"
+GITHUB_ACCESS_TOKEN = "122b35b60532ef430bbd78d3a2179bd90da4dd7a"
