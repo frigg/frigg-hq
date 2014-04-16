@@ -10,20 +10,14 @@ from fabric.operations import local
 from fabric.api import settings as fabric_settings
 
 from django.conf import settings
-import requests
-
-def github_api_request(url, data):
-
-    url = "https://api.github.com/repos/" + url + "?access_token=%s" % settings.GITHUB_ACCESS_TOKEN
-
-    headers = {'Content-type': 'application/json', 'Accept': 'application/vnd.github.she-hulk-preview+json',}
-    print requests.post(url, data=json.dumps(data), headers=headers)._content
+from frigg.utils import github_api_request
 
 
-class Project(models.Model):
+class Build(models.Model):
     git_repository = models.CharField(max_length=150, verbose_name="git@github.com:owner/repo.git")
     pull_request_id = models.IntegerField(max_length=150, default=0)
     branch = models.CharField(max_length=100, default="master")
+    sha = models.CharField(max_length=150)
 
     def get_git_repo_owner_and_name(self):
         """Returns repo owner, repo name"""
@@ -34,9 +28,11 @@ class Project(models.Model):
 
     def run_tests(self):
 
+        self._set_commit_status("pending")
+        self.add_comment_to_pull_request("Running tests.. be patient :)")
+
         self._clone_repo()
         self._run_tox()
-        self._set_commit_status()
         self._delete_tmp_folder()
 
     def _clone_repo(self):
@@ -52,17 +48,14 @@ class Project(models.Model):
             result = self._run("tox")
 
         if result.failed:
-            self.add_comment_to_pull_request("Be careful.. the tests failed")
+            self.add_comment_to_pull_request("Be careful.. the tests failed.. "
+                                             "The results from the test\n\n%s" % result)
+
             self._set_commit_status("failure")
 
         else:
             self.add_comment_to_pull_request("All gooodie good")
             self._set_commit_status("success")
-
-    def get_current_commit_hash(self):
-        with lcd(self.working_directory()):
-            result = local("git rev-parse HEAD", capture=True)
-        return result
 
     def _run(self, command):
         with lcd(self.working_directory()):
@@ -71,18 +64,13 @@ class Project(models.Model):
 
     def add_comment_to_pull_request(self, message):
         owner, repo = self.get_git_repo_owner_and_name()
-
         url = "%s/%s/issues/%s/comments" % (owner, repo, self.pull_request_id, )
-
-        data = {'body': message}
-
-        github_api_request(url, data)
+        github_api_request(url, {'body': message})
 
     def _set_commit_status(self, status, description="Done"):
         owner, repo = self.get_git_repo_owner_and_name()
-        hash = self.get_current_commit_hash()
 
-        url = "%s/%s/statuses/%s" % (owner, repo, hash)
+        url = "%s/%s/statuses/%s" % (owner, repo, self.sha)
 
         data = {'state': status,
                 'target_url': 'https://frigg.tind.io',
