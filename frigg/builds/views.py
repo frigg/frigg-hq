@@ -17,11 +17,9 @@ def build_pull_request(data):
                                  branch=data['branch'],
                                  sha=data["sha"])
 
-    build.run_tests()
-
-    #t = threading.Thread(target=build.run_tests)
-    #t.setDaemon(True)
-    #t.start()
+    t = threading.Thread(target=build.run_tests)
+    t.setDaemon(True)
+    t.start()
 
 
 @csrf_exempt
@@ -33,6 +31,8 @@ def github_webhook(request):
 
     if event == "issue_comment":
         data = json.loads(request.body)
+
+        print data
 
         if data['comment']['body'] == "retest now please":
             url = data['issue']['pull_request']['url'][29:]
@@ -47,6 +47,9 @@ def github_webhook(request):
             build_pull_request(pull_request)
 
     if event == "pull_request":
+
+        print request.body
+
         data = json.loads(request.body)
 
         pull_request = {'repo_name': data['repository']['name'],
