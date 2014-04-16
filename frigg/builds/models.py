@@ -48,18 +48,18 @@ class Build(models.Model):
         with fabric_settings(warn_only=True):
             result = self._run("tox")
 
-        self.result = result
-        self.save()
+            self.result = result
+            self.save()
 
-        if result.failed:
-            self.add_comment_to_pull_request("Be careful.. the tests failed.. "
-                                             "The results from the test\n\n%s" % result)
+            if result.failed:
+                self.add_comment_to_pull_request("Be careful.. the tests failed.. "
+                                                 "The results from the test\n\n%s" % result)
 
-            self._set_commit_status("failure")
+                self._set_commit_status("failure")
 
-        else:
-            self.add_comment_to_pull_request("All gooodie good")
-            self._set_commit_status("success")
+            else:
+                self.add_comment_to_pull_request("All gooodie good")
+                self._set_commit_status("success")
 
     def _run(self, command):
         with lcd(self.working_directory()):
