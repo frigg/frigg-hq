@@ -19,6 +19,8 @@ class Build(models.Model):
     branch = models.CharField(max_length=100, default="master")
     sha = models.CharField(max_length=150)
 
+    result = models.TextField(default="")
+
     def get_git_repo_owner_and_name(self):
         """Returns repo owner, repo name"""
         rex = "git@github.com:(\w*)/(\w*).git"
@@ -30,7 +32,6 @@ class Build(models.Model):
 
         self._set_commit_status("pending")
         self.add_comment_to_pull_request("Running tests.. be patient :)")
-
         self._clone_repo()
         self._run_tox()
         self._delete_tmp_folder()
@@ -46,6 +47,9 @@ class Build(models.Model):
 
         with fabric_settings(warn_only=True):
             result = self._run("tox")
+
+        self.result = result
+        self.save()
 
         if result.failed:
             self.add_comment_to_pull_request("Be careful.. the tests failed.. "
