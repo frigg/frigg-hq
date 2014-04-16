@@ -39,7 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'south',
-    'frigg.builds',
+    #'frigg.builds',
 
 )
 
