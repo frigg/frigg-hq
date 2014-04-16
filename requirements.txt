@@ -2,3 +2,4 @@ django
 south
 fabric
 requests
+gunicorn
