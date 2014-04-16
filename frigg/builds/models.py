@@ -6,7 +6,7 @@ from django.db import models
 from fabric.context_managers import lcd
 from fabric.operations import local
 
-#from fabric.api import settings as fabric_settings
+from fabric.api import settings as fabric_settings
 
 from django.conf import settings
 from frigg.utils import github_api_request
@@ -49,7 +49,7 @@ class Build(models.Model):
             self._set_commit_status("error")
             return
 
-        with settings(warn_only=True):
+        with fabric_settings(warn_only=True):
             result = self._run("tox")
 
             self.result = result
