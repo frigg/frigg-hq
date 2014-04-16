@@ -3,3 +3,4 @@ south
 fabric
 requests
 gunicorn
+django-fabric

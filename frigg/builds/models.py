@@ -45,6 +45,11 @@ class Build(models.Model):
 
     def _run_tox(self):
 
+        if not os.path.isfile(os.path.join(self.working_directory(), "tox.ini")):
+            self.add_comment_to_pull_request("The project is missing a tox.ini file")
+            self._set_commit_status("error")
+            return
+
         with fabric_settings(warn_only=True):
             result = self._run("tox")
 

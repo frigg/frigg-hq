@@ -32,8 +32,6 @@ def github_webhook(request):
     if event == "issue_comment":
         data = json.loads(request.body)
 
-        print data
-
         if data['comment']['body'] == "retest now please":
             url = data['issue']['pull_request']['url'][29:]
             pr_data = json.loads(github_api_get_request(url))
@@ -47,8 +45,6 @@ def github_webhook(request):
             build_pull_request(pull_request)
 
     if event == "pull_request":
-
-        print request.body
 
         data = json.loads(request.body)
 
