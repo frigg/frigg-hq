@@ -4,7 +4,7 @@ from fabric.state import env
 from django_fabric import App
 
 env.user = 'ubuntu'
-env.hosts = ['frigg.tind.io']
+env.hosts = ['balder.tind.io']
 
 site = App(
     project_paths={
@@ -14,10 +14,10 @@ site = App(
         'prod': 'https://frigg.tind.io'
     },
     restart_command={
-        'prod': 'restart prod'
+        'prod': 'supervisorctl restart frigg'
     },
     project_package='frigg',
-    test_settings='frigg.settings.test',
+    test_settings='settings',
 )
 
 deploy = task(site.deploy)
