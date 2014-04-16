@@ -5,7 +5,7 @@ LOGDIR=$(dirname $LOGFILE)
 NUM_WORKERS=8
 USER=ubuntu
 GROUP=ubuntu
-ADDRESS=127.0.0.1:8010
+ADDRESS=127.0.0.1:8011
 cd /opt/frigg
 source /opt/frigg/venv/bin/activate
 test -d $LOGDIR || mkdir -p $LOGDI
