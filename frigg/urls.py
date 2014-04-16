@@ -9,6 +9,6 @@ urlpatterns = patterns('',
     # url(r'^$', 'frigg.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
 
-    url(r'^github-webhook/', 'frigg.builds.views.github_webhook'),
+    #url(r'^github-webhook/', 'frigg.builds.views.github_webhook'),
     url(r'^admin/', include(admin.site.urls)),
 )
