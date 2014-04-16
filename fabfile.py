@@ -8,7 +8,7 @@ env.hosts = ['balder.tind.io']
 
 site = App(
     project_paths={
-        'prod': '/opt/frigg',
+        'prod': '/opt/frigg/frigg',
     },
     urls={
         'prod': 'https://frigg.tind.io'
