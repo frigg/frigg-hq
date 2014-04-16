@@ -8,7 +8,7 @@ env.hosts = ['balder.tind.io']
 
 site = App(
     project_paths={
-        'prod': '/opt/frigg',
+        'prod': '/opt/frigg/',
         },
     urls={
         'prod': 'https://frigg.tind.io'
@@ -17,7 +17,7 @@ site = App(
         'prod': 'supervisorctl restart frigg'
     },
     project_package='frigg',
-    test_settings='settings',
+    test_settings='frigg.frigg.settings',
 )
 
 deploy = task(site.deploy)
