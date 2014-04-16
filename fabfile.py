@@ -15,7 +15,7 @@ site = App(
         'prod': '/opt/frigg',
     },
     urls={
-        'prod': 'https://frigg.tind.io'
+        'prod': 'https://frigg.tind.io/github-webhook/'
     },
     restart_command={
         'prod': 'supervisorctl restart frigg'
