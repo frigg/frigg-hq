@@ -17,9 +17,11 @@ def build_pull_request(data):
                                  branch=data['branch'],
                                  sha=data["sha"])
 
-    t = threading.Thread(target=build.run_tests)
-    t.setDaemon(True)
-    t.start()
+    build.run_tests()
+
+    #t = threading.Thread(target=build.run_tests)
+    #t.setDaemon(True)
+    #t.start()
 
 
 @csrf_exempt
