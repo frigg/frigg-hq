@@ -1,4 +1,6 @@
 # coding=utf-8
+import sys
+
 import os
 import re
 
@@ -10,6 +12,8 @@ from fabric.api import settings as fabric_settings
 
 from django.conf import settings
 from frigg.utils import github_api_request
+
+#sys.path.append(os.path.dirname(__file__))
 
 
 class Build(models.Model):
@@ -33,7 +37,7 @@ class Build(models.Model):
         self.add_comment_to_pull_request("Running tests.. be patient :)")
         self._clone_repo()
         self._run_tox()
-        self._delete_tmp_folder()
+        #self._delete_tmp_folder()
 
     def _clone_repo(self):
         #Cleanup old if exists..
@@ -51,6 +55,8 @@ class Build(models.Model):
 
         with fabric_settings(warn_only=True):
             result = self._run("tox")
+
+            print result
 
             self.result = result
             self.save()
