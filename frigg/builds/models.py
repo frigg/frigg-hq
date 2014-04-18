@@ -74,7 +74,8 @@ class Build(models.Model):
     def _run(self, command):
         with lcd(self.working_directory()):
             result = local(command, capture=True)
-        return result
+
+        return result + result.stderr
 
     def add_comment_to_pull_request(self, message):
         owner, repo = self.get_git_repo_owner_and_name()
