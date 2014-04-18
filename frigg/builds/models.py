@@ -16,13 +16,20 @@ from frigg.utils import github_api_request
 #sys.path.append(os.path.dirname(__file__))
 
 
+class BuildResult(models.Model):
+    stdout = models.TextField()
+    stderr = models.TextField()
+    succeeded = models.BooleanField(default=False)
+    return_code = models.CharField(max_length=100)
+
+
 class Build(models.Model):
     git_repository = models.CharField(max_length=150, verbose_name="git@github.com:owner/repo.git")
     pull_request_id = models.IntegerField(max_length=150, default=0)
     branch = models.CharField(max_length=100, default="master")
     sha = models.CharField(max_length=150)
 
-    result = models.TextField(default="")
+    result = models.OneToOneField(BuildResult, null=True)
 
     def get_git_repo_owner_and_name(self):
         """Returns repo owner, repo name"""
@@ -37,7 +44,7 @@ class Build(models.Model):
         self.add_comment_to_pull_request("Running tests.. be patient :)")
         self._clone_repo()
         self._run_tox()
-        #self._delete_tmp_folder()
+        self._delete_tmp_folder()
 
     def _clone_repo(self):
         #Cleanup old if exists..
@@ -58,12 +65,17 @@ class Build(models.Model):
             with fabric_settings(warn_only=True):
                 result = self._run("tox")
 
-                self.result = result + result.stderr
+                result = BuildResult.objects.create(stdout=result, stderr=result.stderr,
+                                                    succeeded=result.succeeded,
+                                                    return_code=result.return_code)
+
+                self.result = result
                 self.save()
 
-                if result.failed:
+                if self.result.failed:
                     self.add_comment_to_pull_request("Be careful.. the tests failed.. "
-                                                     "The results from the test\n\n%s" % self.result)
+                                                     "The results from the test\n\n%s" %
+                                                     self.result)
 
                     self._set_commit_status("failure")
 
