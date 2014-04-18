@@ -12,7 +12,7 @@ env.hosts = ['balder.tind.io']
 
 site = App(
     project_paths={
-        'prod': '/opt/frigg',
+        'prod': '/opt/frigg/',
     },
     urls={
         'prod': 'https://frigg.tind.io/github-webhook/'
@@ -26,5 +26,4 @@ site = App(
 
 deploy = task(site.deploy)
 test = task(site.test)
-
-clone_prod_data = task(site.clone_data, "prod")
+clone_data = task(site.clone_data, "prod")

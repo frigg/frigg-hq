@@ -2,11 +2,25 @@
 import json
 import threading
 
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
+from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
 from frigg.builds.models import Build
 from frigg.utils import github_api_get_request
+
+
+def overview(request):
+    return render(request, "builds/overview.html", {'builds': Build.objects.all()})
+
+
+def build(request, owner, repo, pull_request_id):
+    try:
+        build = Build.get(owner, repo, pull_request_id)
+        return render(request, "builds/build.html", {'build': build})
+
+    except Build.DoesNotExist:
+        raise Http404
 
 
 def build_pull_request(data):

@@ -22,6 +22,12 @@ class BuildResult(models.Model):
     succeeded = models.BooleanField(default=False)
     return_code = models.CharField(max_length=100)
 
+    def get_status(self):
+        if self.succeeded:
+            return "succeded"
+        else:
+            return "failed"
+
 
 class Build(models.Model):
     git_repository = models.CharField(max_length=150, verbose_name="git@github.com:owner/repo.git")
@@ -37,6 +43,22 @@ class Build(models.Model):
         match = re.match(rex, self.git_repository)
 
         return match.group(1), match.group(2)
+
+    def get_owner(self):
+        return self.get_git_repo_owner_and_name()[0]
+
+    def get_name(self):
+        return self.get_git_repo_owner_and_name()[1]
+
+    @staticmethod
+    def get(owner, repo, pull_request_id):
+        for build in Build.objects.filter(pull_request_id=pull_request_id):
+            repo_owner, repo_name = build.get_git_repo_owner_and_name()
+
+            if repo_owner == owner and repo_name == repo:
+                return build
+
+        raise Build.DoesNotExist
 
     def run_tests(self):
 
@@ -77,9 +99,10 @@ class Build(models.Model):
                     self._set_commit_status("success")
 
                 else:
-                    self.add_comment_to_pull_request("Be careful.. the tests failed.. "
-                                                     "The results from the test\n\n%s" %
-                                                     self.result)
+                    self.add_comment_to_pull_request("Be careful.. the tests failed\n\n"
+                                                     "https://frigg.tind.io/build/%s/%s/%s/"
+                                                     "" % (self.get_owner(), self.get_name(),
+                                                           self.pull_request_id))
 
                     self._set_commit_status("failure")
 

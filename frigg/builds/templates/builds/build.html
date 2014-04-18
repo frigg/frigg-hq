@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block js %}
+
+    <link rel="stylesheet" href="{{ STATIC_URL }}js/highlight/styles/default.css">
+    <script src="{{ STATIC_URL }}js/highlight/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+{% endblock js %}
+
+{% block content %}
+
+    <div class="row">
+
+        <div class="col-lg-12">
+
+            <h2>{{ build.get_owner }} / {{ build.get_name }}</h2>
+
+            <table>
+                <tr>
+                    <td class="col-lg-1">Branch</td>
+                    <td class="col-lg-5">{{ build.branch }}</td>
+                </tr>
+                <tr>
+                    <td class="col-lg-1">Last commit</td>
+                    <td class="col-lg-5">{{ build.sha }}</td>
+                </tr>
+            </table>
+
+            <h3>stdout</h3>
+            <pre><code>{{ build.result.stdout }}</code></pre>
+
+
+            <h3>stderr</h3>
+            <pre><code>{{ build.result.stderr }}</code></pre>
+
+        </div>
+
+    </div>
+{% endblock %}
