@@ -40,29 +40,24 @@
                 <h2>Builds</h2>
 
                 {% for build in builds %}
-                    {% if build.result %}
-                        <a href="{% url "view_build" build.get_owner build.get_name build.pull_request_id %}">
-                            <div class="bs-callout bs-callout-{{ build.result.get_status }}">
-                                <h4>
-                                    {{ build.get_owner }} /
-                                    {{ build.get_name }} /
-                                    {{ build.branch }}
-                                </h4>
+                    <a href="{% url "view_build" build.get_owner build.get_name build.pull_request_id %}">
 
-                                <p>{{ build.result.get_status }}</p>
-                            </div>
-                        </a>
-                    {% else %}
-                        <div class="bs-callout bs-callout-pending">
-                            <h4>
-                                {{ build.get_owner }} /
-                                {{ build.get_name }} /
-                                {{ build.branch }}
-                            </h4>
+                        {% if build.result %}
+                            <div class="build bs-callout bs-callout-{{ build.result.get_status }}">
+                        {% else %}
+                            <div class="build bs-callout bs-callout-pending">
+                        {% endif %}
 
-                            <p>pending</p>
+                        <h4>
+                            {{ build.get_owner }} /
+                            {{ build.get_name }} /
+                            {{ build.branch }}
+                        </h4>
+
                         </div>
-                    {% endif %}
+
+                    </a>
+
 
                 {% endfor %}
 
