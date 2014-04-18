@@ -72,20 +72,20 @@ class Build(models.Model):
                 self.result = result
                 self.save()
 
-                if self.result.failed:
+                if self.result.succeeded:
+                    self.add_comment_to_pull_request("All gooodie good")
+                    self._set_commit_status("success")
+
+                else:
                     self.add_comment_to_pull_request("Be careful.. the tests failed.. "
                                                      "The results from the test\n\n%s" %
                                                      self.result)
 
                     self._set_commit_status("failure")
 
-                else:
-                    self.add_comment_to_pull_request("All gooodie good")
-                    self._set_commit_status("success")
-
         except AttributeError, e:
             self.add_comment_to_pull_request("I was not able to perform the tests.. Sorry. \n "
-                                             "More information: %s" % str(e))
+                                             "More information: \n\n %s" % str(e))
 
     def _run(self, command):
         with lcd(self.working_directory()):
