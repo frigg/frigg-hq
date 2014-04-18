@@ -84,6 +84,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
@@ -92,3 +93,6 @@ STATICFILES_DIRS = (
 
 PROJECT_TMP_DIRECTORY = "/home/ubuntu/builds/"
 GITHUB_ACCESS_TOKEN = "ea4d340d4bc4c1c7cd10e52692fbfc622242197b"
+
+
+
