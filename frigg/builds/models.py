@@ -37,6 +37,11 @@ class Build(models.Model):
 
     result = models.OneToOneField(BuildResult, null=True)
 
+    def get_pull_request_url(self):
+        return "https://github.com/%s/%s/pull/%s" % (self.get_owner(),
+                                                     self.get_name(),
+                                                     self.pull_request_id)
+
     def get_git_repo_owner_and_name(self):
         """Returns repo owner, repo name"""
         rex = "git@github.com:(\w*)/(\w*).git"
