@@ -85,5 +85,5 @@ test_suite = "frigg.runtests.runtests",
 
 STATIC_URL = '/static/'
 
-PROJECT_TMP_DIRECTORY = "/tmp/"
+PROJECT_TMP_DIRECTORY = "/home/ubuntu/builds/"
 GITHUB_ACCESS_TOKEN = "ea4d340d4bc4c1c7cd10e52692fbfc622242197b"
