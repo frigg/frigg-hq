@@ -39,7 +39,7 @@
 
                 <h2>Builds</h2>
 
-                {% for build in builds|slice:"1:" %}
+                {% for build in builds %}
                     <a href="{% url "view_build" build.get_owner build.get_name build.pull_request_id %}">
                         <div class="bs-callout bs-callout-{{ build.result.get_status }}">
 
