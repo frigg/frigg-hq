@@ -18,7 +18,7 @@ site = App(
         'prod': 'https://frigg.tind.io/github-webhook/'
     },
     restart_command={
-        'prod': 'supervisorctl restart frigg'
+        'prod': 'sudo supervisorctl restart frigg'
     },
     project_package='frigg',
     test_settings='frigg.settings.test',
