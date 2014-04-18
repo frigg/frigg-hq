@@ -27,13 +27,13 @@
                 </tr>
             </table>
 
-            <h3>stdout</h3>
+            <h3>Output</h3>
             <pre><code>{{ build.result.stdout }}</code></pre>
 
-
-            <h3>stderr</h3>
-            <pre><code>{{ build.result.stderr }}</code></pre>
-
+            {% if build.result.stderr %}
+                <h3>Errors</h3>
+                <pre><code>{{ build.result.stderr }}</code></pre>
+            {% endif %}
         </div>
 
     </div>
