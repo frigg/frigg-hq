@@ -53,29 +53,32 @@ class Build(models.Model):
             self._set_commit_status("error")
             return
 
-        with fabric_settings(warn_only=True):
-            result = self._run("tox")
+        try:
 
-            print result
+            with fabric_settings(warn_only=True):
+                result = self._run("tox")
 
-            self.result = result
-            self.save()
+                self.result = result + result.stderr
+                self.save()
 
-            if result.failed:
-                self.add_comment_to_pull_request("Be careful.. the tests failed.. "
-                                                 "The results from the test\n\n%s" % result)
+                if result.failed:
+                    self.add_comment_to_pull_request("Be careful.. the tests failed.. "
+                                                     "The results from the test\n\n%s" % self.result)
 
-                self._set_commit_status("failure")
+                    self._set_commit_status("failure")
 
-            else:
-                self.add_comment_to_pull_request("All gooodie good")
-                self._set_commit_status("success")
+                else:
+                    self.add_comment_to_pull_request("All gooodie good")
+                    self._set_commit_status("success")
+
+        except AttributeError:
+            self.add_comment_to_pull_request("I was not able to perform the tests.. Sorry.")
 
     def _run(self, command):
         with lcd(self.working_directory()):
             result = local(command, capture=True)
 
-        return result + result.stderr
+        return result
 
     def add_comment_to_pull_request(self, message):
         owner, repo = self.get_git_repo_owner_and_name()
