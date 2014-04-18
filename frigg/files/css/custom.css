@@ -92,3 +92,8 @@ body {
     background-color: #dff0d8;
     border-color: #468847;
 }
+
+.bs-callout-pending {
+    background-color: #fcf8f2;
+    border-color: #f0ad4e;
+}

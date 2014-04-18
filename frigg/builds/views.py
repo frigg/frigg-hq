@@ -11,7 +11,7 @@ from frigg.utils import github_api_get_request
 
 
 def overview(request):
-    return render(request, "builds/overview.html", {'builds': Build.objects.all()})
+    return render(request, "builds/overview.html", {'builds': Build.objects.all().order_by("-id")})
 
 
 def build(request, owner, repo, pull_request_id):
