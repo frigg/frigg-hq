@@ -26,3 +26,5 @@ site = App(
 
 deploy = task(site.deploy)
 test = task(site.test)
+
+clone_prod_data = task(site.clone_data, "prod")

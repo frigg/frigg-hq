@@ -83,8 +83,9 @@ class Build(models.Model):
                     self.add_comment_to_pull_request("All gooodie good")
                     self._set_commit_status("success")
 
-        except AttributeError:
-            self.add_comment_to_pull_request("I was not able to perform the tests.. Sorry.")
+        except AttributeError, e:
+            self.add_comment_to_pull_request("I was not able to perform the tests.. Sorry. \n "
+                                             "More information: %s" % str(e))
 
     def _run(self, command):
         with lcd(self.working_directory()):
