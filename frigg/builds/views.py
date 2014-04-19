@@ -62,6 +62,10 @@ def github_webhook(request):
 
         data = json.loads(request.body)
 
+        #Do nothing if the pull request is being closed
+        if data['action'] == "closed":
+            return
+
         pull_request = {'repo_name': data['repository']['name'],
                         'repo_owner': data['repository']['owner']['login'],
                         'pull_request_id': data['number'],
