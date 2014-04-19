@@ -34,12 +34,13 @@
             </table>
 
             <h3>Output</h3>
-            <pre><code>{{ build.result.stdout }}</code></pre>
+            <pre>
+                <code>
+                    {{ build.result.stdout }}
+                    {{ build.result.stderr }}
+                </code>
+            </pre>
 
-            {% if build.result.stderr %}
-                <h3>Errors</h3>
-                <pre><code>{{ build.result.stderr }}</code></pre>
-            {% endif %}
         </div>
 
     </div>
