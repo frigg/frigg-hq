@@ -105,9 +105,8 @@ class Build(models.Model):
 
                 else:
                     self.add_comment_to_pull_request("Be careful.. the tests failed\n\n"
-                                                     "https://frigg.tind.io/build/%s/%s/%s/"
-                                                     "" % (self.get_owner(), self.get_name(),
-                                                           self.pull_request_id))
+                                                     "https://frigg.tind.io/build/%s/"
+                                                     "" % self.id)
 
                     self._set_commit_status("failure")
 

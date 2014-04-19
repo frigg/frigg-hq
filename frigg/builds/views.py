@@ -14,9 +14,9 @@ def overview(request):
     return render(request, "builds/overview.html", {'builds': Build.objects.all().order_by("-id")})
 
 
-def build(request, owner, repo, pull_request_id):
+def build(request, build_id):
     try:
-        build = Build.get(owner, repo, pull_request_id)
+        build = Build.objects.get(id=build_id)
         return render(request, "builds/build.html", {'build': build})
 
     except Build.DoesNotExist:
