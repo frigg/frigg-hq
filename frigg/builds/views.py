@@ -58,7 +58,7 @@ def github_webhook(request):
 
             build_pull_request(pull_request)
 
-    if event == "pull_request":
+    elif event == "pull_request":
 
         data = json.loads(request.body)
 
@@ -73,6 +73,19 @@ def github_webhook(request):
                         "sha": data['pull_request']['head']['sha']}
 
         build_pull_request(pull_request)
+
+    # If someone pushed directly to master.. lets test it anyway
+    elif event == "push":
+
+        data = json.loads(request.body)
+
+        if data['ref'] == "refs/heads/master":
+            pull_request = {'repo_name': data['repository']['name'],
+                            'repo_owner': data['repository']['owner']['name'],
+                            'branch': 'master',
+                            "sha": data['after']}
+
+            build_pull_request(pull_request)
 
     else:
         return HttpResponse("Do nothing :)")

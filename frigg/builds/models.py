@@ -38,6 +38,9 @@ class Build(models.Model):
     result = models.OneToOneField(BuildResult, null=True)
 
     def get_pull_request_url(self):
+        if self.branch == "master":
+            return "https://github.com/%s/%s/" % (self.get_owner(), self.get_name())
+
         return "https://github.com/%s/%s/pull/%s" % (self.get_owner(),
                                                      self.get_name(),
                                                      self.pull_request_id)
@@ -55,20 +58,9 @@ class Build(models.Model):
     def get_name(self):
         return self.get_git_repo_owner_and_name()[1]
 
-    @staticmethod
-    def get(owner, repo, pull_request_id):
-        for build in Build.objects.filter(pull_request_id=pull_request_id):
-            repo_owner, repo_name = build.get_git_repo_owner_and_name()
-
-            if repo_owner == owner and repo_name == repo:
-                return build
-
-        raise Build.DoesNotExist
-
     def run_tests(self):
-
         self._set_commit_status("pending")
-        self.add_comment_to_pull_request("Running tests.. be patient :)")
+        self.add_comment("Running tests.. be patient :)")
         self._clone_repo()
         self._run_tox()
         self._delete_tmp_folder()
@@ -83,7 +75,7 @@ class Build(models.Model):
     def _run_tox(self):
 
         if not os.path.isfile(os.path.join(self.working_directory(), "tox.ini")):
-            self.add_comment_to_pull_request("The project is missing a tox.ini file")
+            self.add_comment("The project is missing a tox.ini file")
             self._set_commit_status("error")
             return
 
@@ -100,19 +92,18 @@ class Build(models.Model):
                 self.save()
 
                 if self.result.succeeded:
-                    self.add_comment_to_pull_request("All gooodie good")
+                    self.add_comment("All gooodie good")
                     self._set_commit_status("success")
 
                 else:
-                    self.add_comment_to_pull_request("Be careful.. the tests failed\n\n"
-                                                     "https://frigg.tind.io/build/%s/"
-                                                     "" % self.id)
+                    self.add_comment("Be careful.. the tests failed\n\n"
+                                     "https://frigg.tind.io/build/%s/" % self.id)
 
                     self._set_commit_status("failure")
 
         except AttributeError, e:
-            self.add_comment_to_pull_request("I was not able to perform the tests.. Sorry. \n "
-                                             "More information: \n\n %s" % str(e))
+            self.add_comment("I was not able to perform the tests.. Sorry. \n "
+                             "More information: \n\n %s" % str(e))
 
     def _run(self, command):
         with lcd(self.working_directory()):
@@ -120,10 +111,10 @@ class Build(models.Model):
 
         return result
 
-    def add_comment_to_pull_request(self, message):
+    def add_comment(self, message):
         owner, repo = self.get_git_repo_owner_and_name()
-        url = "%s/%s/issues/%s/comments" % (owner, repo, self.pull_request_id, )
-        github_api_request(url, {'body': message})
+        url = "%s/%s/commits/%s/comments" % (owner, repo, self.sha)
+        github_api_request(url, {'body': message, 'sha': self.sha})
 
     def _set_commit_status(self, status, description="Done"):
         owner, repo = self.get_git_repo_owner_and_name()
