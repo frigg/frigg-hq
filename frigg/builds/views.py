@@ -82,6 +82,7 @@ def github_webhook(request):
         if data['ref'] == "refs/heads/master":
             pull_request = {'repo_name': data['repository']['name'],
                             'repo_owner': data['repository']['owner']['name'],
+                            'pull_request_id': 0,
                             'branch': 'master',
                             "sha": data['after']}
 
