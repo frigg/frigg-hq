@@ -84,7 +84,8 @@ class Build(models.Model):
             with fabric_settings(warn_only=True):
                 result = self._run("tox")
 
-                result = BuildResult.objects.create(stdout=result, stderr=result.stderr,
+                result = BuildResult.objects.create(stdout=unicode(result),
+                                                    stderr=unicode(result.stderr),
                                                     succeeded=result.succeeded,
                                                     return_code=result.return_code)
 
