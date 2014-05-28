@@ -1,8 +1,4 @@
 # coding=utf-8
-import sys
-reload(sys)
-sys.setdefaultencoding("utf-8")
-
 import os
 import re
 
@@ -89,7 +85,7 @@ class Build(models.Model):
                 result = BuildResult.objects.create(stdout=result,
                                                     stderr=result.stderr,
                                                     succeeded=result.succeeded,
-                                                    return_code=result.return_code)
+                                                    return_code="1")
 
                 self.result = result
                 self.save()
