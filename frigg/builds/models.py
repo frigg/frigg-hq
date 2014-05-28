@@ -15,8 +15,7 @@ from frigg.utils import github_api_request
 
 
 class BuildResult(models.Model):
-    stdout = models.TextField()
-    stderr = models.TextField()
+    result_log = models.TextField()
     succeeded = models.BooleanField(default=False)
     return_code = models.CharField(max_length=100)
 
@@ -80,14 +79,19 @@ class Build(models.Model):
         try:
 
             with fabric_settings(warn_only=True):
-                result = self._run("tox")
 
-                result = BuildResult.objects.create(stdout=str(result),
-                                                    stderr=str(result.stderr),
-                                                    succeeded=result.succeeded,
-                                                    return_code=result.return_code)
+                with lcd(self.working_directory()):
+                    run_result = local("script -c tox /dev/null |tee frigg_testlog")
 
-                self.result = result
+                    build_result = BuildResult.objects.create(succeeded=run_result.succeeded,
+                                                              return_code=run_result.return_code)
+
+                    with file("frigg_testlog", "r") as f:
+                        build_result.result_log = f.read()
+                        build_result.save()
+
+                #Read from testlog-file
+                self.result_log = build_result
                 self.save()
 
                 if self.result.succeeded:
@@ -104,11 +108,6 @@ class Build(models.Model):
             self.add_comment("I was not able to perform the tests.. Sorry. \n "
                              "More information: \n\n %s" % str(e))
 
-    def _run(self, command):
-        with lcd(self.working_directory()):
-            result = local(command, capture=True)
-
-        return result
 
     def add_comment(self, message):
         owner, repo = self.get_git_repo_owner_and_name()
@@ -130,6 +129,10 @@ class Build(models.Model):
     def _delete_tmp_folder(self):
         if os.path.exists(self.working_directory()):
             local("rm -rf %s" % self.working_directory())
+
+    def testlog(self):
+        with file("frigg_testlog", "r") as f:
+            return f.read()
 
     def working_directory(self):
         return os.path.join(self.frigg_tmp_directory(), str(self.id))
