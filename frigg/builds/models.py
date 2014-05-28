@@ -67,7 +67,9 @@ class Build(models.Model):
         self._delete_tmp_folder()
         local("mkdir -p %s" % self.frigg_tmp_directory())
         local("git clone %s %s" % (self.git_repository, self.working_directory()))
-        self._run("git checkout %s" % self.branch)
+
+        with lcd(self.working_directory()):
+            local("git checkout %s" % self.branch)
 
     def _run_tox(self):
 
