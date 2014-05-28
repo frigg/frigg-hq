@@ -61,7 +61,7 @@ class Build(models.Model):
         self.add_comment("Running tests.. be patient :)")
         self._clone_repo()
         self._run_tox()
-        self._delete_tmp_folder()
+        #self._delete_tmp_folder()
 
     def _clone_repo(self):
         #Cleanup old if exists..
