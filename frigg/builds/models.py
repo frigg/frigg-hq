@@ -83,7 +83,7 @@ class Build(models.Model):
             with fabric_settings(warn_only=True):
 
                 with lcd(self.working_directory()):
-                    run_result = local("script -c tox /dev/null |tee frigg_testlog")
+                    run_result = local("script -c tox /dev/null |tee %s/frigg_testlog" % self.working_directory())
 
                     build_result = BuildResult.objects.create(succeeded=run_result.succeeded,
                                                               return_code=run_result.return_code)
@@ -133,8 +133,11 @@ class Build(models.Model):
             local("rm -rf %s" % self.working_directory())
 
     def testlog(self):
-        with file("frigg_testlog", "r") as f:
-            return f.read()
+        try:
+            with file("%s/frigg_testlog" % self.working_directory() , "r") as f:
+                return f.read()
+        except IOError:
+            return ""
 
     def working_directory(self):
         return os.path.join(self.frigg_tmp_directory(), str(self.id))
