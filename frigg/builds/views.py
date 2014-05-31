@@ -1,6 +1,7 @@
 # coding=utf-8
 import json
 import threading
+from django.contrib.auth.decorators import login_required
 
 from django.http import HttpResponse, Http404
 from django.shortcuts import render
@@ -10,10 +11,12 @@ from frigg.builds.models import Build
 from frigg.utils import github_api_get_request
 
 
+@login_required
 def overview(request):
     return render(request, "builds/overview.html", {'builds': Build.objects.all().order_by("-id")})
 
 
+@login_required
 def build(request, build_id):
     try:
         build = Build.objects.get(id=build_id)
@@ -36,6 +39,7 @@ def build_pull_request(data):
     t.start()
 
 
+@login_required
 def deploy_master_branch(request, build_id):
     build = Build.objects.get(id=build_id)
     build.deploy()
