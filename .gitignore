@@ -4,6 +4,7 @@ __pycache__/
 db.sqlite*
 # C extensions
 *.so
+local.py
 
 # Distribution / packaging
 .Python

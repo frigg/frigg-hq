@@ -62,6 +62,10 @@ class Build(models.Model):
         self._run_tox()
         #self._delete_tmp_folder()
 
+    def deploy(self):
+        if os.path.exists(self.working_directory()):
+            local("./deploy")
+
     def _clone_repo(self):
         #Cleanup old if exists..
         self._delete_tmp_folder()
@@ -83,8 +87,10 @@ class Build(models.Model):
             with fabric_settings(warn_only=True):
 
                 with lcd(self.working_directory()):
-                    run_result = local(
-                        "script -c tox /dev/null |tee %s/frigg_testlog" % self.working_directory())
+                    #run_result = local(
+                    #    "script -k tox |tee %s/frigg_testlog" % self.working_directory())
+
+                    run_result = local("script %s/frigg_testlog tox" % self.working_directory())
 
                     build_result = BuildResult.objects.create(succeeded=run_result.succeeded,
                                                               return_code=run_result.return_code)
@@ -94,7 +100,7 @@ class Build(models.Model):
                         build_result.save()
 
                 #Read from testlog-file
-                self.result_log = build_result
+                self.result = build_result
                 self.save()
 
                 if self.result.succeeded:
@@ -110,7 +116,6 @@ class Build(models.Model):
         except AttributeError, e:
             self.add_comment("I was not able to perform the tests.. Sorry. \n "
                              "More information: \n\n %s" % str(e))
-
 
     def add_comment(self, message):
         owner, repo = self.get_git_repo_owner_and_name()

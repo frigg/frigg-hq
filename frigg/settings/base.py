@@ -10,7 +10,7 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-BASE_DIR = os.path.dirname(__file__)
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
@@ -93,6 +93,3 @@ STATICFILES_DIRS = (
 
 PROJECT_TMP_DIRECTORY = "/home/ubuntu/builds/"
 GITHUB_ACCESS_TOKEN = "ea4d340d4bc4c1c7cd10e52692fbfc622242197b"
-
-
-
