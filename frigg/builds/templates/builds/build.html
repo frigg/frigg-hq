@@ -34,13 +34,11 @@
                 </table>
             </div>
 
-            {% if build.result %}
                 <div class="col-lg-4">
                     <a href="{% url "deploy_master_branch" build.id %}">
                         <div class="btn btn-info">Deploy master branch</div>
                     </a>
                 </div>
-            {% endif %}
 
         </div>
 
