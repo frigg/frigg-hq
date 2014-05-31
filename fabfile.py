@@ -1,5 +1,7 @@
 # coding=utf-8
 import os
+from types import MethodType
+from fabric.context_managers import cd
 from fabric.decorators import task
 from fabric.state import env
 from django_fabric import App
@@ -10,7 +12,15 @@ sys.path.append(os.path.dirname(__file__))
 env.user = 'ubuntu'
 env.hosts = ['balder.tind.io']
 
-site = App(
+class FriggApp(App):
+
+    def pre_deploy_notify(self, instance):
+        pass
+        #code_dir = self.project_paths[instance]
+        #with cd(code_dir):
+        #    self.run('cp frigg/settings/local_dummy.py frigg/settings/local.py')
+
+site = FriggApp(
     project_paths={
         'prod': '/opt/frigg/',
     },
@@ -23,6 +33,7 @@ site = App(
     project_package='frigg',
     test_settings='frigg.settings.test',
 )
+
 
 deploy = task(site.deploy)
 test = task(site.test)
