@@ -36,6 +36,13 @@ def build_pull_request(data):
     t.start()
 
 
+def deploy_master_branch(request, build_id):
+    build = Build.objects.get(id=build_id)
+    build.deploy()
+
+    return HttpResponse("Deployed")
+
+
 @csrf_exempt
 def github_webhook(request):
     try:

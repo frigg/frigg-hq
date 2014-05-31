@@ -64,7 +64,8 @@ class Build(models.Model):
 
     def deploy(self):
         if os.path.exists(self.working_directory()):
-            local("./deploy")
+            with lcd(self.working_directory()):
+                local("./deploy.sh")
 
     def _clone_repo(self):
         #Cleanup old if exists..
