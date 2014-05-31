@@ -1,6 +1,7 @@
 # coding=utf-8
 import os
 import re
+from sys import platform as _platform
 
 from django.db import models
 from fabric.context_managers import lcd
@@ -10,6 +11,7 @@ from fabric.api import settings as fabric_settings
 
 from django.conf import settings
 from frigg.utils import github_api_request
+
 
 #sys.path.append(os.path.dirname(__file__))
 
@@ -88,10 +90,11 @@ class Build(models.Model):
             with fabric_settings(warn_only=True):
 
                 with lcd(self.working_directory()):
-                    #run_result = local(
-                    #    "script -k tox |tee %s/frigg_testlog" % self.working_directory())
 
-                    run_result = local("script %s/frigg_testlog tox" % self.working_directory())
+                    if _platform == "darwin":
+                        run_result = local("script %s/frigg_testlog tox" % self.working_directory())
+                    else:
+                        run_result = local("script -c tox |tee %s/frigg_testlog" % self.working_directory())
 
                     build_result = BuildResult.objects.create(succeeded=run_result.succeeded,
                                                               return_code=run_result.return_code)
