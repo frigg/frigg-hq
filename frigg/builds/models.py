@@ -65,9 +65,8 @@ class Build(models.Model):
         #self._delete_tmp_folder()
 
     def deploy(self):
-        if os.path.exists(self.working_directory()):
-            with lcd(self.working_directory()):
-                local("./deploy.sh")
+        with lcd(self.working_directory()):
+            local("./deploy.sh")
 
     def _clone_repo(self):
         #Cleanup old if exists..
