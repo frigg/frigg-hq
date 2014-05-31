@@ -46,7 +46,6 @@ def deploy_master_branch(request, build_id):
 
     return HttpResponse("Deployed")
 
-
 @csrf_exempt
 def github_webhook(request):
     try:

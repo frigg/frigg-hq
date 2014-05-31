@@ -59,7 +59,8 @@ class Build(models.Model):
 
     def run_tests(self):
         self._set_commit_status("pending")
-        self.add_comment("Running tests.. be patient :)")
+        self.add_comment("Running tests.. be patient :)\n\n"
+                         "https://frigg.tind.io/build/%s/" % self.id)
         self._clone_repo()
         self._run_tox()
         #self._delete_tmp_folder()
@@ -107,7 +108,9 @@ class Build(models.Model):
                 self.save()
 
                 if self.result.succeeded:
-                    self.add_comment("All gooodie good")
+                    self.add_comment("All gooodie good\n\n"
+                                     "https://frigg.tind.io/build/%s/" % self.id)
+
                     self._set_commit_status("success")
 
                 else:
