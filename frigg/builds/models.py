@@ -96,6 +96,8 @@ class Build(models.Model):
                     else:
                         run_result = local("script -c tox |tee %s/frigg_testlog" % self.working_directory())
 
+                    run_result = local("tox")
+
                     build_result = BuildResult.objects.create(succeeded=run_result.succeeded,
                                                               return_code=run_result.return_code)
 
