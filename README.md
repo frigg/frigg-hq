@@ -5,6 +5,9 @@
 make
 ```
 
-You have to create a working directory for frigg and set `PROJECT_TMP_DIRECTORY` in `frigg.settings.local`.
+### Settings that need to be setup
+Add these to `frigg.settings.local`.
 
-To get the correct domain in comments on Github etc. you need to set `SERVER_ADDRESS` in the settings.
+* `PROJECT_TMP_DIRECTORY` - The location you want frigg to clone and test projects.
+* `SERVER_ADDRESS` - To get the correct domain in comments on Github etc.
+* `GITHUB_ACCESS_TOKEN` - Token needed to make the project able to post comments on Github.
