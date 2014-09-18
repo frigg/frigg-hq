@@ -1,11 +1,8 @@
 {% extends "base.html" %}
 
 {% block js %}
-
-    <link rel="stylesheet" href="{{ STATIC_URL }}js/highlight/styles/default.css">
-    <script src="{{ STATIC_URL }}js/highlight/highlight.pack.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
-
+    <script src="{{ STATIC_URL }}js/ansi_up.js"></script>
+    <script src="{{ STATIC_URL }}js/colorify.js"></script>
 {% endblock js %}
 
 {% block content %}
@@ -44,10 +41,10 @@
 
         <div class="col-lg-12">
             {% if build.result %}
-                <pre><code>{{ build.result.result_log }}</code></pre>
+                <pre><code class="colorify">{{ build.result.result_log }}</code></pre>
             {% else %}
                 {% include "builds/loading.html" %}
-                <pre><code>{{ build.testlog }}</code></pre>
+                <pre><code class="colorify">{{ build.testlog }}</code></pre>
             {% endif %}
         </div>
     </div>
