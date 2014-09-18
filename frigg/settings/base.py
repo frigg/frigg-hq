@@ -92,3 +92,4 @@ STATICFILES_DIRS = (
 )
 
 PROJECT_TMP_DIRECTORY = "/home/ubuntu/builds/"
+SERVER_ADDRESS = '127.0.0.1:8000'

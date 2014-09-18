@@ -36,6 +36,9 @@ class Build(models.Model):
 
     result = models.OneToOneField(BuildResult, null=True)
 
+    def get_absolute_url(self):
+        return "https://%s/build/%s/" % (settings.SERVER_ADDRESS, self.id)
+
     def get_pull_request_url(self):
         if self.branch == "master":
             return "https://github.com/%s/%s/" % (self.get_owner(), self.get_name())
@@ -59,8 +62,8 @@ class Build(models.Model):
 
     def run_tests(self):
         self._set_commit_status("pending")
-        self.add_comment("Running tests.. be patient :)\n\n"
-                         "https://frigg.tind.io/build/%s/" % self.id)
+        self.add_comment("Running tests.. be patient :)\n\n%s" % 
+                         self.get_absolute_url())
         self._clone_repo()
         self._run_tox()
         #self._delete_tmp_folder()
@@ -110,14 +113,14 @@ class Build(models.Model):
                 self.save()
 
                 if self.result.succeeded:
-                    self.add_comment("All gooodie good\n\n"
-                                     "https://frigg.tind.io/build/%s/" % self.id)
+                    self.add_comment("All gooodie good\n\n%s" %
+                                     self.get_absolute_url())
 
                     self._set_commit_status("success")
 
                 else:
-                    self.add_comment("Be careful.. the tests failed\n\n"
-                                     "https://frigg.tind.io/build/%s/" % self.id)
+                    self.add_comment("Be careful.. the tests failed\n\n%s" %
+                                     self.get_absolute_url())
 
                     self._set_commit_status("failure")
 
