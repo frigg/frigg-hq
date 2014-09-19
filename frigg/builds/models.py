@@ -1,19 +1,20 @@
 # coding=utf-8
 import os
 import re
+import json
 from sys import platform as _platform
 
+import requests
 from django.db import models
+from django.conf import settings
 from fabric.context_managers import lcd
 from fabric.operations import local
-
 from fabric.api import settings as fabric_settings
 
-from django.conf import settings
 from frigg.utils import github_api_request
 
 
-#sys.path.append(os.path.dirname(__file__))
+# sys.path.append(os.path.dirname(__file__))
 
 
 class BuildResult(models.Model):
@@ -62,7 +63,7 @@ class Build(models.Model):
 
     def run_tests(self):
         self._set_commit_status("pending")
-        self.add_comment("Running tests.. be patient :)\n\n%s" % 
+        self.add_comment("Running tests.. be patient :)\n\n%s" %
                          self.get_absolute_url())
         self._clone_repo()
         self._run_tox()
@@ -155,6 +156,16 @@ class Build(models.Model):
                 return f.read()
         except IOError:
             return ""
+
+    def send_webhook(self, url):
+        return requests.post(url, data=json.dumps({
+            'repository': self.git_repository,
+            'sha': self.sha,
+            'build_url': self.get_absolute_url(),
+            'pull_request_id': self.pull_request_id(),
+            'state': self.result.succeeded,
+            'return_code': self.result.return_code
+        }))
 
     def working_directory(self):
         return os.path.join(self.frigg_tmp_directory(), str(self.id))
