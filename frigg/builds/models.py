@@ -4,6 +4,7 @@ import re
 import json
 from sys import platform as _platform
 
+import yaml
 import requests
 from django.db import models
 from django.conf import settings
@@ -65,6 +66,11 @@ class Build(models.Model):
 
     def get_name(self):
         return self.get_git_repo_owner_and_name()[1]
+
+    def load_settings(self):
+        path = os.path.join(self.working_directory(), '.frigg.yml')
+        with open(path) as f:
+            return yaml.load(f)
 
     def run_tests(self):
         self._set_commit_status("pending")
@@ -165,4 +171,3 @@ class Build(models.Model):
 
     def working_directory(self):
         return os.path.join(settings.PROJECT_TMP_DIRECTORY, str(self.id))
-
