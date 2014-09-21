@@ -76,16 +76,34 @@ class Build(models.Model):
         self._set_commit_status("pending")
         self.add_comment("Running tests.. be patient :)\n\n%s" %
                          self.get_absolute_url())
-        self._clone_repo()
-        self._run_tox()
-        #self._delete_tmp_folder()
+        build_result = BuildResult.objects.create()
+        self.result = build_result
+        self.save()
+        try:
+            self._clone_repo()
+
+            for task in self.load_settings['tasks']:
+                self._run_task()
+                if not self.result.succeeded:
+                    # if one task fails, we do not care about the rest
+                    break
+
+        except AttributeError, e:
+            self.result.succeeded = False
+            self.result.result_log = str(e)
+            self.result.save()
+            self.add_comment("I was not able to perform the tests.. Sorry. \n "
+                             "More information: \n\n %s" % str(e))
+
+        self.add_comment(self.result.get_comment_message(self.get_absolute_url()))
+        self._set_commit_status(self.result.get_status())
 
     def deploy(self):
         with lcd(self.working_directory()):
             local("./deploy.sh")
 
     def _clone_repo(self):
-        #Cleanup old if exists..
+        # Cleanup old if exists..
         self._delete_tmp_folder()
         local("mkdir -p %s" % settings.PROJECT_TMP_DIRECTORY)
         local("git clone %s %s" % (self.git_repository, self.working_directory()))
@@ -93,43 +111,35 @@ class Build(models.Model):
         with lcd(self.working_directory()):
             local("git checkout %s" % self.branch)
 
-    def _run_tox(self):
+    def _run_task(self, task_command):
+        options = {
+            'pwd': self.working_directory(),
+            'command': task_command
+        }
 
-        if not os.path.isfile(os.path.join(self.working_directory(), "tox.ini")):
-            self.add_comment("The project is missing a tox.ini file")
-            self._set_commit_status("error")
-            return
+        with fabric_settings(warn_only=True):
+            with lcd(self.working_directory()):
+                if _platform == "darwin":
+                    script_command = "script %(pwd)s/frigg_testlog %(command)s"
+                else:
+                    script_command = "script -c %(command)s |tee %(pwd)s/frigg_testlog"
 
-        try:
+                run_result = local(script_command % options)
+                run_result = local(task_command)
 
-            with fabric_settings(warn_only=True):
+                self.result.succeeded = run_result.succeeded,
+                self.result.return_code += "%s," % run_result.return_code
 
-                with lcd(self.working_directory()):
+                log = 'Task: %(command)s\n' % options
+                log += '------------------------------------\n'
 
-                    if _platform == "darwin":
-                        run_result = local("script %s/frigg_testlog tox" % self.working_directory())
-                    else:
-                        run_result = local("script -c tox |tee %s/frigg_testlog" % self.working_directory())
+                with file("%(pwd)s/frigg_testlog" % options, "r") as f:
+                    log += f.read() + "\n"
 
-                    run_result = local("tox")
-
-                    build_result = BuildResult.objects.create(succeeded=run_result.succeeded,
-                                                              return_code=run_result.return_code)
-
-                    with file("%s/frigg_testlog" % self.working_directory(), "r") as f:
-                        build_result.result_log = f.read()
-                        build_result.save()
-
-                # Read from testlog-file
-                self.result = build_result
-                self.save()
-
-                self.add_comment(self.result.get_comment_message(self.get_absolute_url()))
-                self._set_commit_status(self.result.get_status())
-
-        except AttributeError, e:
-            self.add_comment("I was not able to perform the tests.. Sorry. \n "
-                             "More information: \n\n %s" % str(e))
+                log += '------------------------------------\n'
+                log += 'Exited with exit code: %s\n\n' % run_result.return_code
+                self.result.result_log += log
+                self.result.save()
 
     def add_comment(self, message):
         owner, repo = self.get_git_repo_owner_and_name()
