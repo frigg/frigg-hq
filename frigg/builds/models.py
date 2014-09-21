@@ -82,8 +82,8 @@ class Build(models.Model):
         try:
             self._clone_repo()
 
-            for task in self.load_settings['tasks']:
-                self._run_task()
+            for task in self.load_settings()['tasks']:
+                self._run_task(task)
                 if not self.result.succeeded:
                     # if one task fails, we do not care about the rest
                     break
@@ -122,12 +122,12 @@ class Build(models.Model):
                 if _platform == "darwin":
                     script_command = "script %(pwd)s/frigg_testlog %(command)s"
                 else:
-                    script_command = "script -c %(command)s |tee %(pwd)s/frigg_testlog"
+                    script_command = "script -c \"%(command)s\" |tee %(pwd)s/frigg_testlog"
 
                 run_result = local(script_command % options)
                 run_result = local(task_command)
 
-                self.result.succeeded = run_result.succeeded,
+                self.result.succeeded = run_result.succeeded
                 self.result.return_code += "%s," % run_result.return_code
 
                 log = 'Task: %(command)s\n' % options

@@ -46,6 +46,7 @@ def deploy_master_branch(request, build_id):
 
     return HttpResponse("Deployed")
 
+
 @csrf_exempt
 def github_webhook(request):
     try:
@@ -72,7 +73,7 @@ def github_webhook(request):
 
         data = json.loads(request.body)
 
-        #Do nothing if the pull request is being closed
+        # Do nothing if the pull request is being closed
         if data['action'] == "closed":
             return
 
