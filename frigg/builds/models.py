@@ -76,7 +76,7 @@ class Build(models.Model):
     def _clone_repo(self):
         #Cleanup old if exists..
         self._delete_tmp_folder()
-        local("mkdir -p %s" % self.frigg_tmp_directory())
+        local("mkdir -p %s" % settings.PROJECT_TMP_DIRECTORY)
         local("git clone %s %s" % (self.git_repository, self.working_directory()))
 
         with lcd(self.working_directory()):
@@ -168,7 +168,5 @@ class Build(models.Model):
         }))
 
     def working_directory(self):
-        return os.path.join(self.frigg_tmp_directory(), str(self.id))
+        return os.path.join(settings.PROJECT_TMP_DIRECTORY, str(self.id))
 
-    def frigg_tmp_directory(self):
-        return os.path.join(settings.PROJECT_TMP_DIRECTORY, "frigg_working_dir", )
