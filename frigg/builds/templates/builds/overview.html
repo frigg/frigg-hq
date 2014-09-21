@@ -1,1 +1,34 @@
 {% extends "base.html" %}
+
+{% block content %}
+    <div class="row builds">
+        <div class="col-xs-12">
+            {% for build in builds %}
+                <a href="{% url "view_build" build.id %}">
+
+                    {% if build.result %}
+                        <div class="row build bs-callout bs-callout-{{ build.result.get_status }}">
+                    {% else %}
+                        <div class="row build bs-callout bs-callout-pending">
+                    {% endif %}
+
+                        <div class="col-xs-1 build-number"><h4>#{{ build.id }}</h4></div>
+                        <div class="col-xs-11">
+                            <h4>
+                                {{ build.get_owner }} /
+                                {{ build.get_name }} /
+                                {{ build.branch }}
+                            </h4>
+                            <span class="sha">{{ build.sha }}</span>
+                        </div>
+
+                    </div>
+
+                </a>
+
+
+            {% endfor %}
+
+        </div>
+    </div>
+{% endblock %}

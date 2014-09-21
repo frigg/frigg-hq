@@ -72,6 +72,11 @@ body {
     color: #000000;
 }
 
+.builds .build-number {
+    color: #555;
+    text-align: center;
+}
+
 a:hover {
     text-decoration: none;
 }
