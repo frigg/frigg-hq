@@ -91,5 +91,5 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'files/'),
 )
 
-PROJECT_TMP_DIRECTORY = "/home/ubuntu/builds/"
+PROJECT_TMP_DIRECTORY = "/home/ubuntu/builds/frigg_working_dir/"
 SERVER_ADDRESS = '127.0.0.1:8000'

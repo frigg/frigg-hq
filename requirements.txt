@@ -4,3 +4,4 @@ fabric
 requests
 gunicorn
 django-fabric
+pyyaml

@@ -1,19 +1,21 @@
 # coding=utf-8
 import os
 import re
+import json
 from sys import platform as _platform
 
+import yaml
+import requests
 from django.db import models
+from django.conf import settings
 from fabric.context_managers import lcd
 from fabric.operations import local
-
 from fabric.api import settings as fabric_settings
 
-from django.conf import settings
 from frigg.utils import github_api_request
 
 
-#sys.path.append(os.path.dirname(__file__))
+# sys.path.append(os.path.dirname(__file__))
 
 
 class BuildResult(models.Model):
@@ -26,6 +28,12 @@ class BuildResult(models.Model):
             return "succeded"
         else:
             return "failed"
+
+    def get_comment_message(self, url):
+        if self.succeeded:
+            return "All gooodie good\n\n%s" % url
+        else:
+            return "Be careful.. the tests failed\n\n%s" % url
 
 
 class Build(models.Model):
@@ -48,7 +56,6 @@ class Build(models.Model):
                                                      self.pull_request_id)
 
     def get_git_repo_owner_and_name(self):
-        """Returns repo owner, repo name"""
         rex = "git@github.com:(\w*)/([\w.]*).git"
         match = re.match(rex, self.git_repository)
 
@@ -60,73 +67,79 @@ class Build(models.Model):
     def get_name(self):
         return self.get_git_repo_owner_and_name()[1]
 
+    def load_settings(self):
+        path = os.path.join(self.working_directory(), '.frigg.yml')
+        with open(path) as f:
+            return yaml.load(f)
+
     def run_tests(self):
         self._set_commit_status("pending")
-        self.add_comment("Running tests.. be patient :)\n\n%s" % 
+        self.add_comment("Running tests.. be patient :)\n\n%s" %
                          self.get_absolute_url())
-        self._clone_repo()
-        self._run_tox()
-        #self._delete_tmp_folder()
+        build_result = BuildResult.objects.create()
+        self.result = build_result
+        self.save()
+        try:
+            self._clone_repo()
+
+            for task in self.load_settings()['tasks']:
+                self._run_task(task)
+                if not self.result.succeeded:
+                    # if one task fails, we do not care about the rest
+                    break
+
+        except AttributeError, e:
+            self.result.succeeded = False
+            self.result.result_log = str(e)
+            self.result.save()
+            self.add_comment("I was not able to perform the tests.. Sorry. \n "
+                             "More information: \n\n %s" % str(e))
+
+        self.add_comment(self.result.get_comment_message(self.get_absolute_url()))
+        self._set_commit_status(self.result.get_status())
 
     def deploy(self):
         with lcd(self.working_directory()):
             local("./deploy.sh")
 
     def _clone_repo(self):
-        #Cleanup old if exists..
+        # Cleanup old if exists..
         self._delete_tmp_folder()
-        local("mkdir -p %s" % self.frigg_tmp_directory())
+        local("mkdir -p %s" % settings.PROJECT_TMP_DIRECTORY)
         local("git clone %s %s" % (self.git_repository, self.working_directory()))
 
         with lcd(self.working_directory()):
             local("git checkout %s" % self.branch)
 
-    def _run_tox(self):
+    def _run_task(self, task_command):
+        options = {
+            'pwd': self.working_directory(),
+            'command': task_command
+        }
 
-        if not os.path.isfile(os.path.join(self.working_directory(), "tox.ini")):
-            self.add_comment("The project is missing a tox.ini file")
-            self._set_commit_status("error")
-            return
-
-        try:
-
-            with fabric_settings(warn_only=True):
-
-                with lcd(self.working_directory()):
-
-                    if _platform == "darwin":
-                        run_result = local("script %s/frigg_testlog tox" % self.working_directory())
-                    else:
-                        run_result = local("script -c tox |tee %s/frigg_testlog" % self.working_directory())
-
-                    run_result = local("tox")
-
-                    build_result = BuildResult.objects.create(succeeded=run_result.succeeded,
-                                                              return_code=run_result.return_code)
-
-                    with file("%s/frigg_testlog" % self.working_directory(), "r") as f:
-                        build_result.result_log = f.read()
-                        build_result.save()
-
-                #Read from testlog-file
-                self.result = build_result
-                self.save()
-
-                if self.result.succeeded:
-                    self.add_comment("All gooodie good\n\n%s" %
-                                     self.get_absolute_url())
-
-                    self._set_commit_status("success")
-
+        with fabric_settings(warn_only=True):
+            with lcd(self.working_directory()):
+                if _platform == "darwin":
+                    script_command = "script %(pwd)s/frigg_testlog %(command)s"
                 else:
-                    self.add_comment("Be careful.. the tests failed\n\n%s" %
-                                     self.get_absolute_url())
+                    script_command = "script -c \"%(command)s\" |tee %(pwd)s/frigg_testlog"
 
-                    self._set_commit_status("failure")
+                run_result = local(script_command % options)
+                run_result = local(task_command)
 
-        except AttributeError, e:
-            self.add_comment("I was not able to perform the tests.. Sorry. \n "
-                             "More information: \n\n %s" % str(e))
+                self.result.succeeded = run_result.succeeded
+                self.result.return_code += "%s," % run_result.return_code
+
+                log = 'Task: %(command)s\n' % options
+                log += '------------------------------------\n'
+
+                with file("%(pwd)s/frigg_testlog" % options, "r") as f:
+                    log += f.read() + "\n"
+
+                log += '------------------------------------\n'
+                log += 'Exited with exit code: %s\n\n' % run_result.return_code
+                self.result.result_log += log
+                self.result.save()
 
     def add_comment(self, message):
         owner, repo = self.get_git_repo_owner_and_name()
@@ -156,8 +169,15 @@ class Build(models.Model):
         except IOError:
             return ""
 
-    def working_directory(self):
-        return os.path.join(self.frigg_tmp_directory(), str(self.id))
+    def send_webhook(self, url):
+        return requests.post(url, data=json.dumps({
+            'repository': self.git_repository,
+            'sha': self.sha,
+            'build_url': self.get_absolute_url(),
+            'pull_request_id': self.pull_request_id,
+            'state': self.result.succeeded,
+            'return_code': self.result.return_code
+        }))
 
-    def frigg_tmp_directory(self):
-        return os.path.join(settings.PROJECT_TMP_DIRECTORY, "frigg_working_dir", )
+    def working_directory(self):
+        return os.path.join(settings.PROJECT_TMP_DIRECTORY, str(self.id))
