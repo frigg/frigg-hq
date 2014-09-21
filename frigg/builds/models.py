@@ -28,6 +28,12 @@ class BuildResult(models.Model):
         else:
             return "failed"
 
+    def get_comment_message(self, url):
+        if self.succeeded:
+            return "All gooodie good\n\n%s" % url
+        else:
+            return "Be careful.. the tests failed\n\n%s" % url
+
 
 class Build(models.Model):
     git_repository = models.CharField(max_length=150, verbose_name="git@github.com:owner/repo.git")
@@ -49,7 +55,6 @@ class Build(models.Model):
                                                      self.pull_request_id)
 
     def get_git_repo_owner_and_name(self):
-        """Returns repo owner, repo name"""
         rex = "git@github.com:(\w*)/([\w.]*).git"
         match = re.match(rex, self.git_repository)
 
@@ -109,21 +114,12 @@ class Build(models.Model):
                         build_result.result_log = f.read()
                         build_result.save()
 
-                #Read from testlog-file
+                # Read from testlog-file
                 self.result = build_result
                 self.save()
 
-                if self.result.succeeded:
-                    self.add_comment("All gooodie good\n\n%s" %
-                                     self.get_absolute_url())
-
-                    self._set_commit_status("success")
-
-                else:
-                    self.add_comment("Be careful.. the tests failed\n\n%s" %
-                                     self.get_absolute_url())
-
-                    self._set_commit_status("failure")
+                self.add_comment(self.result.get_comment_message(self.get_absolute_url()))
+                self._set_commit_status(self.result.get_status())
 
         except AttributeError, e:
             self.add_comment("I was not able to perform the tests.. Sorry. \n "
@@ -162,7 +158,7 @@ class Build(models.Model):
             'repository': self.git_repository,
             'sha': self.sha,
             'build_url': self.get_absolute_url(),
-            'pull_request_id': self.pull_request_id(),
+            'pull_request_id': self.pull_request_id,
             'state': self.result.succeeded,
             'return_code': self.result.return_code
         }))
