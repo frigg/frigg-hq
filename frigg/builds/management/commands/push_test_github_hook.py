@@ -1,9 +1,8 @@
 # -*- coding: utf8 -*-
-
-from django.core.management.base import BaseCommand
-import requests
-from frigg.builds.models import Build
 import json
+
+import requests
+from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
@@ -22,7 +21,8 @@ class Command(BaseCommand):
                     "distinct": True,
                     "message": "add shebang line",
                     "timestamp": "2014-05-31T12:56:10+02:00",
-                    "url": "https://github.com/tind/tind.io/commit/6ebe61b9e030ff7f23d514f9f9ee7b1760b548c8",
+                    "url": "https://github.com/tind/tind.io/commit/"
+                           "6ebe61b9e030ff7f23d514f9f9ee7b1760b548c8",
                     "author": {
                         "name": "Fredrik Nygård Carlsen",
                         "email": "me@frecar.no",
@@ -49,7 +49,8 @@ class Command(BaseCommand):
                 "distinct": True,
                 "message": "add shebang line",
                 "timestamp": "2014-05-31T12:56:10+02:00",
-                "url": "https://github.com/tind/tind.io/commit/6ebe61b9e030ff7f23d514f9f9ee7b1760b548c8",
+                "url": "https://github.com/tind/tind.io/commit/"
+                       "6ebe61b9e030ff7f23d514f9f9ee7b1760b548c8",
                 "author": {
                     "name": "Fredrik Nygård Carlsen",
                     "email": "me@frecar.no",
