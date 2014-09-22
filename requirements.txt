@@ -1,4 +1,4 @@
-django==1.6.7
+django==1.7
 south
 fabric
 requests
