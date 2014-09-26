@@ -142,9 +142,10 @@ class Build(models.Model):
                 self.result.save()
 
     def add_comment(self, message):
-        owner, repo = self.get_git_repo_owner_and_name()
-        url = "%s/%s/commits/%s/comments" % (owner, repo, self.sha)
-        github_api_request(url, {'body': message, 'sha': self.sha})
+        if bool(self.load_settings().get('comment', True)):
+            owner, repo = self.get_git_repo_owner_and_name()
+            url = "%s/%s/commits/%s/comments" % (owner, repo, self.sha)
+            github_api_request(url, {'body': message, 'sha': self.sha})
 
     def _set_commit_status(self, status, description="Done"):
         owner, repo = self.get_git_repo_owner_and_name()
