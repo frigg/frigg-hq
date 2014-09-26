@@ -2,6 +2,9 @@
 import os
 import re
 import json
+import logging
+import traceback
+
 from sys import platform as _platform
 
 import yaml
@@ -16,6 +19,7 @@ from frigg.utils import github_api_request
 
 
 # sys.path.append(os.path.dirname(__file__))
+logger = logging.getLogger("frigg_build_logger")
 
 
 class BuildResult(models.Model):
@@ -69,8 +73,10 @@ class Build(models.Model):
 
     def load_settings(self):
         path = os.path.join(self.working_directory(), '.frigg.yml')
+        # Default value for project .frigg.yml
         settings = {
-            'webhooks': []
+            'webhooks': [],
+            'comment': True
         }
         with open(path) as f:
             settings.update(yaml.load(f))
@@ -179,6 +185,7 @@ class Build(models.Model):
             with file("%s/frigg_testlog" % self.working_directory(), "r") as f:
                 return f.read()
         except IOError:
+            logger.error(traceback.format_exc())
             return ""
 
     def send_webhook(self, url):
