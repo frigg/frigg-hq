@@ -133,7 +133,7 @@ class Build(models.Model):
                 if _platform == "darwin":
                     script_command = "script %(pwd)s/frigg_testlog %(command)s"
                 else:
-                    script_command = "script -c \"%(command)s\" |tee %(pwd)s/frigg_testlog"
+                    script_command = "script %(pwd)s/frigg_testlog -c \"%(command)s\" -q "
 
                 run_result = local(script_command % options)
                 run_result = local(task_command)

@@ -46,8 +46,8 @@
                            placeholder="Username"
                            value="{% if form.username.value %}{{ form.username.value }}{% endif %}">
 
-                    {% if form.errors.username %}
-                        <span class="help-block">{{ form.errors.username }}</span>
+                    {% if form.username.errors %}
+                        <span class="help-block">{{ form.username.errors}}</span>
                     {% endif %}
 
                 </div>
@@ -58,10 +58,15 @@
                            id="exampleInputPassword1"
                            placeholder="Password">
 
-                    {% if form.errors.password %}
-                        <span class="help-block">{{ form.errors.password }}</span>
+                    {% if form.password.errors %}
+                        <span class="help-block">{{ form.password.errors  }}</span>
                     {% endif %}
                 </div>
+                {% if form.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}
 
                 <button type="submit" class="btn btn-primary">Login</button>
 
