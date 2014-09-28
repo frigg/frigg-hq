@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/tind/frigg.png?label=ready&title=Ready)](https://waffle.io/tind/frigg)
 # frigg-ci
 
 # Setup
