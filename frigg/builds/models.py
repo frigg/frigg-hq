@@ -163,12 +163,14 @@ class Build(models.Model):
 
         url = "%s/%s/statuses/%s" % (owner, repo, self.sha)
 
-        data = {'state': status,
-                'target_url': 'https://frigg.tind.io',
-                'description': description,
-                'context': 'build'}
+        data = {
+            'state': status,
+            'target_url': self.get_absolute_url(),
+            'description': description,
+            'context': 'build'
+        }
 
-        github_api_request(url, data)
+        return github_api_request(url, data)
 
     def _delete_tmp_folder(self):
         if os.path.exists(self.working_directory()):
