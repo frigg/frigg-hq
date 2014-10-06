@@ -42,24 +42,6 @@ class Project(models.Model):
         return os.path.join(settings.PROJECT_TMP_DIRECTORY, self.owner, self.name)
 
 
-class BuildResult(models.Model):
-    result_log = models.TextField()
-    succeeded = models.BooleanField(default=False)
-    return_code = models.CharField(max_length=100)
-
-    def get_status(self):
-        if self.succeeded:
-            return "succeded"
-        else:
-            return "failed"
-
-    def get_comment_message(self, url):
-        if self.succeeded:
-            return "All gooodie good\n\n%s" % url
-        else:
-            return "Be careful.. the tests failed\n\n%s" % url
-
-
 class Build(models.Model):
     project = models.ForeignKey(Project, related_name='builds', null=True)
     build_number = models.IntegerField(db_index=True)
@@ -218,3 +200,21 @@ class Build(models.Model):
     @cached_property
     def working_directory(self):
         return os.path.join(self.project.working_directory, str(self.id))
+
+
+class BuildResult(models.Model):
+    result_log = models.TextField()
+    succeeded = models.BooleanField(default=False)
+    return_code = models.CharField(max_length=100)
+
+    def get_status(self):
+        if self.succeeded:
+            return "succeded"
+        else:
+            return "failed"
+
+    def get_comment_message(self, url):
+        if self.succeeded:
+            return "All gooodie good\n\n%s" % url
+        else:
+            return "Be careful.. the tests failed\n\n%s" % url
