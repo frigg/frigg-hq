@@ -2,6 +2,7 @@
 import os
 import json
 import logging
+import threading
 import traceback
 
 from sys import platform as _platform
@@ -14,8 +15,8 @@ from django.utils.functional import cached_property
 from fabric.context_managers import lcd
 from fabric.operations import local
 from fabric.api import settings as fabric_settings
-from frigg.helpers import github
 
+from frigg.helpers import github
 from .managers import ProjectManager
 
 
@@ -44,6 +45,20 @@ class Project(models.Model):
     def working_directory(self):
         return os.path.join(settings.PROJECT_TMP_DIRECTORY, self.owner, self.name)
 
+    def start_build(self, data):
+        build = Build.objects.create(
+            project=self,
+            build_number=self.last_build_number + 1,
+            pull_request_id=data['pull_request_id'],
+            branch=data['branch'],
+            sha=data["sha"]
+        )
+
+        t = threading.Thread(target=build.run_tests)
+        t.setDaemon(True)
+        t.start()
+        return build
+
 
 class Build(models.Model):
     project = models.ForeignKey(Project, related_name='builds', null=True)
@@ -65,10 +80,10 @@ class Build(models.Model):
 
     def get_pull_request_url(self):
         if self.branch == "master":
-            return "https://github.com/%s/%s/" % (self.get_owner(), self.get_name())
+            return "https://github.com/%s/%s/" % (self.project.owner, self.project.name)
 
-        return "https://github.com/%s/%s/pull/%s" % (self.get_owner(),
-                                                     self.get_name(),
+        return "https://github.com/%s/%s/pull/%s" % (self.project.owner,
+                                                     self.project.name,
                                                      self.pull_request_id)
 
     def load_settings(self):

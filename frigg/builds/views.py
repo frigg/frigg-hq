@@ -1,6 +1,5 @@
 # coding=utf-8
 import json
-import threading
 
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, Http404
@@ -42,6 +41,7 @@ def github_webhook(request):
         return HttpResponse("Missing HTTP_X_GITHUB_EVENT")
 
     data = json.loads(request.body)
+    project = Project.objects.get_or_create_from_url(data['repo_url'])
     if event == "issue_comment":
         data = github.parse_comment_payload(data)
 
@@ -55,24 +55,8 @@ def github_webhook(request):
         return HttpResponse("Unknown event: %s" % event)
 
     if data:
-        build = start_build(data)
+        build = project.start_build(data)
         return HttpResponse(
             'Handled "%s" event.\nMore info at %s' % (event, build.get_absolute_url()))
     else:
         return HttpResponse('Handled "%s" event.' % event)
-
-
-def start_build(data):
-    project = Project.objects.get_or_create_from_url(data['repo_url'])
-    build = Build.objects.create(
-        project=project,
-        build_number=project.last_build_number + 1,
-        pull_request_id=data['pull_request_id'],
-        branch=data['branch'],
-        sha=data["sha"]
-    )
-
-    t = threading.Thread(target=build.run_tests)
-    t.setDaemon(True)
-    t.start()
-    return build
