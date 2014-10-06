@@ -1,6 +1,5 @@
 # coding=utf-8
 import os
-import re
 import json
 import logging
 import traceback
@@ -11,15 +10,36 @@ import yaml
 import requests
 from django.db import models
 from django.conf import settings
+from django.utils.functional import cached_property
 from fabric.context_managers import lcd
 from fabric.operations import local
 from fabric.api import settings as fabric_settings
 
 from frigg.utils import github_api_request
+from .managers import ProjectManager
 
 
-# sys.path.append(os.path.dirname(__file__))
 logger = logging.getLogger("frigg_build_logger")
+
+
+class Project(models.Model):
+    name = models.CharField(max_length=100, blank=True)
+    owner = models.CharField(max_length=100, blank=True)
+    git_repository = models.CharField(max_length=150, help_text="git@github.com:owner/repo.git")
+    average_time = models.IntegerField(null=True)
+
+    objects = ProjectManager()
+
+    def __unicode__(self):
+        return "%(owner)s / %(name)s " % self.__dict__
+
+    @property
+    def last_build_number(self):
+        return self.builds.all().order_by('-build_number')[0]
+
+    @property
+    def working_directory(self):
+        return os.path.join(settings.PROJECT_TMP_DIRECTORY, self.owner, self.name)
 
 
 class BuildResult(models.Model):
@@ -41,12 +61,19 @@ class BuildResult(models.Model):
 
 
 class Build(models.Model):
-    git_repository = models.CharField(max_length=150, verbose_name="git@github.com:owner/repo.git")
+    project = models.ForeignKey(Project, related_name='builds', null=True)
+    build_number = models.IntegerField(db_index=True)
     pull_request_id = models.IntegerField(max_length=150, default=0)
     branch = models.CharField(max_length=100, default="master")
     sha = models.CharField(max_length=150)
 
     result = models.OneToOneField(BuildResult, null=True)
+
+    class Meta:
+        unique_together = ('project', 'build_number')
+
+    def __unicode__(self):
+        return "%(project)s / %(branch)s " % self.__dict__
 
     def get_absolute_url(self):
         return "https://%s/build/%s/" % (settings.SERVER_ADDRESS, self.id)
@@ -59,20 +86,8 @@ class Build(models.Model):
                                                      self.get_name(),
                                                      self.pull_request_id)
 
-    def get_git_repo_owner_and_name(self):
-        rex = "git@github.com:([\w-]*)/([\w.-]*).git"
-        match = re.match(rex, self.git_repository)
-
-        return match.group(1), match.group(2)
-
-    def get_owner(self):
-        return self.get_git_repo_owner_and_name()[0]
-
-    def get_name(self):
-        return self.get_git_repo_owner_and_name()[1]
-
     def load_settings(self):
-        path = os.path.join(self.working_directory(), '.frigg.yml')
+        path = os.path.join(self.working_directory, '.frigg.yml')
         # Default value for project .frigg.yml
         settings = {
             'webhooks': [],
@@ -112,7 +127,7 @@ class Build(models.Model):
             self.send_webhook(url)
 
     def deploy(self):
-        with lcd(self.working_directory()):
+        with lcd(self.working_directory):
             local("./deploy.sh")
 
     def _clone_repo(self, depth=1):
@@ -121,21 +136,21 @@ class Build(models.Model):
         local("mkdir -p %s" % settings.PROJECT_TMP_DIRECTORY)
         local("git clone --depth=%s --no-single-branch %s %s" % (
             depth,
-            self.git_repository,
-            self.working_directory()
+            self.project.git_repository,
+            self.working_directory
         ))
 
-        with lcd(self.working_directory()):
+        with lcd(self.working_directory):
             local("git checkout %s" % self.branch)
 
     def _run_task(self, task_command):
         options = {
-            'pwd': self.working_directory(),
+            'pwd': self.working_directory,
             'command': task_command
         }
 
         with fabric_settings(warn_only=True):
-            with lcd(self.working_directory()):
+            with lcd(self.working_directory):
                 if _platform == "darwin":
                     script_command = "script %(pwd)s/frigg_testlog %(command)s"
                 else:
@@ -179,12 +194,12 @@ class Build(models.Model):
         return github_api_request(url, data)
 
     def _delete_tmp_folder(self):
-        if os.path.exists(self.working_directory()):
-            local("rm -rf %s" % self.working_directory())
+        if os.path.exists(self.working_directory):
+            local("rm -rf %s" % self.working_directory)
 
     def testlog(self):
         try:
-            with file("%s/frigg_testlog" % self.working_directory(), "r") as f:
+            with file("%s/frigg_testlog" % self.working_directory, "r") as f:
                 return f.read()
         except IOError:
             logger.error(traceback.format_exc())
@@ -192,7 +207,7 @@ class Build(models.Model):
 
     def send_webhook(self, url):
         return requests.post(url, data=json.dumps({
-            'repository': self.git_repository,
+            'repository': self.project.git_repository,
             'sha': self.sha,
             'build_url': self.get_absolute_url(),
             'pull_request_id': self.pull_request_id,
@@ -200,5 +215,6 @@ class Build(models.Model):
             'return_code': self.result.return_code
         }))
 
+    @cached_property
     def working_directory(self):
-        return os.path.join(settings.PROJECT_TMP_DIRECTORY, str(self.id))
+        return os.path.join(self.project.working_directory, str(self.id))

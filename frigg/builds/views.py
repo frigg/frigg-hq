@@ -7,7 +7,7 @@ from django.http import HttpResponse, Http404
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
-from frigg.builds.models import Build
+from frigg.builds.models import Build, Project
 from frigg.utils import github_api_get_request
 
 
@@ -29,10 +29,14 @@ def build(request, build_id):
 def build_pull_request(data):
     repo_url = "git@github.com:%s/%s.git" % (data['repo_owner'], data['repo_name'])
 
-    build = Build.objects.create(git_repository=repo_url,
-                                 pull_request_id=data['pull_request_id'],
-                                 branch=data['branch'],
-                                 sha=data["sha"])
+    project = Project.objects.get_or_create_from_url(repo_url)
+    build = Build.objects.create(
+        project=project,
+        build_number=project.last_build_number,
+        pull_request_id=data['pull_request_id'],
+        branch=data['branch'],
+        sha=data["sha"]
+    )
 
     t = threading.Thread(target=build.run_tests)
     t.setDaemon(True)
