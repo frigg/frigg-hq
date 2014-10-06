@@ -35,7 +35,10 @@ class Project(models.Model):
 
     @property
     def last_build_number(self):
-        return self.builds.all().order_by('-build_number')[0]
+        try:
+            return self.builds.all().order_by('-build_number')[0].build_number
+        except IndexError:
+            return 0
 
     @property
     def working_directory(self):
@@ -49,13 +52,13 @@ class Build(models.Model):
     branch = models.CharField(max_length=100, default="master")
     sha = models.CharField(max_length=150)
 
-    result = models.OneToOneField(BuildResult, null=True)
+    result = models.OneToOneField('builds.BuildResult', null=True)
 
     class Meta:
         unique_together = ('project', 'build_number')
 
     def __unicode__(self):
-        return "%(project)s / %(branch)s " % self.__dict__
+        return "%s / %s " % (self.project, self.branch)
 
     def get_absolute_url(self):
         return "https://%s/build/%s/" % (settings.SERVER_ADDRESS, self.id)
