@@ -63,6 +63,14 @@ def comment_on_commit(build, message):
     return github_api_request(url, {'body': message, 'sha': build.sha})
 
 
+def get_pull_request_url(build):
+    if build.branch == "master":
+        return "https://github.com/%s/%s/" % (build.project.owner, build.project.name)
+
+    return "https://github.com/%s/%s/pull/%s" % (build.project.owner, build.project.name,
+                                                     build.pull_request_id)
+
+
 def set_commit_status(build, status, description="Done"):
         url = "%s/%s/statuses/%s" % (build.project.owner, build.project.name, build.sha)
 

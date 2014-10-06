@@ -26,7 +26,7 @@ logger = logging.getLogger("frigg_build_logger")
 class Project(models.Model):
     name = models.CharField(max_length=100, blank=True)
     owner = models.CharField(max_length=100, blank=True)
-    git_repository = models.CharField(max_length=150, help_text="git@github.com:owner/repo.git")
+    git_repository = models.CharField(max_length=150)
     average_time = models.IntegerField(null=True)
 
     objects = ProjectManager()
@@ -79,12 +79,7 @@ class Build(models.Model):
         return "https://%s/build/%s/" % (settings.SERVER_ADDRESS, self.id)
 
     def get_pull_request_url(self):
-        if self.branch == "master":
-            return "https://github.com/%s/%s/" % (self.project.owner, self.project.name)
-
-        return "https://github.com/%s/%s/pull/%s" % (self.project.owner,
-                                                     self.project.name,
-                                                     self.pull_request_id)
+        return github.get_pull_request_url(self)
 
     def load_settings(self):
         path = os.path.join(self.working_directory, '.frigg.yml')

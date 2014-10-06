@@ -33,6 +33,7 @@ def deploy_master_branch(request, build_id):
 
     return HttpResponse("Deployed")
 
+
 @csrf_exempt
 def github_webhook(request):
     try:
@@ -56,7 +57,9 @@ def github_webhook(request):
 
     if data:
         build = project.start_build(data)
-        return HttpResponse(
-            'Handled "%s" event.\nMore info at %s' % (event, build.get_absolute_url()))
+        return HttpResponse('Handled "%s" event.\nMore info at %s' % (
+            event,
+            build.get_absolute_url())
+        )
     else:
         return HttpResponse('Handled "%s" event.' % event)
