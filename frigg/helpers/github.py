@@ -10,8 +10,8 @@ def parse_comment_payload(data):
         url = data['issue']['pull_request']['url'][29:]
         pr_data = json.loads(github_api_request(url))
         repo_url = "git@github.com:%s/%s.git" % (
-            data['repository']['name'],
-            data['repository']['owner']['name']
+            data['repository']['owner']['name'],
+            data['repository']['name']
         )
 
         return {
@@ -29,8 +29,8 @@ def parse_pull_request_payload(data):
         return None
 
     repo_url = "git@github.com:%s/%s.git" % (
-        data['repository']['name'],
-        data['repository']['owner']['name']
+        data['repository']['owner']['name'],
+        data['repository']['name']
     )
     return {
         'repo_url': repo_url,
@@ -45,8 +45,8 @@ def parse_pull_request_payload(data):
 def parse_push_payload(data):
     if data['ref'] == "refs/heads/master":
         repo_url = "git@github.com:%s/%s.git" % (
-            data['repository']['name'],
-            data['repository']['owner']['name']
+            data['repository']['owner']['name'],
+            data['repository']['name']
         )
         return {
             'repo_url': repo_url,
