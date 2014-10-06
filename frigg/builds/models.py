@@ -56,7 +56,7 @@ class Build(models.Model):
                                                      self.pull_request_id)
 
     def get_git_repo_owner_and_name(self):
-        rex = "git@github.com:(\w*)/([\w.]*).git"
+        rex = "git@github.com:([\w-]*)/([\w.-]*).git"
         match = re.match(rex, self.git_repository)
 
         return match.group(1), match.group(2)
