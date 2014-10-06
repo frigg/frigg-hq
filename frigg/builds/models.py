@@ -14,8 +14,8 @@ from django.utils.functional import cached_property
 from fabric.context_managers import lcd
 from fabric.operations import local
 from fabric.api import settings as fabric_settings
+from frigg.helpers import github
 
-from frigg.utils import github_api_request
 from .managers import ProjectManager
 
 
@@ -83,7 +83,7 @@ class Build(models.Model):
         return settings
 
     def run_tests(self):
-        self._set_commit_status("pending")
+        github.set_commit_status(self, "pending")
         self._clone_repo()
         self.add_comment("Running tests.. be patient :)\n\n%s" %
                          self.get_absolute_url())
@@ -106,7 +106,7 @@ class Build(models.Model):
                              "More information: \n\n %s" % str(e))
 
         self.add_comment(self.result.get_comment_message(self.get_absolute_url()))
-        self._set_commit_status(self.result.get_status())
+        github.set_commit_status(self, self.result.get_status())
 
         for url in self.load_settings()['webhooks']:
             self.send_webhook(url)
@@ -160,23 +160,7 @@ class Build(models.Model):
 
     def add_comment(self, message):
         if bool(self.load_settings().get('comment', True)):
-            owner, repo = self.get_git_repo_owner_and_name()
-            url = "%s/%s/commits/%s/comments" % (owner, repo, self.sha)
-            github_api_request(url, {'body': message, 'sha': self.sha})
-
-    def _set_commit_status(self, status, description="Done"):
-        owner, repo = self.get_git_repo_owner_and_name()
-
-        url = "%s/%s/statuses/%s" % (owner, repo, self.sha)
-
-        data = {
-            'state': status,
-            'target_url': self.get_absolute_url(),
-            'description': description,
-            'context': 'build'
-        }
-
-        return github_api_request(url, data)
+            github.comment_on_commit({'owner': self.project.owner}, message)
 
     def _delete_tmp_folder(self):
         if os.path.exists(self.working_directory):
