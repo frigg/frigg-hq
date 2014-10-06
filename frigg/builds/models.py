@@ -11,6 +11,7 @@ import yaml
 import requests
 from django.db import models
 from django.conf import settings
+from django.utils.functional import cached_property
 from fabric.context_managers import lcd
 from fabric.operations import local
 from fabric.api import settings as fabric_settings
@@ -71,7 +72,8 @@ class Build(models.Model):
     def get_name(self):
         return self.get_git_repo_owner_and_name()[1]
 
-    def load_settings(self):
+    @cached_property
+    def settings(self):
         path = os.path.join(self.working_directory(), '.frigg.yml')
         # Default value for project .frigg.yml
         settings = {
@@ -92,7 +94,7 @@ class Build(models.Model):
         self.save()
         try:
 
-            for task in self.load_settings()['tasks']:
+            for task in self.settings['tasks']:
                 self._run_task(task)
                 if not self.result.succeeded:
                     # if one task fails, we do not care about the rest
@@ -108,7 +110,7 @@ class Build(models.Model):
         self.add_comment(self.result.get_comment_message(self.get_absolute_url()))
         self._set_commit_status(self.result.get_status())
 
-        for url in self.load_settings()['webhooks']:
+        for url in self.settings['webhooks']:
             self.send_webhook(url)
 
     def deploy(self):
@@ -159,7 +161,7 @@ class Build(models.Model):
                 self.result.save()
 
     def add_comment(self, message):
-        if bool(self.load_settings().get('comment', True)):
+        if bool(self.settings.get('comment', True)):
             owner, repo = self.get_git_repo_owner_and_name()
             url = "%s/%s/commits/%s/comments" % (owner, repo, self.sha)
             github_api_request(url, {'body': message, 'sha': self.sha})
