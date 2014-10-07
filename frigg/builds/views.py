@@ -42,7 +42,6 @@ def github_webhook(request):
         return HttpResponse("Missing HTTP_X_GITHUB_EVENT")
 
     data = json.loads(request.body)
-    project = Project.objects.get_or_create_from_url(data['repo_url'])
     if event == "issue_comment":
         data = github.parse_comment_payload(data)
 
@@ -56,6 +55,7 @@ def github_webhook(request):
         return HttpResponse("Unknown event: %s" % event)
 
     if data:
+        project = Project.objects.get_or_create_from_url(data['repo_url'])
         build = project.start_build(data)
         return HttpResponse('Handled "%s" event.\nMore info at %s' % (
             event,
