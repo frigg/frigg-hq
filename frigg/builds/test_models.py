@@ -1,7 +1,7 @@
 # coding=utf-8
 from django.test import TestCase
 
-from .models import Project, Build
+from .models import Project
 
 
 class ProjectTestCase(TestCase):

@@ -14,10 +14,11 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Project',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True,
+                                        primary_key=True)),
                 ('name', models.CharField(max_length=100, blank=True)),
                 ('owner', models.CharField(max_length=100, blank=True)),
-                ('git_repository', models.CharField(help_text=b'git@github.com:owner/repo.git', max_length=150)),
+                ('git_repository', models.CharField(max_length=150)),
                 ('average_time', models.IntegerField(null=True)),
             ],
             options={

@@ -68,7 +68,7 @@ def get_pull_request_url(build):
         return "https://github.com/%s/%s/" % (build.project.owner, build.project.name)
 
     return "https://github.com/%s/%s/pull/%s" % (build.project.owner, build.project.name,
-                                                     build.pull_request_id)
+                                                 build.pull_request_id)
 
 
 def set_commit_status(build, status, description="Done"):
