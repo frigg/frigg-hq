@@ -13,7 +13,9 @@ from frigg.utils import github_api_get_request
 
 @login_required
 def overview(request):
-    return render(request, "builds/overview.html", {'builds': Build.objects.all().order_by("-id")})
+    return render(request,
+                  "builds/overview.html",
+                  {'builds': Build.objects.all().order_by("-id")[0:100]})
 
 
 @login_required
