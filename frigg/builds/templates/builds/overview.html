@@ -4,7 +4,7 @@
     <div class="row builds">
         <div class="col-xs-12">
             {% for build in builds %}
-                <a href="{% url "view_build" build.id %}">
+                <a href="{% url 'view_build' build.project.owner build.project.name build.build_number %}">
 
                     {% if build.result %}
                         <div class="row build bs-callout bs-callout-{{ build.result.get_status }}">
@@ -12,11 +12,11 @@
                         <div class="row build bs-callout bs-callout-pending">
                     {% endif %}
 
-                        <div class="col-xs-1 build-number"><h4>#{{ build.id }}</h4></div>
+                        <div class="col-xs-1 build-number"><h4>#{{ build.build_number }}</h4></div>
                         <div class="col-xs-11">
                             <h4>
-                                {{ build.get_owner }} /
-                                {{ build.get_name }} /
+                                {{ build.project.owner }} /
+                                {{ build.project.name }} /
                                 {{ build.branch }}
                             </h4>
                             <span class="sha">{{ build.sha }}</span>

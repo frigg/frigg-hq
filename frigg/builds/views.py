@@ -2,8 +2,8 @@
 import json
 
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, Http404
-from django.shortcuts import render
+from django.http import HttpResponse
+from django.shortcuts import render, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 
 from frigg.helpers import github
@@ -13,17 +13,17 @@ from .models import Build, Project
 
 @login_required
 def overview(request):
-    return render(request, "builds/overview.html", {'builds': Build.objects.all().order_by("-id")})
+    return render(request, "builds/overview.html", {
+        'builds': Build.objects.all().order_by("-id").select_related('project', 'result')
+    })
 
 
 @login_required
-def build(request, build_id):
-    try:
-        build = Build.objects.get(id=build_id)
-        return render(request, "builds/build.html", {'build': build})
-
-    except Build.DoesNotExist:
-        raise Http404
+def build(request, owner, name, build_number):
+    return render(request, "builds/build.html", {
+        'build': get_object_or_404(Build.objects.select_related('project'), project__owner=owner,
+                                   project__name=name, build_number=build_number)
+    })
 
 
 @login_required

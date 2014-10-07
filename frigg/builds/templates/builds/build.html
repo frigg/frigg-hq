@@ -12,10 +12,10 @@
         <div class="col-lg-12">
 
             <div class="col-lg-8">
-                <h3>{{ build.get_owner }}/{{ build.get_name }}</h3>
+                <h3>{{ build.project.owner }} / {{ build.project.name }} / {{ build.branch }}</h3>
                 <table>
                     <tr>
-                        <td class="col-lg-1">Pull Requst</td>
+                        <td class="col-lg-1">Pull Request</td>
                         <td class="col-lg-5">
                             <a href="{{ build.get_pull_request_url }}">Github</a>
                         </td>
@@ -32,7 +32,7 @@
             </div>
 
                 <div class="col-lg-4">
-                    <a href="{% url "deploy_master_branch" build.id %}">
+                    <a href="{% url 'deploy_master_branch' build.id %}">
                         <div class="btn btn-info">Deploy master branch</div>
                     </a>
                 </div>
