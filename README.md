@@ -1,5 +1,6 @@
 [![Stories in Ready](https://badge.waffle.io/tind/frigg.png?label=ready&title=Ready)](https://waffle.io/tind/frigg)
 # frigg-ci
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/tind/frigg?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 # Setup
 ```
