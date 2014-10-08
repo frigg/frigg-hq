@@ -3,8 +3,13 @@
 {% block content %}
     <div class="row builds">
         <div class="col-xs-12">
+            <h2>{{ organization }}</h2>
+        </div>
+    </div>
+    <div class="row builds">
+        <div class="col-xs-12">
             {% for build in builds %}
-               {% include "builds/partials/build_list_element.html" %}
+                {% include "builds/partials/build_list_element.html" %}
             {% endfor %}
         </div>
     </div>
