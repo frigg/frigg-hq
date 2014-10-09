@@ -17,7 +17,6 @@ class GithubHelpersTestCase(TestCase):
     def test_parse_comment_payload(self):
         data = json.load(open(os.path.join(self.fixture_path, 'comment.json')))
         output = parse_comment_payload(data)
-        print output
 
         self.assertEquals(output['repo_url'], 'git@github.com:tind/frigg.git')
         self.assertEquals(output['repo_owner'], 'tind')
