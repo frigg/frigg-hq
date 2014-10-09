@@ -1,0 +1,320 @@
+{
+    "ref": "refs/heads/master",
+    "before": "8e67d02041573cf848389a48acdd8eed083a28fa",
+    "after": "f46de8636ee17af659ebe13b530724dd0f1f505a",
+    "created": false,
+    "deleted": false,
+    "forced": false,
+    "base_ref": null,
+    "compare": "https://github.com/relekang/frigg/compare/8e67d0204157...f46de8636ee1",
+    "commits": [
+        {
+            "id": "569eca3c8e9942a4b30ad71258db868f4584976c",
+            "distinct": true,
+            "message": "make git clone only fetch last commit on each branch\n\nCloning will be faster and I do not think it is necessary to go deeper.",
+            "timestamp": "2014-09-23T21:09:23+02:00",
+            "url": "https://github.com/relekang/frigg/commit/569eca3c8e9942a4b30ad71258db868f4584976c",
+            "author": {
+                "name": "Rolf Erik Lekang",
+                "email": "me@rolflekang.com",
+                "username": "relekang"
+            },
+            "committer": {
+                "name": "Rolf Erik Lekang",
+                "email": "me@rolflekang.com",
+                "username": "relekang"
+            },
+            "added": [
+
+            ],
+            "removed": [
+
+            ],
+            "modified": [
+                "frigg/builds/models.py"
+            ]
+        },
+        {
+            "id": "d1669f27b957d2e37ec47556a53c23bf03794427",
+            "distinct": true,
+            "message": "Check comment setting. Disable Github spam",
+            "timestamp": "2014-09-24T21:56:49+02:00",
+            "url": "https://github.com/relekang/frigg/commit/d1669f27b957d2e37ec47556a53c23bf03794427",
+            "author": {
+                "name": "Eirik Martiniussen Sylliaas",
+                "email": "eirik@sylliaas.no",
+                "username": "eirsyl"
+            },
+            "committer": {
+                "name": "Eirik Martiniussen Sylliaas",
+                "email": "eirik@sylliaas.no",
+                "username": "eirsyl"
+            },
+            "added": [
+
+            ],
+            "removed": [
+
+            ],
+            "modified": [
+                "frigg/builds/models.py"
+            ]
+        },
+        {
+            "id": "0805c629c2dc2dd6b7fa90075df29fbad2d15032",
+            "distinct": true,
+            "message": "Read comment setting from frig.yml",
+            "timestamp": "2014-09-24T21:56:59+02:00",
+            "url": "https://github.com/relekang/frigg/commit/0805c629c2dc2dd6b7fa90075df29fbad2d15032",
+            "author": {
+                "name": "Eirik Martiniussen Sylliaas",
+                "email": "eirik@sylliaas.no",
+                "username": "eirsyl"
+            },
+            "committer": {
+                "name": "Eirik Martiniussen Sylliaas",
+                "email": "eirik@sylliaas.no",
+                "username": "eirsyl"
+            },
+            "added": [
+
+            ],
+            "removed": [
+
+            ],
+            "modified": [
+                "frigg/builds/models.py"
+            ]
+        },
+        {
+            "id": "795780e22c41c001914e913a9cb9cb804c10951d",
+            "distinct": true,
+            "message": "Merge pull request #14 from webkom/comment-settings\n\nComment settings",
+            "timestamp": "2014-09-26T10:31:03+02:00",
+            "url": "https://github.com/relekang/frigg/commit/795780e22c41c001914e913a9cb9cb804c10951d",
+            "author": {
+                "name": "Guillaume Lastecoueres",
+                "email": "PX9e@gmx.fr",
+                "username": "PXke"
+            },
+            "committer": {
+                "name": "Guillaume Lastecoueres",
+                "email": "PX9e@gmx.fr",
+                "username": "PXke"
+            },
+            "added": [
+
+            ],
+            "removed": [
+
+            ],
+            "modified": [
+                "frigg/builds/models.py"
+            ]
+        },
+        {
+            "id": "a9f80ef1ed793ab047c607b485b9a39d25e9f905",
+            "distinct": true,
+            "message": "add defaults to the webhook setting\n\nThis should make sure that keyerrors don't get raised when a repo has no\nwebhooks.",
+            "timestamp": "2014-09-26T12:08:58+02:00",
+            "url": "https://github.com/relekang/frigg/commit/a9f80ef1ed793ab047c607b485b9a39d25e9f905",
+            "author": {
+                "name": "Rolf Erik Lekang",
+                "email": "me@rolflekang.com",
+                "username": "relekang"
+            },
+            "committer": {
+                "name": "Guillaume Lastecoueres",
+                "email": "PX9e@gmx.fr",
+                "username": "PXke"
+            },
+            "added": [
+
+            ],
+            "removed": [
+
+            ],
+            "modified": [
+                "frigg/builds/models.py"
+            ]
+        },
+        {
+            "id": "3758733a276aedb05ac452369254b0fa243420dc",
+            "distinct": true,
+            "message": "add sending of webhooks after a build",
+            "timestamp": "2014-09-26T12:08:58+02:00",
+            "url": "https://github.com/relekang/frigg/commit/3758733a276aedb05ac452369254b0fa243420dc",
+            "author": {
+                "name": "Rolf Erik Lekang",
+                "email": "me@rolflekang.com",
+                "username": "relekang"
+            },
+            "committer": {
+                "name": "Guillaume Lastecoueres",
+                "email": "PX9e@gmx.fr",
+                "username": "PXke"
+            },
+            "added": [
+
+            ],
+            "removed": [
+
+            ],
+            "modified": [
+                "frigg/builds/management/commands/test_all_projects.py",
+                "frigg/builds/models.py",
+                "frigg/builds/tests.py",
+                "frigg/utils.py"
+            ]
+        },
+        {
+            "id": "f46de8636ee17af659ebe13b530724dd0f1f505a",
+            "distinct": true,
+            "message": "Merge pull request #13 from relekang/clone-depth\n\nmake git clone only fetch last commit on each branch",
+            "timestamp": "2014-09-26T12:24:08+02:00",
+            "url": "https://github.com/relekang/frigg/commit/f46de8636ee17af659ebe13b530724dd0f1f505a",
+            "author": {
+                "name": "Fredrik Nygård Carlsen",
+                "email": "me@frecar.no",
+                "username": "frecar"
+            },
+            "committer": {
+                "name": "Fredrik Nygård Carlsen",
+                "email": "me@frecar.no",
+                "username": "frecar"
+            },
+            "added": [
+
+            ],
+            "removed": [
+
+            ],
+            "modified": [
+                "frigg/builds/models.py"
+            ]
+        }
+    ],
+    "head_commit": {
+        "id": "f46de8636ee17af659ebe13b530724dd0f1f505a",
+        "distinct": true,
+        "message": "Merge pull request #13 from relekang/clone-depth\n\nmake git clone only fetch last commit on each branch",
+        "timestamp": "2014-09-26T12:24:08+02:00",
+        "url": "https://github.com/relekang/frigg/commit/f46de8636ee17af659ebe13b530724dd0f1f505a",
+        "author": {
+            "name": "Fredrik Nygård Carlsen",
+            "email": "me@frecar.no",
+            "username": "frecar"
+        },
+        "committer": {
+            "name": "Fredrik Nygård Carlsen",
+            "email": "me@frecar.no",
+            "username": "frecar"
+        },
+        "added": [
+
+        ],
+        "removed": [
+
+        ],
+        "modified": [
+            "frigg/builds/models.py"
+        ]
+    },
+    "repository": {
+        "id": 24164233,
+        "name": "frigg",
+        "full_name": "relekang/frigg",
+        "owner": {
+            "name": "relekang",
+            "email": "me@rolflekang.com"
+        },
+        "private": false,
+        "html_url": "https://github.com/relekang/frigg",
+        "description": "CI",
+        "fork": true,
+        "url": "https://github.com/relekang/frigg",
+        "forks_url": "https://api.github.com/repos/relekang/frigg/forks",
+        "keys_url": "https://api.github.com/repos/relekang/frigg/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/relekang/frigg/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/relekang/frigg/teams",
+        "hooks_url": "https://api.github.com/repos/relekang/frigg/hooks",
+        "issue_events_url": "https://api.github.com/repos/relekang/frigg/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/relekang/frigg/events",
+        "assignees_url": "https://api.github.com/repos/relekang/frigg/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/relekang/frigg/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/relekang/frigg/tags",
+        "blobs_url": "https://api.github.com/repos/relekang/frigg/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/relekang/frigg/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/relekang/frigg/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/relekang/frigg/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/relekang/frigg/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/relekang/frigg/languages",
+        "stargazers_url": "https://api.github.com/repos/relekang/frigg/stargazers",
+        "contributors_url": "https://api.github.com/repos/relekang/frigg/contributors",
+        "subscribers_url": "https://api.github.com/repos/relekang/frigg/subscribers",
+        "subscription_url": "https://api.github.com/repos/relekang/frigg/subscription",
+        "commits_url": "https://api.github.com/repos/relekang/frigg/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/relekang/frigg/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/relekang/frigg/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/relekang/frigg/issues/comments/{number}",
+        "contents_url": "https://api.github.com/repos/relekang/frigg/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/relekang/frigg/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/relekang/frigg/merges",
+        "archive_url": "https://api.github.com/repos/relekang/frigg/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/relekang/frigg/downloads",
+        "issues_url": "https://api.github.com/repos/relekang/frigg/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/relekang/frigg/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/relekang/frigg/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/relekang/frigg/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/relekang/frigg/labels{/name}",
+        "releases_url": "https://api.github.com/repos/relekang/frigg/releases{/id}",
+        "created_at": 1410991758,
+        "updated_at": "2014-09-21T14:43:16Z",
+        "pushed_at": 1411732562,
+        "git_url": "git://github.com/relekang/frigg.git",
+        "ssh_url": "git@github.com:relekang/frigg.git",
+        "clone_url": "https://github.com/relekang/frigg.git",
+        "svn_url": "https://github.com/relekang/frigg",
+        "homepage": "http://frigg.lkng.me",
+        "size": 660,
+        "stargazers_count": 0,
+        "watchers_count": 0,
+        "language": "Python",
+        "has_issues": false,
+        "has_downloads": true,
+        "has_wiki": false,
+        "has_pages": false,
+        "forks_count": 0,
+        "mirror_url": null,
+        "open_issues_count": 0,
+        "forks": 0,
+        "open_issues": 0,
+        "watchers": 0,
+        "default_branch": "master",
+        "stargazers": 0,
+        "master_branch": "master"
+    },
+    "pusher": {
+        "name": "relekang",
+        "email": "me@rolflekang.com"
+    },
+    "sender": {
+        "login": "relekang",
+        "id": 476364,
+        "avatar_url": "https://avatars.githubusercontent.com/u/476364?v=2",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/relekang",
+        "html_url": "https://github.com/relekang",
+        "followers_url": "https://api.github.com/users/relekang/followers",
+        "following_url": "https://api.github.com/users/relekang/following{/other_user}",
+        "gists_url": "https://api.github.com/users/relekang/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/relekang/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/relekang/subscriptions",
+        "organizations_url": "https://api.github.com/users/relekang/orgs",
+        "repos_url": "https://api.github.com/users/relekang/repos",
+        "events_url": "https://api.github.com/users/relekang/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/relekang/received_events",
+        "type": "User",
+        "site_admin": false
+    }
+}
