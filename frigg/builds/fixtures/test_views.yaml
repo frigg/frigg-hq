@@ -1,0 +1,25 @@
+- model: builds.project
+  pk: 1
+  fields:
+    average_time: 0
+    git_repository: 'git@github.com:tind/frigg.git'
+    name: frigg
+    owner: tind
+
+- model: builds.build
+  pk: 1
+  fields:
+    branch: master
+    build_number: 1
+    project: 1
+    pull_request_id: 0
+    result: 1
+    sha: 6ebe61b9e030ff7f23d514f9f9ee7b1760b548c8
+
+- model: builds.buildresult
+  pk: 1
+  fields:
+    result_log: 'All ok'
+    return_code: '0'
+    succeeded: true
+

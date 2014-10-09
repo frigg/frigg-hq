@@ -14,7 +14,7 @@ def overview(request):
 
 
 @login_required
-def organization(request, owner):
+def view_organization(request, owner):
     builds = Build.objects.filter(project__owner=owner).select_related('project', 'result')
     if len(builds) == 0:
         raise Http404
@@ -26,7 +26,7 @@ def organization(request, owner):
 
 
 @login_required
-def project(request, owner, name):
+def view_project(request, owner, name):
     return render(request, "builds/project.html", {
         'project': get_object_or_404(Project.objects.prefetch_related('builds'), owner=owner,
                                      name=name)
@@ -34,7 +34,7 @@ def project(request, owner, name):
 
 
 @login_required
-def build(request, owner, name, build_number):
+def view_build(request, owner, name, build_number):
     return render(request, "builds/build.html", {
         'build': get_object_or_404(Build.objects.select_related('project'), project__owner=owner,
                                    project__name=name, build_number=build_number)
@@ -47,5 +47,3 @@ def deploy_master_branch(request, build_id):
     build.deploy()
 
     return HttpResponse("Deployed")
-
-
