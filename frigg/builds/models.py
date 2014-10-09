@@ -139,7 +139,7 @@ class Build(models.Model):
                 self.result.succeeded = run_result.succeeded
                 self.result.return_code += "%s," % run_result.return_code
                 
-                log = 'Task: %(command)s\n' % task_command
+                log = 'Task: {0}\n'.format(task_command)
                 log += '------------------------------------\n'
                 log += run_result
                 log += '------------------------------------\n'
