@@ -134,8 +134,8 @@ class Build(models.Model):
 
         with fabric_settings(warn_only=True):
             with lcd(self.working_directory()):
-                run_result = local(task_command)
-
+                run_result = local(task_command, capture=True)
+                
                 self.result.succeeded = run_result.succeeded
                 self.result.return_code += "%s," % run_result.return_code
                 
