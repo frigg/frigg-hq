@@ -131,32 +131,20 @@ class Build(models.Model):
             local("git checkout %s" % self.branch)
 
     def _run_task(self, task_command):
-        options = {
-            'pwd': self.working_directory(),
-            'command': task_command
-        }
 
         with fabric_settings(warn_only=True):
             with lcd(self.working_directory()):
-                if _platform == "darwin":
-                    script_command = "script %(pwd)s/frigg_testlog %(command)s"
-                else:
-                    script_command = "script %(pwd)s/frigg_testlog -c \"%(command)s\" -q "
-
-                run_result = local(script_command % options)
                 run_result = local(task_command)
 
                 self.result.succeeded = run_result.succeeded
                 self.result.return_code += "%s," % run_result.return_code
-
-                log = 'Task: %(command)s\n' % options
+                
+                log = 'Task: %(command)s\n' % task_command
                 log += '------------------------------------\n'
-
-                with file("%(pwd)s/frigg_testlog" % options, "r") as f:
-                    log += f.read() + "\n"
-
+                log += run_result
                 log += '------------------------------------\n'
                 log += 'Exited with exit code: %s\n\n' % run_result.return_code
+
                 self.result.result_log += log
                 self.result.save()
 
