@@ -29,3 +29,6 @@ defined during the run.
 
 ### `webhooks`
 Should be defined as a list of urls where frigg can post status about the build.
+
+### `comment`
+If set to `false`, frigg will not comment on commits on Github only set commit status in the Github API
