@@ -165,7 +165,7 @@ class Build(models.Model):
 
     def add_comment(self, message):
         if bool(self.settings.get('comment', True)):
-            github.comment_on_commit({'owner': self.project.owner}, message)
+            github.comment_on_commit(self, message)
 
     def _delete_tmp_folder(self):
         if os.path.exists(self.working_directory):
