@@ -9,7 +9,7 @@ from .models import Build, Project
 @login_required
 def overview(request):
     return render(request, "builds/overview.html", {
-        'builds': Build.objects.all().order_by('-id').select_related('project', 'result')
+        'builds': Build.objects.all().order_by('-id').select_related('project', 'result')[:100]
     })
 
 

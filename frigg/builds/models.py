@@ -5,8 +5,6 @@ import logging
 import threading
 import traceback
 
-from sys import platform as _platform
-
 import yaml
 import requests
 from django.db import models
@@ -81,8 +79,9 @@ class Build(models.Model):
     def get_pull_request_url(self):
         return github.get_pull_request_url(self)
 
-    def load_settings(self):
-        path = os.path.join(self.working_directory, '.frigg.yml')
+    @cached_property
+    def settings(self):
+        path = os.path.join(self.working_directory(), '.frigg.yml')
         # Default value for project .frigg.yml
         settings = {
             'webhooks': [],
@@ -98,7 +97,7 @@ class Build(models.Model):
         self._clone_repo()
 
         try:
-            self.load_settings()
+            self.settings
         except IOError:
             message = ".frigg.yml file is missing, can't continue without it"
             github.comment_on_commit(self, message)
@@ -111,7 +110,7 @@ class Build(models.Model):
         self.save()
         try:
 
-            for task in self.load_settings()['tasks']:
+            for task in self.settings['tasks']:
                 self._run_task(task)
                 if not self.result.succeeded:
                     # if one task fails, we do not care about the rest
@@ -127,7 +126,7 @@ class Build(models.Model):
         self.add_comment(self.result.get_comment_message(self.get_absolute_url()))
         github.set_commit_status(self, self.result.get_status())
 
-        for url in self.load_settings()['webhooks']:
+        for url in self.settings['webhooks']:
             self.send_webhook(url)
 
     def deploy(self):
@@ -148,32 +147,19 @@ class Build(models.Model):
             local("git checkout %s" % self.branch)
 
     def _run_task(self, task_command):
-        options = {
-            'pwd': self.working_directory,
-            'command': task_command
-        }
-
         with fabric_settings(warn_only=True):
-            with lcd(self.working_directory):
-                if _platform == "darwin":
-                    script_command = "script %(pwd)s/frigg_testlog %(command)s"
-                else:
-                    script_command = "script %(pwd)s/frigg_testlog -c \"%(command)s\" -q "
-
-                run_result = local(script_command % options)
-                run_result = local(task_command)
+            with lcd(self.working_directory()):
+                run_result = local(task_command, capture=True)
 
                 self.result.succeeded = run_result.succeeded
                 self.result.return_code += "%s," % run_result.return_code
 
-                log = 'Task: %(command)s\n' % options
+                log = 'Task: {0}\n'.format(task_command)
                 log += '------------------------------------\n'
-
-                with file("%(pwd)s/frigg_testlog" % options, "r") as f:
-                    log += f.read() + "\n"
-
+                log += run_result
                 log += '------------------------------------\n'
                 log += 'Exited with exit code: %s\n\n' % run_result.return_code
+
                 self.result.result_log += log
                 self.result.save()
 
