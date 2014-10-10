@@ -10,6 +10,7 @@ import requests
 from django.db import models
 from django.conf import settings
 from django.utils.functional import cached_property
+from django.core.urlresolvers import reverse
 from fabric.context_managers import lcd
 from fabric.operations import local
 from fabric.api import settings as fabric_settings
@@ -74,14 +75,17 @@ class Build(models.Model):
         return "%s / %s " % (self.project, self.branch)
 
     def get_absolute_url(self):
-        return "https://%s/build/%s/" % (settings.SERVER_ADDRESS, self.id)
+        return "https://%s%s" % (
+            settings.SERVER_ADDRESS,
+            reverse('view_build', args=[self.project.owner, self.project.name, self.build_number])
+        )
 
     def get_pull_request_url(self):
         return github.get_pull_request_url(self)
 
     @cached_property
     def settings(self):
-        path = os.path.join(self.working_directory(), '.frigg.yml')
+        path = os.path.join(self.working_directory, '.frigg.yml')
         # Default value for project .frigg.yml
         settings = {
             'webhooks': [],
@@ -148,7 +152,7 @@ class Build(models.Model):
 
     def _run_task(self, task_command):
         with fabric_settings(warn_only=True):
-            with lcd(self.working_directory()):
+            with lcd(self.working_directory):
                 run_result = local(task_command, capture=True)
 
                 self.result.succeeded = run_result.succeeded
@@ -164,8 +168,8 @@ class Build(models.Model):
                 self.result.save()
 
     def add_comment(self, message):
-        if bool(self.load_settings().get('comment', True)):
-            github.comment_on_commit({'owner': self.project.owner}, message)
+        if bool(self.settings.get('comment', True)):
+            github.comment_on_commit(self, message)
 
     def _delete_tmp_folder(self):
         if os.path.exists(self.working_directory):

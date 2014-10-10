@@ -30,7 +30,7 @@ class GithubHelpersTestCase(TestCase):
         self.assertEquals(output['repo_name'], 'frigg')
 
     def test_parse_push_payload(self):
-        data = json.load(open(os.path.join(self.fixtures_path, 'push.json')))
+        data = json.load(open(os.path.join(self.fixtures_path, 'push_master.json')))
         output = parse_push_payload(data)
 
         self.assertEquals(output['repo_url'], 'git@github.com:tind/frigg.git')
@@ -38,3 +38,6 @@ class GithubHelpersTestCase(TestCase):
         self.assertEquals(output['repo_name'], 'frigg')
         self.assertEquals(output['branch'], 'master')
         self.assertEquals(output['sha'], 'fddd2887efd63196e48fd5d6bc0e62e1bafa0276')
+
+        data = json.load(open(os.path.join(self.fixtures_path, 'push_branch.json')))
+        self.assertIsNone(parse_push_payload(data))
