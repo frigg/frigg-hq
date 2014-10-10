@@ -10,6 +10,7 @@ import requests
 from django.db import models
 from django.conf import settings
 from django.utils.functional import cached_property
+from django.core.urlresolvers import reverse
 from fabric.context_managers import lcd
 from fabric.operations import local
 from fabric.api import settings as fabric_settings
@@ -74,7 +75,10 @@ class Build(models.Model):
         return "%s / %s " % (self.project, self.branch)
 
     def get_absolute_url(self):
-        return "https://%s/build/%s/" % (settings.SERVER_ADDRESS, self.id)
+        return "https://%s%s" % (
+            settings.SERVER_ADDRESS,
+            reverse('view_build', args=[self.project.owner, self.project.name, self.build_number])
+        )
 
     def get_pull_request_url(self):
         return github.get_pull_request_url(self)
