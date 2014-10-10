@@ -18,6 +18,10 @@ def github_webhook(request):
     if event == "issue_comment":
         data = github.parse_comment_payload(data)
 
+        #if this comment is on a pull request, build it
+        if data and data['pull_request_url'] != "":
+            data = github.parse_pull_request_payload(github.api_request(data['pull_request_url']))
+
     elif event == "pull_request":
         data = github.parse_pull_request_payload(data)
 

@@ -11,18 +11,19 @@ from .github import parse_comment_payload, parse_push_payload, parse_pull_reques
 
 class GithubHelpersTestCase(TestCase):
     def setUp(self):
-        self.fixture_path = os.path.join(settings.BASE_DIR, 'helpers/fixtures/github')
+        self.fixtures_path = os.path.join(settings.BASE_DIR, 'helpers/fixtures/github')
 
-    def test_parse_comment_payload(self):
-        data = json.load(open(os.path.join(self.fixture_path, 'comment.json')))
+    def test_parse_issue_comment_payload(self):
+        data = json.load(open(os.path.join(self.fixtures_path, 'issue_comment.json')))
         output = parse_comment_payload(data)
 
         self.assertEquals(output['repo_url'], 'git@github.com:tind/frigg.git')
         self.assertEquals(output['repo_owner'], 'tind')
         self.assertEquals(output['repo_name'], 'frigg')
+        self.assertEquals(output['pull_request_id'], '29')
 
     def test_parse_pull_request_payload(self):
-        data = json.load(open(os.path.join(self.fixture_path, 'pull_request.json')))
+        data = json.load(open(os.path.join(self.fixtures_path, 'pull_request.json')))
         output = parse_pull_request_payload(data)
 
         self.assertEquals(output['repo_url'], 'git@github.com:tind/frigg.git')
@@ -30,7 +31,7 @@ class GithubHelpersTestCase(TestCase):
         self.assertEquals(output['repo_name'], 'frigg')
 
     def test_parse_push_payload(self):
-        data = json.load(open(os.path.join(self.fixture_path, 'push.json')))
+        data = json.load(open(os.path.join(self.fixtures_path, 'push.json')))
         output = parse_push_payload(data)
 
         self.assertEquals(output['repo_url'], 'git@github.com:tind/frigg.git')
