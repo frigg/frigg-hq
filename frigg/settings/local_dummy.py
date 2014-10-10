@@ -1,1 +1,2 @@
 SERVER_ADDRESS = 'frigg.tind.io'
+GITHUB_ACCESS_TOKEN=""

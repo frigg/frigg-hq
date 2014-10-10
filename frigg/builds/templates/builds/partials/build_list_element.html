@@ -1,0 +1,11 @@
+<a href="{% url 'view_build' build.project.owner build.project.name build.build_number %}">
+    <div class="row build bs-callout bs-callout-{% if build.result %}{{ build.result.get_status }}{% else %}pending{% endif %}">
+        <div class="col-xs-12">
+            <h4>
+                {{ build.project.owner }} / {{ build.project.name }} / {{ build.branch }}
+                <span class="build-number">#{{ build.build_number }}</span>
+            </h4>
+            <span class="sha">{{ build.sha }}</span>
+        </div>
+    </div>
+</a>
