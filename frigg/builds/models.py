@@ -81,7 +81,7 @@ class Build(models.Model):
 
     @cached_property
     def settings(self):
-        path = os.path.join(self.working_directory(), '.frigg.yml')
+        path = os.path.join(self.working_directory, '.frigg.yml')
         # Default value for project .frigg.yml
         settings = {
             'webhooks': [],
@@ -148,7 +148,7 @@ class Build(models.Model):
 
     def _run_task(self, task_command):
         with fabric_settings(warn_only=True):
-            with lcd(self.working_directory()):
+            with lcd(self.working_directory):
                 run_result = local(task_command, capture=True)
 
                 self.result.succeeded = run_result.succeeded
