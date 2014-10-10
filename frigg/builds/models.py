@@ -88,6 +88,7 @@ class Build(models.Model):
             'webhooks': [],
             'comment': True
         }
+
         with open(path) as f:
             settings.update(yaml.load(f))
         return settings
@@ -95,6 +96,14 @@ class Build(models.Model):
     def run_tests(self):
         github.set_commit_status(self, "pending")
         self._clone_repo()
+
+        try:
+            self.load_settings()
+        except IOError:
+            message = ".frigg.yml file is missing, can't continue without it"
+            github.comment_on_commit(self, message)
+            return
+
         self.add_comment("Running tests.. be patient :)\n\n%s" %
                          self.get_absolute_url())
         build_result = BuildResult.objects.create()

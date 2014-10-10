@@ -1,7 +1,6 @@
 # -*- coding: utf8 -*-
 import os
 import json
-from unittest import skip
 
 from django.conf import settings
 from django.test import TestCase
