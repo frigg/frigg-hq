@@ -4,9 +4,11 @@ import json
 import requests
 from django.conf import settings
 
+from .common import is_retest_comment
+
 
 def parse_comment_payload(data):
-    if "retest now please" in data['comment']['body']:
+    if is_retest_comment(data['comment']['body']):
         repo_name = data['repository']['name']
         repo_owner = data['repository']['owner']['login']
 
