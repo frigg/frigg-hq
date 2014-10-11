@@ -37,6 +37,12 @@ class GithubHelpersTestCase(TestCase):
 
         self.assertEqual(output, None)
 
+    def test_parse_pull_request_payload_closed(self):
+        data = json.load(open(os.path.join(self.fixtures_path, 'pull_request_closed.json')))
+        output = parse_pull_request_payload(data)
+
+        self.assertEqual(output, None)
+
     def test_parse_push_payload(self):
         data = json.load(open(os.path.join(self.fixtures_path, 'push_master.json')))
         output = parse_push_payload(data)
