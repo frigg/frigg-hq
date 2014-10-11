@@ -3,6 +3,7 @@ import json
 
 import requests
 from django.conf import settings
+from frigg.settings import IGNORED_PULL_REQUEST_ACTIONS
 
 from .common import is_retest_comment
 
@@ -35,7 +36,8 @@ def parse_comment_payload(data):
 
 
 def parse_pull_request_payload(data):
-    if data['action'] == "closed":  # Do nothing if the pull request is being closed
+    # Ignore building pull request if the pull request is being closed
+    if data['action'] in IGNORED_PULL_REQUEST_ACTIONS:
         return None
 
     repo_name = data['repository']['name']
