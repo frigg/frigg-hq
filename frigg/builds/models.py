@@ -83,6 +83,14 @@ class Build(models.Model):
     def get_pull_request_url(self):
         return github.get_pull_request_url(self)
 
+    @property
+    def color(self):
+        if self.result is None:
+            return 'orange'
+        if self.result.succeeded:
+            return 'green'
+        return 'red'
+
     @cached_property
     def settings(self):
         path = os.path.join(self.working_directory, '.frigg.yml')
