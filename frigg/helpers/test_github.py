@@ -4,6 +4,8 @@ import json
 
 from django.conf import settings
 from django.test import TestCase
+from frigg.builds.models import Build, BuildResult
+from frigg.helpers.github import _get_status_from_build
 
 from .github import parse_comment_payload, parse_push_payload, parse_pull_request_payload
 
@@ -41,3 +43,21 @@ class GithubHelpersTestCase(TestCase):
 
         data = json.load(open(os.path.join(self.fixtures_path, 'push_branch.json')))
         self.assertIsNone(parse_push_payload(data))
+
+    def test__get_status_from_build(self):
+        error = RuntimeError()
+        build = Build.objects.create(build_number=1, branch='master', sha='sha')
+        build.result = BuildResult.objects.create(result_log='result', succeeded=True,
+                                                  return_code=0)
+
+        status = _get_status_from_build(build, True, None)[0]
+        self.assertEqual(status, 'pending')
+        status = _get_status_from_build(build, False, None)[0]
+        self.assertEqual(status, 'success')
+        status = _get_status_from_build(build, False, error)[0]
+        self.assertEqual(status, 'error')
+        build.result.succeeded = False
+        build.result.return_code = 1
+        build.result.save()
+        status = _get_status_from_build(build, False, None)[0]
+        self.assertEqual(status, 'failure')

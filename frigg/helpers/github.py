@@ -84,15 +84,34 @@ def get_pull_request_url(build):
                                                  build.pull_request_id)
 
 
-def set_commit_status(build, status, description="Done"):
+def set_commit_status(build, pending=False, error=None):
     url = "%s/%s/statuses/%s" % (build.project.owner, build.project.name, build.sha)
+    status, description = _get_status_from_build(build, pending, error)
 
     return api_request(url, {
         'state': status,
         'target_url': build.get_absolute_url(),
         'description': description,
-        'context': 'build'
+        'context': 'continuous-integration/frigg'
     })
+
+
+def _get_status_from_build(build, pending, error):
+    if pending:
+        status = 'pending'
+        description = "Frigg started the build."
+    else:
+        if error is None:
+            description = 'The build finished.'
+            if build.result.succeeded:
+                status = 'success'
+            else:
+                status = 'failure'
+        else:
+            status = 'error'
+            description = "The build errored: %s" % error
+
+    return status, description
 
 
 def api_request(url, data=None):

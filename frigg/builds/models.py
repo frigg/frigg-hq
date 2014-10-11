@@ -97,7 +97,7 @@ class Build(models.Model):
         return settings
 
     def run_tests(self):
-        github.set_commit_status(self, "pending")
+        github.set_commit_status(self, pending=True)
         self._clone_repo()
 
         try:
@@ -120,15 +120,16 @@ class Build(models.Model):
                     # if one task fails, we do not care about the rest
                     break
 
+            github.set_commit_status(self)
+            self.add_comment(self.result.get_comment_message(self.get_absolute_url()))
+
         except AttributeError, e:
             self.result.succeeded = False
             self.result.result_log = str(e)
             self.result.save()
+            github.set_commit_status(self, error=e)
             self.add_comment("I was not able to perform the tests.. Sorry. \n "
                              "More information: \n\n %s" % str(e))
-
-        self.add_comment(self.result.get_comment_message(self.get_absolute_url()))
-        github.set_commit_status(self, self.result.get_status())
 
         for url in self.settings['webhooks']:
             self.send_webhook(url)
@@ -202,12 +203,6 @@ class BuildResult(models.Model):
     result_log = models.TextField()
     succeeded = models.BooleanField(default=False)
     return_code = models.CharField(max_length=100)
-
-    def get_status(self):
-        if self.succeeded:
-            return "succeded"
-        else:
-            return "failed"
 
     def get_comment_message(self, url):
         if self.succeeded:
