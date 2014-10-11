@@ -33,7 +33,12 @@ def parse_comment_payload(data):
 
 
 def parse_pull_request_payload(data):
-    if data['action'] == "closed":  # Do nothing if the pull request is being closed
+    # Ignore building pull request if the pull request is being closed
+    if data['action'] == "closed":
+        return None
+
+    # Don't bother to build pull request if the labels change
+    if data['action'] == "labeled":
         return None
 
     repo_name = data['repository']['name']
