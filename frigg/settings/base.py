@@ -10,6 +10,7 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # Quick-start development settings - unsuitable for production
@@ -92,3 +93,8 @@ STATICFILES_DIRS = (
 
 PROJECT_TMP_DIRECTORY = "/home/ubuntu/builds/frigg_working_dir/"
 SERVER_ADDRESS = '127.0.0.1:8000'
+
+# Available options:
+# assigned, unassigned, labeled, unlabeled, opened, closed, reopened, or synchronized.
+IGNORED_PULL_REQUEST_ACTIONS = ['closed', 'assigned', 'unassigned', 'labeled',
+                                'unlabeled']
