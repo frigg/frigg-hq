@@ -111,17 +111,17 @@ a:hover {
     border-left: 3px solid #eee;
 }
 
-.bs-callout-failed {
+.bs-callout.red {
     background-color: #fdf7f7;
     border-color: #d9534f;
 }
 
-.bs-callout-succeded {
+.bs-callout.green {
     background-color: #dff0d8;
     border-color: #468847;
 }
 
-.bs-callout-pending {
+.bs-callout.orange {
     background-color: #fcf8f2;
     border-color: #f0ad4e;
 }
