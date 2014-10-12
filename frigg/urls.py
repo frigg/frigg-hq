@@ -12,5 +12,6 @@ urlpatterns = patterns(
         name='login'),
 
     url(r'^accounts/logout/$', 'django.contrib.auth.views.logout_then_login', name='logout'),
+    url(r'^auth/', include('social_auth.urls')),
     url(r'^', include('frigg.builds.urls')),
 )
