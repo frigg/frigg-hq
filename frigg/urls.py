@@ -5,7 +5,7 @@ admin.autodiscover()
 
 urlpatterns = patterns(
     '',
-    url(r'^github-webhook/', 'frigg.builds.api.github_webhook'),
+    url(r'^webhooks/github/$', 'frigg.builds.api.github_webhook'),
     url(r'^admin/', include(admin.site.urls)),
 
     url(r'^accounts/login/$', 'django.contrib.auth.views.login', {'template_name': 'login.html'},
