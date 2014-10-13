@@ -14,6 +14,9 @@ production: venv
 	${MANAGE} migrate
 	${MANAGE} collectstatic --noinput
 
+clean:
+	find . -name "*.pyc" -exec rm -rf {} \;
+
 venv:
 	virtualenv venv
 
@@ -41,4 +44,4 @@ fab_local.py:
 	 echo "}" >> fab_local.py
 	@echo "\nYou can now deploy with fab deploy:prod"
 
-.PHONY: setup run
+.PHONY: setup run clean production
