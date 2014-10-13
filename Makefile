@@ -2,12 +2,17 @@ PIP=venv/bin/pip
 MANAGE=venv/bin/python manage.py
 
 setup: venv frigg/settings/local.py fab_local.py
-	${PIP} install -r requirements.txt
-	${MANAGE} syncdb --migrate
-	${MANAGE} collectstatic --noinput
+	${PIP} install -r requirements/dev.txt
+	${MANAGE} migrate
 
 run:
 	${MANAGE} runserver 0.0.0.0:8000
+
+production: venv
+	echo "from frigg.settings.production import *" > frigg/settings/local.py
+	${PIP} install -r requirements/prod.txt
+	${MANAGE} migrate
+	${MANAGE} collectstatic --noinput
 
 venv:
 	virtualenv venv
