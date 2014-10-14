@@ -30,6 +30,7 @@ def parse_comment_payload(data):
             'repo_url': repo_url,
             'repo_name': repo_name,
             'repo_owner': repo_owner,
+            'private': data['repository']['private'],
             'pull_request_id': pull_request_id,
             'pull_request_url': pull_request_url
         }
@@ -52,6 +53,7 @@ def parse_pull_request_payload(data):
         'repo_url': repo_url,
         'repo_name': repo_name,
         'repo_owner': repo_owner,
+        'private': data['repository']['private'],
         'pull_request_id': data['number'],
         'branch': data['pull_request']['head']['ref'],
         "sha": data['pull_request']['head']['sha']
@@ -69,6 +71,7 @@ def parse_push_payload(data):
             'repo_url': repo_url,
             'repo_name': data['repository']['name'],
             'repo_owner': data['repository']['owner']['name'],
+            'private': data['repository']['private'],
             'pull_request_id': 0,
             'branch': 'master',
             "sha": data['after']
