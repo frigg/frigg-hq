@@ -107,6 +107,7 @@ IGNORED_PULL_REQUEST_ACTIONS = ['closed', 'assigned', 'unassigned', 'labeled',
 
 
 # Social auth
+LOGIN_URL = '/auth/login/github'
 LOGIN_REDIRECT_URL = '/'
 LOGIN_ERROR_URL = '/auth/error/'
 
