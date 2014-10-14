@@ -110,7 +110,7 @@ class Build(models.Model):
         # Default value for project .frigg.yml
         settings = {
             'webhooks': [],
-            'comment': True
+            'comment': False
         }
 
         try:
