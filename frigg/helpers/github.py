@@ -76,6 +76,8 @@ def parse_push_payload(data):
 
 
 def comment_on_commit(build, message):
+    if settings.DEBUG:
+        return
     url = "%s/%s/commits/%s/comments" % (build.project.owner, build.project.name, build.sha)
     return api_request(url, {'body': message, 'sha': build.sha})
 
@@ -89,6 +91,8 @@ def get_pull_request_url(build):
 
 
 def set_commit_status(build, pending=False, error=None):
+    if settings.DEBUG:
+        return
     url = "%s/%s/statuses/%s" % (build.project.owner, build.project.name, build.sha)
     status, description = _get_status_from_build(build, pending, error)
 

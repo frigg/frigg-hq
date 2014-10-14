@@ -5,3 +5,5 @@ requests
 gunicorn
 django-fabric
 pyyaml
+
+django-social-auth

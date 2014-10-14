@@ -14,6 +14,7 @@ from django.core.urlresolvers import reverse
 from fabric.context_managers import lcd
 from fabric.operations import local
 from fabric.api import settings as fabric_settings
+from social_auth.db.django_models import UserSocialAuth
 
 from frigg.helpers import github
 from .managers import ProjectManager
@@ -27,11 +28,22 @@ class Project(models.Model):
     owner = models.CharField(max_length=100, blank=True)
     git_repository = models.CharField(max_length=150)
     average_time = models.IntegerField(null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True,
+                             help_text='A user with access to the repository.')
 
     objects = ProjectManager()
 
     def __unicode__(self):
         return "%(owner)s / %(name)s " % self.__dict__
+
+    @property
+    def clone_url(self):
+        try:
+            token = UserSocialAuth.objects.get(user=self.user,
+                                               provider='github').extra_data['access_token']
+        except UserSocialAuth.DoesNotExist:
+            token = ':'
+        return "https://%s@github.com/%s/%s" % (token, self.owner, self.name)
 
     @property
     def last_build_number(self):
@@ -106,7 +118,12 @@ class Build(models.Model):
 
     def run_tests(self):
         github.set_commit_status(self, pending=True)
-        self._clone_repo()
+        build_result = BuildResult.objects.create()
+        self.result = build_result
+        self.save()
+
+        if not self._clone_repo():
+            return github.set_commit_status(self, error='Access denied')
 
         try:
             self.settings
@@ -117,9 +134,6 @@ class Build(models.Model):
 
         self.add_comment("Running tests.. be patient :)\n\n%s" %
                          self.get_absolute_url())
-        build_result = BuildResult.objects.create()
-        self.result = build_result
-        self.save()
         try:
 
             for task in self.settings['tasks']:
@@ -150,14 +164,21 @@ class Build(models.Model):
         # Cleanup old if exists..
         self._delete_tmp_folder()
         local("mkdir -p %s" % settings.PROJECT_TMP_DIRECTORY)
-        local("git clone --depth=%s --no-single-branch %s %s" % (
-            depth,
-            self.project.git_repository,
-            self.working_directory
-        ))
-
-        with lcd(self.working_directory):
-            local("git checkout %s" % self.branch)
+        with fabric_settings(warn_only=True):
+            clone = local("git clone --depth=%s --branch=%s %s %s" % (
+                depth,
+                self.branch,
+                self.project.clone_url,
+                self.working_directory
+            ), capture=True)
+            if not clone:
+                message = "Access denied to %s/%s" % (self.project.owner, self.project.name)
+                self.result.succeeded = False
+                self.result.return_code = 128
+                self.result.result_log = message
+                self.result.save()
+                logger.error(message)
+            return clone.succeeded
 
     def _run_task(self, task_command):
         with fabric_settings(warn_only=True):
@@ -165,7 +186,8 @@ class Build(models.Model):
                 run_result = local(task_command, capture=True)
 
                 self.result.succeeded = run_result.succeeded
-                self.result.return_code += "%s," % run_result.return_code
+                self.result.return_code = "%s,%s," % (self.result.return_code,
+                                                      run_result.return_code)
 
                 log = 'Task: {0}\n'.format(task_command)
                 log += '------------------------------------\n'
