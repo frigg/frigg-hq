@@ -29,6 +29,7 @@ class Project(models.Model):
     owner = models.CharField(max_length=100, blank=True)
     git_repository = models.CharField(max_length=150)
     average_time = models.IntegerField(null=True)
+    private = models.BooleanField(default=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True,
                              help_text='A user with access to the repository.')
 
@@ -38,13 +39,20 @@ class Project(models.Model):
         return "%(owner)s / %(name)s " % self.__dict__
 
     @property
-    def clone_url(self):
+    def github_token(self):
         try:
             token = UserSocialAuth.objects.get(user=self.user,
                                                provider='github').extra_data['access_token']
         except UserSocialAuth.DoesNotExist:
-            token = ':'
-        return "https://%s@github.com/%s/%s" % (token, self.owner, self.name)
+            token = getattr(settings, 'GITHUB_ACCESS_TOKEN', ':')
+        return token
+
+    @property
+    def clone_url(self):
+        if self.private:
+            return "https://%s@github.com/%s/%s" % (self.github_token, self.owner, self.name)
+        else:
+            return "https://github.com/%s/%s" % (self.owner, self.name)
 
     @property
     def last_build_number(self):
@@ -168,7 +176,7 @@ class Build(models.Model):
                 self.project.clone_url,
                 self.working_directory
             ), capture=True)
-            if not clone:
+            if not clone.succeeded:
                 message = "Access denied to %s/%s" % (self.project.owner, self.project.name)
                 self.result.succeeded = False
                 self.result.return_code = 128
