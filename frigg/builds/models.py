@@ -49,7 +49,10 @@ class Project(models.Model):
 
     @property
     def clone_url(self):
-        return "https://%s@github.com/%s/%s" % (self.github_token, self.owner, self.name)
+        if self.private:
+            return "https://%s@github.com/%s/%s" % (self.github_token, self.owner, self.name)
+        else:
+            return "https://github.com/%s/%s" % (self.owner, self.name)
 
     @property
     def last_build_number(self):
