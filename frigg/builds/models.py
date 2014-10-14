@@ -38,13 +38,17 @@ class Project(models.Model):
         return "%(owner)s / %(name)s " % self.__dict__
 
     @property
-    def clone_url(self):
+    def github_token(self):
         try:
             token = UserSocialAuth.objects.get(user=self.user,
                                                provider='github').extra_data['access_token']
         except UserSocialAuth.DoesNotExist:
-            token = ':'
-        return "https://%s@github.com/%s/%s" % (token, self.owner, self.name)
+            token = getattr(settings, 'GITHUB_ACCESS_TOKEN', ':')
+        return token
+
+    @property
+    def clone_url(self):
+        return "https://%s@github.com/%s/%s" % (self.github_token, self.owner, self.name)
 
     @property
     def last_build_number(self):
