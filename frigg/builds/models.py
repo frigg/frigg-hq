@@ -18,6 +18,7 @@ from social_auth.db.django_models import UserSocialAuth
 
 from frigg.helpers import github
 from .managers import ProjectManager
+from .helpers import detect_test_runners
 
 
 logger = logging.getLogger("frigg_build_logger")
@@ -112,8 +113,11 @@ class Build(models.Model):
             'comment': True
         }
 
-        with open(path) as f:
-            settings.update(yaml.load(f))
+        try:
+            with open(path) as f:
+                settings.update(yaml.load(f))
+        except IOError:
+            settings['tasks'] = detect_test_runners(self)
         return settings
 
     def run_tests(self):
@@ -124,13 +128,6 @@ class Build(models.Model):
 
         if not self._clone_repo():
             return github.set_commit_status(self, error='Access denied')
-
-        try:
-            self.settings
-        except IOError:
-            message = ".frigg.yml file is missing, can't continue without it"
-            github.comment_on_commit(self, message)
-            return
 
         self.add_comment("Running tests.. be patient :)\n\n%s" %
                          self.get_absolute_url())
