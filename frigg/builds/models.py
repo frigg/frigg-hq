@@ -176,7 +176,7 @@ class Build(models.Model):
                 self.project.clone_url,
                 self.working_directory
             ), capture=True)
-            if not clone:
+            if not clone.succeeded:
                 message = "Access denied to %s/%s" % (self.project.owner, self.project.name)
                 self.result.succeeded = False
                 self.result.return_code = 128
