@@ -2,3 +2,4 @@ django>=1.7,<1.8
 fabric
 requests
 pyyaml
+django-social-auth
