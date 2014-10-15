@@ -1,6 +1,30 @@
 from django.contrib import admin
-from frigg.builds.models import Build, BuildResult, Project
 
-admin.site.register(Project)
-admin.site.register(Build)
-admin.site.register(BuildResult)
+from .models import Build, BuildResult, Project
+
+
+class BuildResultInline(admin.StackedInline):
+    model = BuildResult
+    readonly_fields = ('result_log', 'succeeded', 'return_code')
+
+
+class BuildInline(admin.TabularInline):
+    model = Build
+    readonly_fields = ('build_number', 'branch', 'color', 'pull_request_id', 'sha')
+
+
+@admin.register(Project)
+class ProjectAdmin(admin.ModelAdmin):
+    list_display = ('__unicode__', 'git_repository', 'average_time', 'user', 'last_build_number')
+    inlines = [BuildInline]
+
+
+@admin.register(Build)
+class BuildAdmin(admin.ModelAdmin):
+    list_display = ('build_number', 'project', 'branch', 'pull_request_id', 'sha', 'color')
+    inlines = [BuildResultInline]
+
+
+@admin.register(BuildResult)
+class BuildResultAdmin(admin.ModelAdmin):
+    list_display = ('__unicode__', 'succeeded', 'return_code')
