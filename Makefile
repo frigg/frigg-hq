@@ -21,7 +21,7 @@ venv:
 	virtualenv venv
 
 frigg/settings/local.py:
-	touch frigg/settings/local.py
+	cp frigg/settings/local_dummy.py frigg/settings/local.py
 
 fab_local.py:
 	@echo "We need to set up the fab scripts..."; \
