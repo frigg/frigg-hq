@@ -19,6 +19,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'social_auth',
+
     'frigg.builds'
 )
 
@@ -35,6 +37,10 @@ ROOT_URLCONF = 'frigg.urls'
 
 WSGI_APPLICATION = 'frigg.wsgi.application'
 
+AUTHENTICATION_BACKENDS = (
+    'social_auth.backends.contrib.github.GithubBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
 
 DATABASES = {
     'default': {
@@ -59,3 +65,18 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, '../uploads')
 MEDIA_URL = '/uploads/'
 STATICFILES_DIRS = os.path.join(BASE_DIR, 'files/'),
+
+
+# Social auth
+LOGIN_URL = '/auth/login/github'
+LOGIN_REDIRECT_URL = '/'
+LOGIN_ERROR_URL = '/auth/error/'
+
+SOCIAL_AUTH_DEFAULT_USERNAME = 'new_social_auth_user'
+SOCIAL_AUTH_UID_LENGTH = 16
+SOCIAL_AUTH_ASSOCIATION_HANDLE_LENGTH = 16
+SOCIAL_AUTH_NONCE_SERVER_URL_LENGTH = 16
+SOCIAL_AUTH_ASSOCIATION_SERVER_URL_LENGTH = 16
+SOCIAL_AUTH_ENABLED_BACKENDS = 'github',
+
+GITHUB_EXTENDED_PERMISSIONS = ['repo', 'read:org']

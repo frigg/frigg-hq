@@ -1,0 +1,9 @@
+django==1.7
+south
+fabric
+requests
+gunicorn
+django-fabric
+pyyaml
+
+django-social-auth

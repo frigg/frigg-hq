@@ -29,6 +29,7 @@ def parse_comment_payload(data):
             'repo_url': repo_url,
             'repo_name': repo_name,
             'repo_owner': repo_owner,
+            'private': data['repository']['private'],
             'pull_request_id': pull_request_id,
             'pull_request_url': pull_request_url
         }
@@ -51,6 +52,7 @@ def parse_pull_request_payload(data):
         'repo_url': repo_url,
         'repo_name': repo_name,
         'repo_owner': repo_owner,
+        'private': data['repository']['private'],
         'pull_request_id': data['number'],
         'branch': data['pull_request']['head']['ref'],
         "sha": data['pull_request']['head']['sha']
@@ -68,6 +70,7 @@ def parse_push_payload(data):
             'repo_url': repo_url,
             'repo_name': data['repository']['name'],
             'repo_owner': data['repository']['owner']['name'],
+            'private': data['repository']['private'],
             'pull_request_id': 0,
             'branch': 'master',
             "sha": data['after']
@@ -75,8 +78,10 @@ def parse_push_payload(data):
 
 
 def comment_on_commit(build, message):
+    if settings.DEBUG or not hasattr(settings, 'GITHUB_ACCESS_TOKEN'):
+        return
     url = "%s/%s/commits/%s/comments" % (build.project.owner, build.project.name, build.sha)
-    return api_request(url, {'body': message, 'sha': build.sha})
+    return api_request(url, settings.GITHUB_ACCESS_TOKEN, {'body': message, 'sha': build.sha})
 
 
 def get_pull_request_url(build):
@@ -88,10 +93,12 @@ def get_pull_request_url(build):
 
 
 def set_commit_status(build, pending=False, error=None):
+    if settings.DEBUG:
+        return
     url = "%s/%s/statuses/%s" % (build.project.owner, build.project.name, build.sha)
     status, description = _get_status_from_build(build, pending, error)
 
-    return api_request(url, {
+    return api_request(url, build.project.github_token, {
         'state': status,
         'target_url': build.get_absolute_url(),
         'description': description,
@@ -117,8 +124,8 @@ def _get_status_from_build(build, pending, error):
     return status, description
 
 
-def api_request(url, data=None):
-    url = "https://api.github.com/repos/%s?access_token=%s" % (url, settings.GITHUB_ACCESS_TOKEN)
+def api_request(url, token, data=None):
+    url = "https://api.github.com/repos/%s?access_token=%s" % (url, token)
     if data is None:
         return requests.get(url).text
     else:
