@@ -87,8 +87,6 @@ class Build(models.Model):
     branch = models.CharField(max_length=100, default="master")
     sha = models.CharField(max_length=150)
 
-    result = models.OneToOneField('builds.BuildResult', null=True)
-
     class Meta:
         unique_together = ('project', 'build_number')
 
@@ -130,9 +128,7 @@ class Build(models.Model):
 
     def run_tests(self):
         github.set_commit_status(self, pending=True)
-        build_result = BuildResult.objects.create()
-        self.result = build_result
-        self.save()
+        BuildResult.objects.create(build=self)
 
         if not self._clone_repo():
             return github.set_commit_status(self, error='Access denied')
@@ -235,9 +231,13 @@ class Build(models.Model):
 
 
 class BuildResult(models.Model):
+    build = models.OneToOneField(Build, related_name='result')
     result_log = models.TextField()
     succeeded = models.BooleanField(default=False)
     return_code = models.CharField(max_length=100)
+
+    def __unicode__(self):
+        return "%s - %s" % (self.build, self.build.build_number)
 
     def get_comment_message(self, url):
         if self.succeeded:
