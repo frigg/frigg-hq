@@ -49,8 +49,9 @@ class Migration(migrations.Migration):
                 ('owner', models.CharField(max_length=100, blank=True)),
                 ('git_repository', models.CharField(max_length=150)),
                 ('average_time', models.IntegerField(null=True)),
-                ('user', models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL,
-                 help_text=b'A user with access to the repository.', null=True)),
+                ('private', models.BooleanField(default=True)),
+                ('user', models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True,
+                 help_text=b'A user with access to the repository.')),
             ],
             options={
             },
