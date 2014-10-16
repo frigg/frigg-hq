@@ -4,16 +4,20 @@ from frigg.builds.helpers import _detect_test_runners
 
 
 class SmokeTestCase(TestCase):
-
     def test__detect_test_runners(self):
         self.assertEqual(_detect_test_runners([]), [])
-        files = ['package.json', 'manage.py', 'setup.py', 'tox.ini', 'Makefile']
+        files = ['Cargo.toml', 'build.sbt', 'package.json', 'manage.py', 'setup.py', 'tox.ini',
+                 'Makefile']
         self.assertEqual(_detect_test_runners(files), ['make test'])
-        del files[4]
+        del files[len(files) - 1]
         self.assertEqual(_detect_test_runners(files), ['tox', 'flake8'])
-        del files[3]
+        del files[len(files) - 1]
         self.assertEqual(_detect_test_runners(files), ['python setup.py test', 'flake8'])
-        del files[2]
+        del files[len(files) - 1]
         self.assertEqual(_detect_test_runners(files), ['python manage.py test', 'flake8'])
-        del files[1]
+        del files[len(files) - 1]
         self.assertEqual(_detect_test_runners(files), ['npm test'])
+        del files[len(files) - 1]
+        self.assertEqual(_detect_test_runners(files), ['sbt test'])
+        del files[len(files) - 1]
+        self.assertEqual(_detect_test_runners(files), ['cargo test'])
