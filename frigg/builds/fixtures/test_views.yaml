@@ -5,6 +5,7 @@
     git_repository: 'git@github.com:tind/frigg.git'
     name: frigg
     owner: tind
+    members: [1]
 
 - model: builds.build
   pk: 1

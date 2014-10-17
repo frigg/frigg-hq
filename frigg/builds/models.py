@@ -30,8 +30,9 @@ class Project(models.Model):
     git_repository = models.CharField(max_length=150)
     average_time = models.IntegerField(null=True)
     private = models.BooleanField(default=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True,
-                             help_text='A user with access to the repository.')
+    members = models.ManyToManyField(settings.AUTH_USER_MODEL, null=True, blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='authx1_projects', null=True,
+                             blank=True, help_text='A user with access to the repository.')
 
     objects = ProjectManager()
 
