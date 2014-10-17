@@ -14,3 +14,16 @@ class ProjectManager(models.Manager):
             item.name = match.group(2)
             item.save()
         return item
+
+    def permitted(self, user):
+        return self.filter(members=user)
+
+
+class BuildManager(models.Manager):
+    def permitted(self, user):
+        return self.filter(project__members=user)
+
+
+class BuildResultManager(models.Manager):
+    def permitted(self, user):
+        return self.filter(build__project__members=user)

@@ -17,7 +17,7 @@ from fabric.api import settings as fabric_settings
 from social_auth.db.django_models import UserSocialAuth
 
 from frigg.helpers import github
-from .managers import ProjectManager
+from .managers import ProjectManager, BuildManager, BuildResultManager
 from .helpers import detect_test_runners
 
 
@@ -96,6 +96,8 @@ class Build(models.Model):
     pull_request_id = models.IntegerField(max_length=150, default=0)
     branch = models.CharField(max_length=100, default="master")
     sha = models.CharField(max_length=150)
+
+    objects = BuildManager()
 
     class Meta:
         unique_together = ('project', 'build_number')
@@ -245,6 +247,8 @@ class BuildResult(models.Model):
     result_log = models.TextField()
     succeeded = models.BooleanField(default=False)
     return_code = models.CharField(max_length=100)
+
+    objects = BuildResultManager()
 
     def __unicode__(self):
         return "%s - %s" % (self.build, self.build.build_number)
