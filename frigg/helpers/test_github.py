@@ -62,8 +62,8 @@ class GithubHelpersTestCase(TestCase):
     def test__get_status_from_build(self):
         error = RuntimeError()
         build = Build.objects.create(build_number=1, branch='master', sha='sha')
-        build.result = BuildResult.objects.create(result_log='result', succeeded=True,
-                                                  return_code=0)
+        result = BuildResult.objects.create(build=build, result_log='result', succeeded=True,
+                                            return_code=0)
 
         status = _get_status_from_build(build, True, None)[0]
         self.assertEqual(status, 'pending')
