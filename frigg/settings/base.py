@@ -10,6 +10,7 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as DJANGO_TEMPLATE_CONTEXT_PROCESSORS
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -25,6 +26,7 @@ DEBUG = True
 TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
+INTERNAL_IPS = ('127.0.0.1:8000')
 
 
 # Application definition
@@ -50,6 +52,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
+TEMPLATE_CONTEXT_PROCESSORS = DJANGO_TEMPLATE_CONTEXT_PROCESSORS +\
+                              ('django.core.context_processors.debug',)
 
 ROOT_URLCONF = 'frigg.urls'
 
