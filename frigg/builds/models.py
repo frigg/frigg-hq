@@ -79,6 +79,15 @@ class Project(models.Model):
         t.start()
         return build
 
+    @classmethod
+    def token_for_url(cls, repo_url):
+        try:
+            project = Project.objects.get(git_repository=repo_url)
+            token = project.github_token
+        except cls.DoesNotExist:
+            token = getattr(settings, 'GITHUB_ACCESS_TOKEN', ':')
+        return token
+
 
 class Build(models.Model):
     project = models.ForeignKey(Project, related_name='builds', null=True)
