@@ -6,11 +6,15 @@ from .models import Build, BuildResult, Project
 class BuildResultInline(admin.StackedInline):
     model = BuildResult
     readonly_fields = ('result_log', 'succeeded', 'return_code')
+    extra = 0
+    max_num = 0
 
 
 class BuildInline(admin.TabularInline):
     model = Build
     readonly_fields = ('build_number', 'branch', 'color', 'pull_request_id', 'sha')
+    extra = 0
+    max_num = 0
 
 
 @admin.register(Project)
