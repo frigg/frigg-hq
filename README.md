@@ -1,7 +1,7 @@
 
 # frigg-ci
 [![Stories in Ready](https://badge.waffle.io/tind/frigg.png?label=ready&title=Ready)](https://waffle.io/tind/frigg)
-[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/tind/frigg?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/frigg/frigg?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 # Setup
 ```
@@ -20,15 +20,5 @@ Add `http://<your frigg domain>/github-webhook` to the projects webhooks on Gith
 
 ## Config file
 Frigg supports config file to give details about what kind of tasks to perform. The file
-should be named `.frigg.yml` and placed in the root of the project.  The fields allowed
-in the config is described below:
-
-### `task`
-Should be defined as a list of commands. Those commands will be run in the order they are
-defined during the run.
-
-### `webhooks`
-Should be defined as a list of urls where frigg can post status about the build.
-
-### `comment`
-If set to `false`, frigg will not comment on commits on Github only set commit status in the Github API
+should be named `.frigg.yml` and placed in the root of the project. More information about
+the config file can be found on [frigg.io/docs/](https://frigg.io/docs/).
