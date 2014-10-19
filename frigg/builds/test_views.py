@@ -7,13 +7,13 @@ from .views import overview, view_build, view_organization, view_project
 
 
 class SmokeTestCase(TestCase):
-    fixtures = ['frigg/builds/fixtures/test_views.yaml']
+    fixtures = ['frigg/builds/fixtures/users.yaml', 'frigg/builds/fixtures/test_views.yaml']
 
     def assertStatusCode(self, response, code=200):
         self.assertEqual(response.status_code, code)
 
     def setUp(self):
-        self.user = get_user_model().objects.create(username='dumbledore')
+        self.user = get_user_model().objects.get(pk=1)
         self.factory = RequestFactory()
 
     def tearDown(self):

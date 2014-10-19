@@ -19,6 +19,10 @@ def _detect_test_runners(files):
         return ['python manage.py test', 'flake8']
     if 'package.json' in files:
         return ['npm test']
+    if 'build.sbt' in files:
+        return ['sbt test']
+    if 'Cargo.toml' in files:
+        return ['cargo test']
     return []
 
 

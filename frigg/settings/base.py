@@ -1,5 +1,7 @@
 # -*- coding: utf8 -*-
 import os
+from django.conf.global_settings import (TEMPLATE_CONTEXT_PROCESSORS as
+                                         DJANGO_TEMPLATE_CONTEXT_PROCESSORS)
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -7,6 +9,7 @@ SECRET_KEY = 'v8aa$cb0knx6)vyo!%tn6k6_g($!n1yq_v+4bg9v4*n@&dpu0w'
 DEBUG = True
 TEMPLATE_DEBUG = True
 ALLOWED_HOSTS = []
+INTERNAL_IPS = ('127.0.0.1:8000')
 
 
 # Application definition
@@ -32,6 +35,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
+TEMPLATE_CONTEXT_PROCESSORS = (DJANGO_TEMPLATE_CONTEXT_PROCESSORS +
+                               ('django.core.context_processors.debug',))
 
 ROOT_URLCONF = 'frigg.urls'
 
