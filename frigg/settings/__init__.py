@@ -1,8 +1,12 @@
 # -*- coding: utf8 -*-
 
-from frigg.settings.base import *
+# django base settings
+from .base import *
+
+# settings variables introduced in frigg
+from .frigg import *
 
 try:
-    from frigg.settings.local import *
+    from .local import *
 except ImportError, e:
     raise ImportError("Couldn't load local settings frigg.settings.local")

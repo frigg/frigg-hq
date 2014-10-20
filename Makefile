@@ -2,18 +2,26 @@ PIP=venv/bin/pip
 MANAGE=venv/bin/python manage.py
 
 setup: venv frigg/settings/local.py fab_local.py
-	${PIP} install -r requirements.txt
-	${MANAGE} syncdb --migrate
-	${MANAGE} collectstatic --noinput
+	${PIP} install -r requirements/dev.txt
+	${MANAGE} migrate
 
 run:
 	${MANAGE} runserver 0.0.0.0:8000
+
+production: venv
+	echo "from frigg.settings.production import *" > frigg/settings/local.py
+	${PIP} install -r requirements/prod.txt
+	${MANAGE} migrate
+	${MANAGE} collectstatic --noinput
+
+clean:
+	find . -name "*.pyc" -exec rm -rf {} \;
 
 venv:
 	virtualenv venv
 
 frigg/settings/local.py:
-	touch frigg/settings/local.py
+	cp frigg/settings/local_dummy.py frigg/settings/local.py
 
 fab_local.py:
 	@echo "We need to set up the fab scripts..."; \
@@ -36,4 +44,4 @@ fab_local.py:
 	 echo "}" >> fab_local.py
 	@echo "\nYou can now deploy with fab deploy:prod"
 
-.PHONY: setup run
+.PHONY: setup run clean production

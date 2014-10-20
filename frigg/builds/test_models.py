@@ -1,4 +1,4 @@
-# coding=utf-8
+# -*- coding: utf8 -*-
 from django.test import TestCase
 
 from .models import Project
