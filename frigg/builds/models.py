@@ -141,6 +141,8 @@ class Build(models.Model):
         BuildResult.objects.create(build=self)
 
         if not self._clone_repo():
+            self.is_pending = False
+            self.save()
             return github.set_commit_status(self, error='Access denied')
 
         self.add_comment("Running tests.. be patient :)\n\n%s" %
@@ -163,9 +165,12 @@ class Build(models.Model):
             github.set_commit_status(self, error=e)
             self.add_comment("I was not able to perform the tests.. Sorry. \n "
                              "More information: \n\n %s" % str(e))
+        finally:
+            self.is_pending = False
+            self.save()
 
-        for url in self.settings['webhooks']:
-            self.send_webhook(url)
+            for url in self.settings['webhooks']:
+                self.send_webhook(url)
 
     def deploy(self):
         with lcd(self.working_directory):
