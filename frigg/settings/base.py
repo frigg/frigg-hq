@@ -1,7 +1,9 @@
 # -*- coding: utf8 -*-
 import os
+
 from django.conf.global_settings import (TEMPLATE_CONTEXT_PROCESSORS as
                                          DJANGO_TEMPLATE_CONTEXT_PROCESSORS)
+from django.contrib import messages
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -9,7 +11,11 @@ SECRET_KEY = 'v8aa$cb0knx6)vyo!%tn6k6_g($!n1yq_v+4bg9v4*n@&dpu0w'
 DEBUG = True
 TEMPLATE_DEBUG = True
 ALLOWED_HOSTS = []
-INTERNAL_IPS = ('127.0.0.1:8000')
+INTERNAL_IPS = ('127.0.0.1:8000',)
+
+MESSAGE_TAGS = {
+    messages.ERROR: 'danger'  # Makes messages play nice with bootstrap 3
+}
 
 
 # Application definition
