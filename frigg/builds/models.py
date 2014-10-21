@@ -95,6 +95,7 @@ class Build(models.Model):
     pull_request_id = models.IntegerField(max_length=150, default=0)
     branch = models.CharField(max_length=100, default="master")
     sha = models.CharField(max_length=150)
+    is_pending = models.BooleanField(default=True)
 
     class Meta:
         unique_together = ('project', 'build_number')
@@ -113,7 +114,7 @@ class Build(models.Model):
 
     @property
     def color(self):
-        if self.result is None:
+        if self.is_pending:
             return 'orange'
         if self.result.succeeded:
             return 'green'
@@ -140,6 +141,8 @@ class Build(models.Model):
         BuildResult.objects.create(build=self)
 
         if not self._clone_repo():
+            self.is_pending = False
+            self.save()
             return github.set_commit_status(self, error='Access denied')
 
         self.add_comment("Running tests.. be patient :)\n\n%s" %
@@ -162,9 +165,12 @@ class Build(models.Model):
             github.set_commit_status(self, error=e)
             self.add_comment("I was not able to perform the tests.. Sorry. \n "
                              "More information: \n\n %s" % str(e))
+        finally:
+            self.is_pending = False
+            self.save()
 
-        for url in self.settings['webhooks']:
-            self.send_webhook(url)
+            for url in self.settings['webhooks']:
+                self.send_webhook(url)
 
     def deploy(self):
         with lcd(self.working_directory):
