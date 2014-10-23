@@ -24,3 +24,4 @@ urlpatterns = patterns(
 
     url(r'^deploy/(?P<build_id>\d+)/$', 'deploy_master_branch', name="deploy_master_branch"),
 )
+

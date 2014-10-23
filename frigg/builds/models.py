@@ -1,24 +1,16 @@
 # -*- coding: utf8 -*-
-import os
 import json
 import logging
-import threading
-import traceback
+import redis
 
-import yaml
 import requests
 from django.db import models
 from django.conf import settings
-from django.utils.functional import cached_property
 from django.core.urlresolvers import reverse
-from fabric.context_managers import lcd
-from fabric.operations import local
-from fabric.api import settings as fabric_settings
 from social_auth.db.django_models import UserSocialAuth
 
 from frigg.helpers import github
 from .managers import ProjectManager
-from .helpers import detect_test_runners
 
 
 logger = logging.getLogger("frigg_build_logger")
@@ -61,10 +53,6 @@ class Project(models.Model):
         except IndexError:
             return 0
 
-    @property
-    def working_directory(self):
-        return os.path.join(settings.PROJECT_TMP_DIRECTORY, self.owner, self.name)
-
     def start_build(self, data):
         build = Build.objects.create(
             project=self,
@@ -73,10 +61,11 @@ class Project(models.Model):
             branch=data['branch'],
             sha=data["sha"]
         )
+        github.set_commit_status(self, pending=True)
 
-        t = threading.Thread(target=build.run_tests)
-        t.setDaemon(True)
-        t.start()
+        r = redis.Redis(**settings.REDIS_SETTINGS)
+        r.lpush(settings.FRIGG_WORKER_QUEUE, json.dumps(build.queue_object))
+
         return build
 
     @classmethod
@@ -120,115 +109,50 @@ class Build(models.Model):
             return 'green'
         return 'red'
 
-    @cached_property
-    def settings(self):
-        path = os.path.join(self.working_directory, '.frigg.yml')
-        # Default value for project .frigg.yml
-        settings = {
-            'webhooks': [],
-            'comment': False
+
+    @property
+    def comment_message(self):
+        if self.succeeded:
+            return "All gooodie good\n\n%s" % self.get_absolute_url()
+        else:
+            return "Be careful.. the tests failed\n\n%s" % self.get_absolute_url()
+
+    @property
+    def queue_object(self):
+        return {
+            'id': self.pk,
+            'branch': self.branch,
+            'sha': self.sha,
+            'clone_url': self.project.clone_url,
+            'owner': self.project.owner,
+            'name': self.project.name
         }
 
-        try:
-            with open(path) as f:
-                settings.update(yaml.load(f))
-        except IOError:
-            settings['tasks'] = detect_test_runners(self)
-        return settings
+    def handle_worker_report(self, payload):
+        result = BuildResult.objects.create(
+            build_id=self.pk,
+            return_code='',
+            result_log=''
+        )
+        return_codes = []
+        for r in payload['results']:
+            if 'return_code' in r:
+                return_codes.append(r['return_code'])
+            result.succeeded = 'succeeded' in r and r['succeeded'] and result.succeeded
+            result.result_log += self.create_log_string_for_task(r)
+        result.return_code = ",".join([str(code) for code in return_codes])
 
-    def run_tests(self):
-        github.set_commit_status(self, pending=True)
-        BuildResult.objects.create(build=self)
+        self.is_pending = True
+        self.save()
+        result.save()
 
-        if not self._clone_repo():
-            self.is_pending = False
-            self.save()
-            return github.set_commit_status(self, error='Access denied')
+        github.set_commit_status(self)
+        if 'comment' in payload and payload['comment']:
+            github.comment_on_commit(self, self.comment_message)
 
-        self.add_comment("Running tests.. be patient :)\n\n%s" %
-                         self.get_absolute_url())
-        try:
-
-            for task in self.settings['tasks']:
-                self._run_task(task)
-                if not self.result.succeeded:
-                    # if one task fails, we do not care about the rest
-                    break
-
-            github.set_commit_status(self)
-            self.add_comment(self.result.get_comment_message(self.get_absolute_url()))
-
-        except AttributeError, e:
-            self.result.succeeded = False
-            self.result.result_log = str(e)
-            self.result.save()
-            github.set_commit_status(self, error=e)
-            self.add_comment("I was not able to perform the tests.. Sorry. \n "
-                             "More information: \n\n %s" % str(e))
-        finally:
-            self.is_pending = False
-            self.save()
-
-            for url in self.settings['webhooks']:
+        if 'webhooks' in payload:
+            for url in payload['webhooks']:
                 self.send_webhook(url)
-
-    def deploy(self):
-        with lcd(self.working_directory):
-            local("./deploy.sh")
-
-    def _clone_repo(self, depth=1):
-        # Cleanup old if exists..
-        self._delete_tmp_folder()
-        local("mkdir -p %s" % settings.PROJECT_TMP_DIRECTORY)
-        with fabric_settings(warn_only=True):
-            clone = local("git clone --depth=%s --branch=%s %s %s" % (
-                depth,
-                self.branch,
-                self.project.clone_url,
-                self.working_directory
-            ), capture=True)
-            if not clone.succeeded:
-                message = "Access denied to %s/%s" % (self.project.owner, self.project.name)
-                self.result.succeeded = False
-                self.result.return_code = 128
-                self.result.result_log = message
-                self.result.save()
-                logger.error(message)
-            return clone.succeeded
-
-    def _run_task(self, task_command):
-        with fabric_settings(warn_only=True):
-            with lcd(self.working_directory):
-                run_result = local(task_command, capture=True)
-
-                self.result.succeeded = run_result.succeeded
-                self.result.return_code = "%s,%s," % (self.result.return_code,
-                                                      run_result.return_code)
-
-                log = 'Task: {0}\n'.format(task_command)
-                log += '------------------------------------\n'
-                log += run_result
-                log += '------------------------------------\n'
-                log += 'Exited with exit code: %s\n\n' % run_result.return_code
-
-                self.result.result_log += log
-                self.result.save()
-
-    def add_comment(self, message):
-        if bool(self.settings.get('comment', True)):
-            github.comment_on_commit(self, message)
-
-    def _delete_tmp_folder(self):
-        if os.path.exists(self.working_directory):
-            local("rm -rf %s" % self.working_directory)
-
-    def testlog(self):
-        try:
-            with file("%s/frigg_testlog" % self.working_directory, "r") as f:
-                return f.read()
-        except IOError:
-            logger.error(traceback.format_exc())
-            return ""
 
     def send_webhook(self, url):
         return requests.post(url, data=json.dumps({
@@ -240,9 +164,17 @@ class Build(models.Model):
             'return_code': self.result.return_code
         }))
 
-    @cached_property
-    def working_directory(self):
-        return os.path.join(self.project.working_directory, str(self.id))
+    @classmethod
+    def create_log_string_for_task(cls, result):
+        if 'task' in result and 'result_log' in result and 'return_code' in result:
+            return (
+                'Task: %(task)s\n'
+                '\n------------------------------------\n'
+                '%(result_log)s'
+                '\n------------------------------------\n'
+                'Exited with exit code: %(return_code)s\n\n'
+            ) % result
+        return ''
 
 
 class BuildResult(models.Model):
@@ -253,9 +185,3 @@ class BuildResult(models.Model):
 
     def __unicode__(self):
         return "%s - %s" % (self.build, self.build.build_number)
-
-    def get_comment_message(self, url):
-        if self.succeeded:
-            return "All gooodie good\n\n%s" % url
-        else:
-            return "Be careful.. the tests failed\n\n%s" % url
