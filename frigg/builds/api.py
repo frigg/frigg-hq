@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 import json
 
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse
 from django.http.response import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from frigg.decorators import token_required

@@ -1,12 +1,12 @@
 # -*- coding: utf8 -*-
 import json
 from django.contrib.auth import get_user_model
+from django.contrib.messages.storage.fallback import FallbackStorage
 from django.core.urlresolvers import reverse
 from django.test import TestCase, RequestFactory
 from django.test.utils import override_settings
 
 from .api import report_build
-from frigg.builds.models import BuildResult
 from .views import overview, view_build, view_organization, view_project
 
 
@@ -23,28 +23,34 @@ class SmokeTestCase(TestCase):
     def tearDown(self):
         get_user_model().objects.all().delete()
 
+    def add_request_fields(self, request):
+        request.user = self.user
+        setattr(request, 'session', 'session')
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+
     def test_overview_view(self):
         request = self.factory.get(reverse('overview'))
-        request.user = self.user
+        self.add_request_fields(request)
         response = overview(request)
         self.assertStatusCode(response)
 
     def test_organization_view(self):
         request = self.factory.get(reverse('view_organization', args=['tind']))
-        request.user = self.user
-        response = view_organization(request, 'tind')
+        self.add_request_fields(request)
+        response = view_organization(request, 'frigg')
         self.assertStatusCode(response)
 
     def test_project_view(self):
-        request = self.factory.get(reverse('view_project', args=['tind', 'frigg']))
-        request.user = self.user
-        response = view_project(request, 'tind', 'frigg')
+        request = self.factory.get(reverse('view_project', args=['frigg', 'frigg']))
+        self.add_request_fields(request)
+        response = view_project(request, 'frigg', 'frigg')
         self.assertStatusCode(response)
 
     def test_build_view(self):
-        request = self.factory.get(reverse('view_build', args=['tind', 'frigg', 1]))
-        request.user = self.user
-        response = view_build(request, 'tind', 'frigg', '1')
+        request = self.factory.get(reverse('view_build', args=['frigg', 'frigg', 1]))
+        self.add_request_fields(request)
+        response = view_build(request, 'frigg', 'frigg', '1')
         self.assertStatusCode(response)
 
 

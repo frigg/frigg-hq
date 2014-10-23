@@ -22,6 +22,7 @@ class Project(models.Model):
     git_repository = models.CharField(max_length=150)
     average_time = models.IntegerField(null=True)
     private = models.BooleanField(default=True)
+    approved = models.BooleanField(default=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True,
                              help_text='A user with access to the repository.')
 
@@ -61,6 +62,11 @@ class Project(models.Model):
             branch=data['branch'],
             sha=data["sha"]
         )
+        if not self.project.approved:
+            self.result.result_log = 'This project is not approved.'
+            self.result.succeeded = False
+            self.result.save()
+            return github.set_commit_status(self, error='This project is not approved')
         github.set_commit_status(self, pending=True)
 
         r = redis.Redis(**settings.REDIS_SETTINGS)
@@ -108,7 +114,6 @@ class Build(models.Model):
         if self.result.succeeded:
             return 'green'
         return 'red'
-
 
     @property
     def comment_message(self):

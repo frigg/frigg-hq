@@ -2,9 +2,9 @@
   pk: 1
   fields:
     average_time: 0
-    git_repository: 'git@github.com:tind/frigg.git'
+    git_repository: 'git@github.com:frigg/frigg.git'
     name: frigg
-    owner: tind
+    owner: frigg
 
 - model: builds.build
   pk: 1
