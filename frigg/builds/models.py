@@ -58,9 +58,9 @@ class Project(models.Model):
         build = Build.objects.create(project=self, build_number=self.last_build_number + 1,
                                      pull_request_id=data['pull_request_id'], branch=data['branch'],
                                      sha=data["sha"])
-        if not self.project.approved:
-            return BuildResult.create_not_approved(self)
-        github.set_commit_status(self, pending=True)
+        if not self.approved:
+            return BuildResult.create_not_approved(build)
+        github.set_commit_status(build, pending=True)
 
         r = redis.Redis(**settings.REDIS_SETTINGS)
         r.lpush(settings.FRIGG_WORKER_QUEUE, json.dumps(build.queue_object))
@@ -166,7 +166,8 @@ class BuildResult(models.Model):
 
     @classmethod
     def create_from_worker_payload(cls, build, payload):
-        result = cls.objects.create(build_id=build.pk, return_code='', result_log='')
+        result = cls.objects.create(build_id=build.pk, succeeded=True, return_code='',
+                                    result_log='')
         return_codes = []
         for r in payload['results']:
             if 'return_code' in r:
@@ -178,10 +179,10 @@ class BuildResult(models.Model):
 
     @classmethod
     def create_log_string_for_task(cls, result):
-        if 'task' in result and 'result_log' in result and 'return_code' in result:
+        if 'task' in result and 'log' in result and 'return_code' in result:
             return ('Task: %(task)s\n'
                     '\n------------------------------------\n'
-                    '%(result_log)s'
+                    '%(log)s'
                     '\n------------------------------------\n'
                     'Exited with exit code: %(return_code)s\n\n') % result
         return ''
