@@ -55,18 +55,11 @@ class Project(models.Model):
             return 0
 
     def start_build(self, data):
-        build = Build.objects.create(
-            project=self,
-            build_number=self.last_build_number + 1,
-            pull_request_id=data['pull_request_id'],
-            branch=data['branch'],
-            sha=data["sha"]
-        )
+        build = Build.objects.create(project=self, build_number=self.last_build_number + 1,
+                                     pull_request_id=data['pull_request_id'], branch=data['branch'],
+                                     sha=data["sha"])
         if not self.project.approved:
-            self.result.result_log = 'This project is not approved.'
-            self.result.succeeded = False
-            self.result.save()
-            return github.set_commit_status(self, error='This project is not approved')
+            return BuildResult.create_not_approved(self)
         github.set_commit_status(self, pending=True)
 
         r = redis.Redis(**settings.REDIS_SETTINGS)
@@ -134,22 +127,9 @@ class Build(models.Model):
         }
 
     def handle_worker_report(self, payload):
-        result = BuildResult.objects.create(
-            build_id=self.pk,
-            return_code='',
-            result_log=''
-        )
-        return_codes = []
-        for r in payload['results']:
-            if 'return_code' in r:
-                return_codes.append(r['return_code'])
-            result.succeeded = 'succeeded' in r and r['succeeded'] and result.succeeded
-            result.result_log += self.create_log_string_for_task(r)
-        result.return_code = ",".join([str(code) for code in return_codes])
-
+        BuildResult.create_from_worker_payload(self, payload)
         self.is_pending = True
         self.save()
-        result.save()
 
         github.set_commit_status(self)
         if 'comment' in payload and payload['comment']:
@@ -169,18 +149,6 @@ class Build(models.Model):
             'return_code': self.result.return_code
         }))
 
-    @classmethod
-    def create_log_string_for_task(cls, result):
-        if 'task' in result and 'result_log' in result and 'return_code' in result:
-            return (
-                'Task: %(task)s\n'
-                '\n------------------------------------\n'
-                '%(result_log)s'
-                '\n------------------------------------\n'
-                'Exited with exit code: %(return_code)s\n\n'
-            ) % result
-        return ''
-
 
 class BuildResult(models.Model):
     build = models.OneToOneField(Build, related_name='result')
@@ -190,3 +158,30 @@ class BuildResult(models.Model):
 
     def __unicode__(self):
         return "%s - %s" % (self.build, self.build.build_number)
+
+    @classmethod
+    def create_not_approved(cls, build):
+        cls.objects.create(build=build, result_log='This project is not approved.', succeeded=False)
+        github.set_commit_status(build, error='This project is not approved')
+
+    @classmethod
+    def create_from_worker_payload(cls, build, payload):
+        result = cls.objects.create(build_id=build.pk, return_code='', result_log='')
+        return_codes = []
+        for r in payload['results']:
+            if 'return_code' in r:
+                return_codes.append(r['return_code'])
+            result.succeeded = 'succeeded' in r and r['succeeded'] and result.succeeded
+            result.result_log += cls.create_log_string_for_task(r)
+        result.return_code = ",".join([str(code) for code in return_codes])
+        result.save()
+
+    @classmethod
+    def create_log_string_for_task(cls, result):
+        if 'task' in result and 'result_log' in result and 'return_code' in result:
+            return ('Task: %(task)s\n'
+                    '\n------------------------------------\n'
+                    '%(result_log)s'
+                    '\n------------------------------------\n'
+                    'Exited with exit code: %(return_code)s\n\n') % result
+        return ''
