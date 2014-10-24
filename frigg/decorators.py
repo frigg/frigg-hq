@@ -14,5 +14,5 @@ def token_required(view_func):
         if token:
             if token in getattr(settings, 'FRIGG_WORKER_TOKENS', []):
                 return view_func(request, *args, **kwargs)
-        return HttpResponseForbidden
+        return HttpResponseForbidden()
     return _wrapped_view
