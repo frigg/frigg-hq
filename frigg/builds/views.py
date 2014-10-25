@@ -1,4 +1,5 @@
-# coding=utf-8
+# -*- coding: utf8 -*-
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404
@@ -8,6 +9,8 @@ from .models import Build, Project
 
 @login_required
 def overview(request):
+    if Project.objects.filter(approved=False).exists():
+        messages.info(request, 'One or more projects needs approval before any builds will run.')
     return render(request, "builds/overview.html", {
         'builds': Build.objects.permitted(request.user).order_by('-id')
                                                        .select_related('project', 'result')[:100]

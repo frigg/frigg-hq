@@ -23,6 +23,8 @@ def _detect_test_runners(files):
         return ['sbt test']
     if 'Cargo.toml' in files:
         return ['cargo test']
+    if '_config.yml' in files:
+        return ['jekyll build']
     return []
 
 

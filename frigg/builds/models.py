@@ -1,4 +1,4 @@
-# coding=utf-8
+# -*- coding: utf8 -*-
 import os
 import json
 import logging
@@ -11,9 +11,6 @@ from django.db import models
 from django.conf import settings
 from django.utils.functional import cached_property
 from django.core.urlresolvers import reverse
-from fabric.context_managers import lcd
-from fabric.operations import local
-from fabric.api import settings as fabric_settings
 from social_auth.db.django_models import UserSocialAuth
 
 from frigg.helpers import github
@@ -30,6 +27,7 @@ class Project(models.Model):
     git_repository = models.CharField(max_length=150)
     average_time = models.IntegerField(null=True)
     private = models.BooleanField(default=True)
+    approved = models.BooleanField(default=False)
     members = models.ManyToManyField(settings.AUTH_USER_MODEL, null=True, blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='authx1_projects', null=True,
                              blank=True, help_text='A user with access to the repository.')
@@ -96,6 +94,7 @@ class Build(models.Model):
     pull_request_id = models.IntegerField(max_length=150, default=0)
     branch = models.CharField(max_length=100, default="master")
     sha = models.CharField(max_length=150)
+    is_pending = models.BooleanField(default=True)
 
     objects = BuildManager()
 
@@ -116,7 +115,7 @@ class Build(models.Model):
 
     @property
     def color(self):
-        if self.result is None:
+        if self.is_pending:
             return 'orange'
         if self.result.succeeded:
             return 'green'
@@ -142,7 +141,15 @@ class Build(models.Model):
         github.set_commit_status(self, pending=True)
         BuildResult.objects.create(build=self)
 
+        if not self.project.approved:
+            self.result.result_log = 'This project is not approved.'
+            self.result.succeeded = False
+            self.result.save()
+            return github.set_commit_status(self, error='This project is not approved')
+
         if not self._clone_repo():
+            self.is_pending = False
+            self.save()
             return github.set_commit_status(self, error='Access denied')
 
         self.add_comment("Running tests.. be patient :)\n\n%s" %
@@ -165,9 +172,12 @@ class Build(models.Model):
             github.set_commit_status(self, error=e)
             self.add_comment("I was not able to perform the tests.. Sorry. \n "
                              "More information: \n\n %s" % str(e))
+        finally:
+            self.is_pending = False
+            self.save()
 
-        for url in self.settings['webhooks']:
-            self.send_webhook(url)
+            for url in self.settings['webhooks']:
+                self.send_webhook(url)
 
     def deploy(self):
         with lcd(self.working_directory):
