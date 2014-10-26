@@ -55,17 +55,13 @@ class Project(models.Model):
             return 0
 
     def start_build(self, data):
-        build = Build.objects.create(project=self, build_number=self.last_build_number + 1,
-                                     pull_request_id=data['pull_request_id'], branch=data['branch'],
-                                     sha=data["sha"])
-        if not self.approved:
-            return BuildResult.create_not_approved(build)
-        github.set_commit_status(build, pending=True)
-
-        r = redis.Redis(**settings.REDIS_SETTINGS)
-        r.lpush(settings.FRIGG_WORKER_QUEUE, json.dumps(build.queue_object))
-
-        return build
+        return Build.objects.create(
+            project=self,
+            build_number=self.last_build_number + 1,
+            pull_request_id=data['pull_request_id'],
+            branch=data['branch'],
+            sha=data["sha"]
+        ).start()
 
     @classmethod
     def token_for_url(cls, repo_url):
@@ -128,6 +124,20 @@ class Build(models.Model):
             'owner': self.project.owner,
             'name': self.project.name
         }
+
+    def start(self):
+        if hasattr(self, 'result'):
+            self.result.delete()
+
+        if not self.approved:
+            return BuildResult.create_not_approved(self)
+
+        github.set_commit_status(self, pending=True)
+
+        r = redis.Redis(**settings.REDIS_SETTINGS)
+        r.lpush(settings.FRIGG_WORKER_QUEUE, json.dumps(self.queue_object))
+
+        return self
 
     def handle_worker_report(self, payload):
         BuildResult.create_from_worker_payload(self, payload)
