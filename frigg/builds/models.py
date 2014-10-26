@@ -83,7 +83,6 @@ class Build(models.Model):
     pull_request_id = models.IntegerField(max_length=150, default=0)
     branch = models.CharField(max_length=100, default="master")
     sha = models.CharField(max_length=150)
-    is_pending = models.BooleanField(default=True)
 
     class Meta:
         unique_together = ('project', 'build_number')
@@ -99,6 +98,10 @@ class Build(models.Model):
 
     def get_pull_request_url(self):
         return github.get_pull_request_url(self)
+
+    @property
+    def is_pending(self):
+        return hasattr(self, 'result')
 
     @property
     def color(self):
@@ -128,8 +131,6 @@ class Build(models.Model):
 
     def handle_worker_report(self, payload):
         BuildResult.create_from_worker_payload(self, payload)
-        self.is_pending = True
-        self.save()
 
         github.set_commit_status(self)
         if 'comment' in payload and payload['comment']:
