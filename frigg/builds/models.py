@@ -7,15 +7,17 @@ import requests
 from django.db import models
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.utils.encoding import python_2_unicode_compatible
 from social_auth.db.django_models import UserSocialAuth
 
 from frigg.helpers import github
 from .managers import ProjectManager
 
 
-logger = logging.getLogger("frigg_build_logger")
+logger = logging.getLogger(__name__)
 
 
+@python_2_unicode_compatible
 class Project(models.Model):
     name = models.CharField(max_length=100, blank=True)
     owner = models.CharField(max_length=100, blank=True)
@@ -28,7 +30,7 @@ class Project(models.Model):
 
     objects = ProjectManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return "%(owner)s / %(name)s " % self.__dict__
 
     @property
@@ -73,6 +75,7 @@ class Project(models.Model):
         return token
 
 
+@python_2_unicode_compatible
 class Build(models.Model):
     project = models.ForeignKey(Project, related_name='builds', null=True)
     build_number = models.IntegerField(db_index=True)
@@ -83,7 +86,7 @@ class Build(models.Model):
     class Meta:
         unique_together = ('project', 'build_number')
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s / %s " % (self.project, self.branch)
 
     def get_absolute_url(self):
@@ -161,13 +164,14 @@ class Build(models.Model):
         }))
 
 
+@python_2_unicode_compatible
 class BuildResult(models.Model):
     build = models.OneToOneField(Build, related_name='result')
     result_log = models.TextField()
     succeeded = models.BooleanField(default=False)
     return_code = models.CharField(max_length=100)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s - %s" % (self.build, self.build.build_number)
 
     @classmethod
