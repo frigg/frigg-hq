@@ -29,6 +29,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'social_auth',
+    'pipeline',
 
     'frigg.builds'
 )
@@ -70,12 +71,25 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-
 STATIC_ROOT = os.path.join(BASE_DIR, '../static')
 STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, '../uploads')
 MEDIA_URL = '/uploads/'
 STATICFILES_DIRS = os.path.join(BASE_DIR, 'files/'),
+STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+
+PIPELINE_COMPILERS = (
+    'pipeline.compilers.sass.SASSCompiler',
+)
+PIPELINE_CSS = {
+    'main': {
+        'source_filenames': (
+            'sass/main.sass',
+        ),
+        'output_filename': 'css/main.css',
+    },
+}
+
 
 
 # Social auth

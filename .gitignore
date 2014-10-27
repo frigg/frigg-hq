@@ -58,3 +58,5 @@ venv/
 frigg/static/
 fab_local.py
 .environment
+frigg/files/sass/*css*
+.sass-cache

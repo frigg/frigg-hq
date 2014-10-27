@@ -1,3 +1,4 @@
+{% load compressed %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,14 +11,15 @@
 
   <title>Frigg Continuous Integration Server</title>
 
-  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"
+        rel="stylesheet">
   <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
   <!--[if lte IE 8]> <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/grids-responsive-old-ie-min.css">
   <![endif]-->
   <!--[if gt IE 8]><!-->
   <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/grids-responsive-min.css">
   <!--<![endif]-->
-  <link rel="stylesheet" type="text/sass" href="{{ STATIC_URL }}sass/main.sass">
+  {% compressed_css 'main' %}
 
   <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!--[if lt IE 9]>
@@ -27,32 +29,33 @@
 </head>
 
 <body>
-<div class="pure-g">
-  <div class="pure-u-1 pure-u-md-4-5">
-    <a href="/">
-      <h3 class="text-muted">Frigg Continuous Integration Server</h3>
-    </a>
+<div class="container">
+  <div class="pure-g">
+    <div class="pure-u-1 pure-u-md-4-5">
+      <a href="/">
+        <h3 class="text-muted">Frigg Continuous Integration Server</h3>
+      </a>
+    </div>
+    <div class="pure-u-1 pure-u-md-1-5">
+      <ul>
+        <li class="active"><a href="/">Overview</a></li>
+        <li><a href="{% url 'logout' %}">Logout</a></li>
+      </ul>
+    </div>
   </div>
-  <div class="pure-u-1 pure-u-md-1-5">
-    <ul>
-      <li class="active"><a href="/">Overview</a></li>
-      <li><a href="{% url 'logout' %}">Logout</a></li>
-    </ul>
+  <div class="pure-g">
+    <div class="pure-u-1">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="pure-g">
+    {% block content %}{% endblock %}
   </div>
 </div>
-<div class="pure-g">
-  <div class="pure-u-1">
-    {% for message in messages %}
-      <div class="alert alert-{{ message.tags }}">
-        {{ message }}
-      </div>
-    {% endfor %}
-  </div>
-</div>
-<div class="pure-g">
-  {% block content %}{% endblock %}
-</div>
-
 <script src="{{ STATIC_URL }}js/jquery.js" type="text/javascript"></script>
 
 {% block js %}{% endblock %}
