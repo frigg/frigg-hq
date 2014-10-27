@@ -1,40 +1,25 @@
 {% extends "base.html" %}
 
 {% block js %}
-    <script src="{{ STATIC_URL }}js/ansi_up.js"></script>
-    <script src="{{ STATIC_URL }}js/colorify.js"></script>
+  <script src="{{ STATIC_URL }}js/ansi_up.js"></script>
+  <script src="{{ STATIC_URL }}js/colorify.js"></script>
 {% endblock js %}
 
 {% block content %}
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="col-lg-8">
-                <h3>{{ build.project.owner }} / {{ build.project.name }} / {{ build.branch }}</h3>
-                <table>
-                    <tr>
-                        <td class="col-lg-1">Pull Request</td>
-                        <td class="col-lg-5">
-                            <a href="{{ build.get_pull_request_url }}">Github</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-lg-1">Branch</td>
-                        <td class="col-lg-5">{{ build.branch }}</td>
-                    </tr>
-                    <tr>
-                        <td class="col-lg-1">Last commit</td>
-                        <td class="col-lg-5">{{ build.sha }}</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
+  <div class="pure-u-1">
+    <h3>
+      {{ build.project.owner }} / {{ build.project.name }} / {{ build.branch }}
+      <a href="{{ build.get_pull_request_url }}"><i class="fa fa-github"></i></a>
+    </h3>
+    <strong>Branch:</strong> {{ build.branch }} <br/>
+    <strong>Commit hash:</strong> {{ build.sha }}
+  </div>
 
-        <div class="col-lg-12">
-            {% if build.is_pending %}
-                {% include "builds/partials/loading.html" %}
-            {% else %}
-                <pre><code class="colorify">{{ build.result.result_log }}</code></pre>
-            {% endif %}
-        </div>
-    </div>
+  <div class="pure-u-1">
+    {% if build.is_pending %}
+      {% include "builds/partials/loading.html" %}
+    {% else %}
+      <pre><code class="colorify">{{ build.result.result_log }}</code></pre>
+    {% endif %}
+  </div>
 {% endblock %}

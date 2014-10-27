@@ -1,6 +1,6 @@
 <a href="{% url 'view_build' build.project.owner build.project.name build.build_number %}">
-    <div class="row build bs-callout {{ build.color}}">
-        <div class="col-xs-12">
+    <div class="pure-g bs-callout {{ build.color}}">
+        <div class="pure-u-1">
             <h4>
                 {{ build.project.owner }} / {{ build.project.name }} / {{ build.branch }}
                 <span class="build-number">#{{ build.build_number }}</span>

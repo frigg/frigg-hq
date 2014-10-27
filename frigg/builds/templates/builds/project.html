@@ -1,17 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="row builds">
-        <div class="col-xs-12">
-            <h2>{{ project.owner }} / {{ project.name }}</h2>
-        </div>
-    </div>
+  <div class="pure-u-1">
+    <h2>{{ project.owner }} / {{ project.name }}</h2>
+  </div>
 
-    <div class="row builds">
-        <div class="col-xs-12">
-            {% for build in project.builds.all %}
-                {% include "builds/partials/build_list_element.html" %}
-            {% endfor %}
-        </div>
-    </div>
+  <div class="pure-u-1">
+    {% for build in project.builds.all %}
+      {% include "builds/partials/build_list_element.html" %}
+    {% endfor %}
+  </div>
 {% endblock %}
