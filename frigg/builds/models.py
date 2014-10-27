@@ -11,13 +11,10 @@ from django.db import models
 from django.conf import settings
 from django.utils.functional import cached_property
 from django.core.urlresolvers import reverse
-from fabric.context_managers import lcd
-from fabric.operations import local
-from fabric.api import settings as fabric_settings
 from social_auth.db.django_models import UserSocialAuth
 
 from frigg.helpers import github
-from .managers import ProjectManager
+from .managers import ProjectManager, BuildManager, BuildResultManager
 from .helpers import detect_test_runners
 
 
@@ -31,8 +28,9 @@ class Project(models.Model):
     average_time = models.IntegerField(null=True)
     private = models.BooleanField(default=True)
     approved = models.BooleanField(default=False)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True,
-                             help_text='A user with access to the repository.')
+    members = models.ManyToManyField(settings.AUTH_USER_MODEL, null=True, blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='authx1_projects', null=True,
+                             blank=True, help_text='A user with access to the repository.')
 
     objects = ProjectManager()
 
@@ -97,6 +95,8 @@ class Build(models.Model):
     branch = models.CharField(max_length=100, default="master")
     sha = models.CharField(max_length=150)
     is_pending = models.BooleanField(default=True)
+
+    objects = BuildManager()
 
     class Meta:
         unique_together = ('project', 'build_number')
@@ -257,6 +257,8 @@ class BuildResult(models.Model):
     result_log = models.TextField()
     succeeded = models.BooleanField(default=False)
     return_code = models.CharField(max_length=100)
+
+    objects = BuildResultManager()
 
     def __unicode__(self):
         return "%s - %s" % (self.build, self.build.build_number)
