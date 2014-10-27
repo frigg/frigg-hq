@@ -11,6 +11,8 @@ from django.db import models
 from django.conf import settings
 from django.utils.functional import cached_property
 from django.core.urlresolvers import reverse
+from fabric.context_managers import lcd, settings as fabric_settings
+from fabric.operations import local
 from social_auth.db.django_models import UserSocialAuth
 
 from frigg.helpers import github

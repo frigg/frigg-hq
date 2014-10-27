@@ -34,7 +34,13 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='project',
             name='user',
-            field=models.ForeignKey(related_name='authx1_projects', blank=True, to=settings.AUTH_USER_MODEL, help_text=b'A user with access to the repository.', null=True),
+            field=models.ForeignKey(
+                related_name='authx1_projects',
+                blank=True,
+                to=settings.AUTH_USER_MODEL,
+                help_text=b'A user with access to the repository.',
+                null=True
+            ),
             preserve_default=True,
         ),
     ]
