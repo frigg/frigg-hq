@@ -1,15 +1,120 @@
 $background-color: #fafafa
 $link-color: #333
-
+$border-color: #aaa
+$meta-font-color: #999
+$code-background-color: #ededed
+$transparent: rgba(0,0,0,0)
 
 body
   background: $background-color
+  font-size: 17px
+  font-family: Roboto, sans-serif
+  font-weight: 100
+  line-height: 1.7em
+  overflow-x: hidden
 
 a
   color: $link-color
 
+h1
+  font-size: 1.8em
+  font-weight: 100
+  margin-bottom: 0.2em
+
+h2
+  font-size: 1.6em
+  font-weight: 100
+  margin-bottom: 0.2em
+
+h3
+  font-size: 1.5em
+  font-weight: 100
+  margin-bottom: 0.2em
+
+h4
+  font-size: 1.4em
+  font-weight: 100
+  margin-bottom: 0.2em
+
+pre
+  background: $code-background-color
+  font-size: 0.8em
+  padding: 2em 40px
+  margin: 4em -40px
+
+
+.header-grid
+  width: 90%
+  margin: 0 auto
+
+.header
+  height: 4em
+  padding-top: 1em
+  display: inline-block
+  text-decoration: none
+  text-align: center
+
+.navigation
+  text-align: center
+  ul
+    margin: 0
+    padding: 0
+    list-style-type: none
+    li
+      display: inline-block
+
+.content-grid
+  margin-top: 1em
+  margin-bottom: 1em
+
+  &.ninthy-percent
+    width: 90%
+    margin: 0 auto
+
+  a
+    text-decoration: none
+    background-image: linear-gradient($transparent 50%, #333333 50%)
+    background-repeat: repeat-x
+    background-position: 0 1.3rem
+    background-size: 1px 1px
+
+    &.no-underline
+      background-image: none
+
+    &:hover,
+    &:active
+      color: #808080
+      background-image: linear-gradient($transparent 50%, #808080 50%)
+
+    &:visited
+      color: #333333
+      background-image: linear-gradient($transparent 50%, #333333 50%)
+
+.build-list-item
+  padding: 0.6em
+  border-bottom: 1px dashed $border-color
+  border-left: 0.3em solid #eee
+
+  h4
+    margin: 0.2em 0
+    font-size: 1.2em
+
+  .meta
+    font-size: 0.8em
+    color: $meta-font-color
+    a
+      color: $meta-font-color
+
+  &.red
+    background-color: #fdf7f7
+    border-left-color: #d9534f
+  &.green
+    background-color: #dff0d8
+    border-left-color: #468847
+  &.orange
+    background-color: #fcf8f2
+    border-left-color: #f0ad4e
 
 @media screen and (min-width: 35.5em)
-  .container
-    max-width: 1000px
-    margin: 0 auto
+  .mobile-only
+    display: block

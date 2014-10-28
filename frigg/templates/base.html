@@ -11,8 +11,8 @@
 
   <title>Frigg Continuous Integration Server</title>
 
-  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"
-        rel="stylesheet">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href='http://fonts.googleapis.com/css?family=Roboto:400,100,300,500,400italic' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
   <!--[if lte IE 8]> <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/grids-responsive-old-ie-min.css">
   <![endif]-->
@@ -30,16 +30,16 @@
 
 <body>
 <div class="container">
-  <div class="pure-g">
+  <div class="pure-g header-grid">
     <div class="pure-u-1 pure-u-md-4-5">
-      <a href="/">
-        <h3 class="text-muted">Frigg Continuous Integration Server</h3>
+      <a href="/" class="header">
+        <h2>Frigg Continuous Integration</h2>
       </a>
     </div>
-    <div class="pure-u-1 pure-u-md-1-5">
+    <div class="pure-u-1 pure-u-md-1-5 navigation">
       <ul>
-        <li class="active"><a href="/">Overview</a></li>
-        <li><a href="{% url 'logout' %}">Logout</a></li>
+        <li><a href="/" class="pure-button">Overview</a></li>
+        <li><a href="{% url 'logout' %}" class="pure-button">Logout</a></li>
       </ul>
     </div>
   </div>
@@ -52,7 +52,8 @@
       {% endfor %}
     </div>
   </div>
-  <div class="pure-g">
+  <div class="pure-g content-grid{% if request.path != '/' %} ninthy-percent{% endif %}">
+
     {% block content %}{% endblock %}
   </div>
 </div>

@@ -43,7 +43,8 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 TEMPLATE_CONTEXT_PROCESSORS = (DJANGO_TEMPLATE_CONTEXT_PROCESSORS +
-                               ('django.core.context_processors.debug',))
+                               ('django.core.context_processors.debug',
+                                'django.core.context_processors.request',))
 
 ROOT_URLCONF = 'frigg.urls'
 

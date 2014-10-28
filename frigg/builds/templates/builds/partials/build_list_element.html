@@ -1,11 +1,13 @@
-<a href="{% url 'view_build' build.project.owner build.project.name build.build_number %}">
-    <div class="pure-g bs-callout {{ build.color}}">
-        <div class="pure-u-1">
-            <h4>
-                {{ build.project.owner }} / {{ build.project.name }} / {{ build.branch }}
-                <span class="build-number">#{{ build.build_number }}</span>
-            </h4>
-            <span class="sha">{{ build.sha }}</span>
-        </div>
+<div class="pure-g build-list-item {{ build.color }}">
+  <div class="pure-u-1">
+    <h4>
+      <a href="{% url 'view_build' build.project.owner build.project.name build.build_number %}">
+        {{ build.project.owner }} / {{ build.project.name }} / {{ build.branch }}
+        <span class="build-number">#{{ build.build_number }}</span>
+      </a>
+    </h4>
+    <div class="meta">
+      <span class="sha"><strong>commit:</strong> <a href="{{ build.commit_link }}">{{ build.sha|slice:':8' }}</a></span>
     </div>
-</a>
+  </div>
+</div>
