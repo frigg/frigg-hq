@@ -9,7 +9,7 @@
   <div class="pure-u-1">
     <h3>
       {{ build.project.owner }} / {{ build.project.name }} / {{ build.branch }}
-      <a href="{{ build.get_pull_request_url }}" class="no-underline"><i class="fa fa-github"></i></a>
+      <a href="{{ build.pull_request_url }}" class="no-underline"><i class="fa fa-github"></i></a>
     </h3>
     <strong>Branch:</strong> {{ build.branch }} <br/>
     <strong>Commit hash:</strong> {{ build.sha }}
