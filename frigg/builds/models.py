@@ -135,7 +135,7 @@ class Build(models.Model):
         if hasattr(self, 'result'):
             self.result.delete()
 
-        if not self.approved:
+        if not self.project.approved:
             return BuildResult.create_not_approved(self)
 
         github.set_commit_status(self, pending=True)
