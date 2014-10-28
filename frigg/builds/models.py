@@ -190,8 +190,7 @@ class BuildResult(models.Model):
 
     @classmethod
     def create_from_worker_payload(cls, build, payload):
-        result = cls.objects.create(build_id=build.pk, succeeded=True, return_code='',
-                                    result_log='')
+        result = cls.objects.create(build_id=build.pk, return_code='', result_log='')
         return_codes = []
         for r in payload['results']:
             if 'return_code' in r:
