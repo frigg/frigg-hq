@@ -92,6 +92,14 @@ def get_pull_request_url(build):
                                                  build.pull_request_id)
 
 
+def get_commit_url(build):
+    return 'https://github.com/%s/%s/commit/%s/' % (
+        build.project.owner,
+        build.project.name,
+        build.sha
+    )
+
+
 def set_commit_status(build, pending=False, error=None):
     if settings.DEBUG:
         return

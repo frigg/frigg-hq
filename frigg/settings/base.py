@@ -29,6 +29,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'social_auth',
+    'pipeline',
 
     'frigg.builds'
 )
@@ -42,7 +43,8 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 TEMPLATE_CONTEXT_PROCESSORS = (DJANGO_TEMPLATE_CONTEXT_PROCESSORS +
-                               ('django.core.context_processors.debug',))
+                               ('django.core.context_processors.debug',
+                                'django.core.context_processors.request',))
 
 ROOT_URLCONF = 'frigg.urls'
 
@@ -70,12 +72,25 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-
 STATIC_ROOT = os.path.join(BASE_DIR, '../static')
 STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, '../uploads')
 MEDIA_URL = '/uploads/'
 STATICFILES_DIRS = os.path.join(BASE_DIR, 'files/'),
+STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+
+PIPELINE_COMPILERS = (
+    'pipeline.compilers.sass.SASSCompiler',
+)
+PIPELINE_CSS = {
+    'main': {
+        'source_filenames': (
+            'sass/main.sass',
+        ),
+        'output_filename': 'css/main.css',
+    },
+}
+
 
 
 # Social auth
