@@ -37,7 +37,7 @@ def parse_comment_payload(data):
 
 def parse_pull_request_payload(data):
     # Ignore building pull request if the pull request is being closed
-    if data['action'] in settings.IGNORED_PULL_REQUEST_ACTIONS:
+    if 'action' in data and data['action'] in settings.IGNORED_PULL_REQUEST_ACTIONS:
         return None
 
     repo_name = data['repository']['name']
