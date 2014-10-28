@@ -181,7 +181,7 @@ class BuildResult(models.Model):
 
     @property
     def return_codes(self):
-        return self.return_code.split(',')
+        return [int(code) for code in self.return_code.split(',')]
 
     @classmethod
     def create_not_approved(cls, build):
@@ -212,10 +212,11 @@ class BuildResult(models.Model):
 
     @classmethod
     def create_log_string_for_task(cls, result):
-        if 'task' in result and 'log' in result and 'return_code' in result:
-            return ('Task: %(task)s\n'
-                    '\n------------------------------------\n'
-                    '%(log)s'
-                    '\n------------------------------------\n'
-                    'Exited with exit code: %(return_code)s\n\n') % result
-        return ''
+        data = {'task': '', 'log': '', 'return_code': ''}
+        data.update(result)
+
+        return ('Task: %(task)s\n'
+                '\n------------------------------------\n'
+                '%(log)s'
+                '\n------------------------------------\n'
+                'Exited with exit code: %(return_code)s\n\n') % data

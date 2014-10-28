@@ -7,6 +7,7 @@ from django.test import TestCase, RequestFactory
 from django.test.utils import override_settings
 
 from .api import report_build
+from frigg.builds.models import Build
 from .views import overview, view_build, view_organization, view_project
 
 
@@ -91,3 +92,14 @@ class APITestCase(TestCase):
         response = report_build(request)
         self.assertStatusCode(response)
         self.assertContains(response, 'Thanks for building it')
+        build = Build.objects.get(pk=2)
+        self.assertFalse(build.is_pending)
+        self.assertTrue(build.result.succeeded)
+        self.assertEquals(build.result.return_codes, [0])
+        self.assertEquals(
+            build.result.result_log,
+            'Task: make test\n\n------------------------------------\n'
+            'log\n------------------------------------\nExited with exit code: 0\n\n'
+            'Task: make test\n\n------------------------------------\n'
+            '\n------------------------------------\nExited with exit code: \n\n'
+        )
