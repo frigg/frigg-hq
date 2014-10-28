@@ -1,0 +1,21 @@
+{
+  "name": "frigg",
+  "version": "0.0.0",
+  "homepage": "https://github.com/frigg/frigg",
+  "authors": [
+    "Frigg team <hi@frigg.io>"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "frigg/files/vendor",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "pure": "~0.5.0"
+  }
+}
