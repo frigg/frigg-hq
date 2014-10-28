@@ -4,3 +4,4 @@ pyyaml
 redis
 
 django-social-auth
+django-pipeline

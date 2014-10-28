@@ -44,8 +44,8 @@ def github_webhook(request):
         build = project.start_build(data)
         return HttpResponse('Handled "%s" event.\nMore info at %s' % (
             event,
-            build.get_absolute_url())
-        )
+            build.get_absolute_url()
+        ))
     else:
         return HttpResponse('Handled "%s" event.' % event)
 

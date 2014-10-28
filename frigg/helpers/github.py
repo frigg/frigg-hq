@@ -37,7 +37,7 @@ def parse_comment_payload(data):
 
 def parse_pull_request_payload(data):
     # Ignore building pull request if the pull request is being closed
-    if data['action'] in settings.IGNORED_PULL_REQUEST_ACTIONS:
+    if 'action' in data and data['action'] in settings.IGNORED_PULL_REQUEST_ACTIONS:
         return None
 
     repo_name = data['repository']['name']
@@ -90,6 +90,14 @@ def get_pull_request_url(build):
 
     return "https://github.com/%s/%s/pull/%s" % (build.project.owner, build.project.name,
                                                  build.pull_request_id)
+
+
+def get_commit_url(build):
+    return 'https://github.com/%s/%s/commit/%s/' % (
+        build.project.owner,
+        build.project.name,
+        build.sha
+    )
 
 
 def set_commit_status(build, pending=False, error=None):

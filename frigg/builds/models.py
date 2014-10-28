@@ -98,9 +98,14 @@ class Build(models.Model):
             reverse('view_build', args=[self.project.owner, self.project.name, self.build_number])
         )
 
-    def get_pull_request_url(self):
+    @property
+    def pull_request_url(self):
         return github.get_pull_request_url(self)
 
+    @property
+    def commit_url(self):
+        return github.get_commit_url(self)
+    
     @property
     def is_pending(self):
         return not hasattr(self, 'result')
