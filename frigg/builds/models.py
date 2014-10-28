@@ -11,7 +11,7 @@ from django.utils.encoding import python_2_unicode_compatible
 from social_auth.db.django_models import UserSocialAuth
 
 from frigg.helpers import github
-from .managers import ProjectManager
+from .managers import ProjectManager, BuildManager, BuildResultManager
 
 
 logger = logging.getLogger(__name__)
@@ -25,8 +25,9 @@ class Project(models.Model):
     average_time = models.IntegerField(null=True)
     private = models.BooleanField(default=True)
     approved = models.BooleanField(default=False)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True,
-                             help_text='A user with access to the repository.')
+    members = models.ManyToManyField(settings.AUTH_USER_MODEL, null=True, blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='authx1_projects', null=True,
+                             blank=True, help_text='A user with access to the repository.')
 
     objects = ProjectManager()
 
@@ -82,6 +83,8 @@ class Build(models.Model):
     pull_request_id = models.IntegerField(max_length=150, default=0)
     branch = models.CharField(max_length=100, default="master")
     sha = models.CharField(max_length=150)
+
+    objects = BuildManager()
 
     class Meta:
         unique_together = ('project', 'build_number')
@@ -170,6 +173,8 @@ class BuildResult(models.Model):
     result_log = models.TextField()
     succeeded = models.BooleanField(default=False)
     return_code = models.CharField(max_length=100)
+
+    objects = BuildResultManager()
 
     def __str__(self):
         return "%s - %s" % (self.build, self.build.build_number)

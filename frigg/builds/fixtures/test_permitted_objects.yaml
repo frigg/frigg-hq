@@ -1,0 +1,38 @@
+- fields:
+    average_time: 0
+    git_repository: git@github.com:frigg/frigg.git
+    members: [1]
+    name: frigg
+    owner: frigg
+    private: true
+    user: 1
+  model: builds.project
+  pk: 1
+- fields:
+    average_time: 0
+    git_repository: git@github.com:frigg/frigg.github.io.git
+    members: []
+    name: frigg.github.io
+    owner: frigg
+    private: true
+    user: null
+  model: builds.project
+  pk: 2
+- fields: {branch: master, build_number: 1, project: 1, pull_request_id: 0, sha: 1kjfkjsdf}
+  model: builds.build
+  pk: 1
+- fields: {branch: master, build_number: 2, project: 1, pull_request_id: 0, sha: jfslksdf}
+  model: builds.build
+  pk: 2
+- fields: {branch: master, build_number: 1, project: 2, pull_request_id: 0, sha: fjkds}
+  model: builds.build
+  pk: 3
+- fields: {build: 1, result_log: '...', return_code: '0', succeeded: true}
+  model: builds.buildresult
+  pk: 1
+- fields: {build: 3, result_log: '....', return_code: '0', succeeded: true}
+  model: builds.buildresult
+  pk: 2
+- fields: {build: 2, result_log: .., return_code: '0', succeeded: true}
+  model: builds.buildresult
+  pk: 3
