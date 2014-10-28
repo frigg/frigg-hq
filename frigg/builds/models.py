@@ -116,6 +116,10 @@ class Build(models.Model):
         return github.get_pull_request_url(self)
 
     @property
+    def commit_url(self):
+        return github.get_commit_url(self)
+
+    @property
     def color(self):
         if self.is_pending:
             return 'orange'

@@ -134,3 +134,11 @@ def api_request(url, token, data=None):
             'Accept': 'application/vnd.github.she-hulk-preview+json'
         }
         return requests.post(url, data=json.dumps(data), headers=headers).text
+
+
+def get_commit_url(build):
+    return 'https://github.com/%s/%s/commit/%s/' % (
+        build.project.owner,
+        build.project.name,
+        build.sha
+    )
