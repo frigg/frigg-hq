@@ -103,7 +103,7 @@ class Build(models.Model):
 
     @property
     def is_pending(self):
-        return hasattr(self, 'result')
+        return not hasattr(self, 'result')
 
     @property
     def color(self):
