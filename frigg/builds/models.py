@@ -177,7 +177,11 @@ class BuildResult(models.Model):
     objects = BuildResultManager()
 
     def __str__(self):
-        return "%s - %s" % (self.build, self.build.build_number)
+        return '%s - %s' % (self.build, self.build.build_number)
+
+    @property
+    def return_codes(self):
+        return self.return_code.split(',')
 
     @classmethod
     def create_not_approved(cls, build):
@@ -192,10 +196,19 @@ class BuildResult(models.Model):
         for r in payload['results']:
             if 'return_code' in r:
                 return_codes.append(r['return_code'])
-            result.succeeded = 'succeeded' in r and r['succeeded'] and result.succeeded
             result.result_log += cls.create_log_string_for_task(r)
+
+        result.succeeded = BuildResult.evaluate_results(payload['results'])
         result.return_code = ",".join([str(code) for code in return_codes])
         result.save()
+
+    @classmethod
+    def evaluate_results(cls, results):
+        succeeded = True
+        for r in results:
+            if 'succeeded' in r:
+                succeeded = succeeded and r['succeeded']
+        return succeeded
 
     @classmethod
     def create_log_string_for_task(cls, result):
