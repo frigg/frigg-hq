@@ -1,28 +1,23 @@
 # -*- coding: utf8 -*-
-import os
 import json
 import logging
-import threading
-import traceback
+import redis
 
-import yaml
 import requests
 from django.db import models
 from django.conf import settings
-from django.utils.functional import cached_property
 from django.core.urlresolvers import reverse
-from fabric.context_managers import lcd, settings as fabric_settings
-from fabric.operations import local
+from django.utils.encoding import python_2_unicode_compatible
 from social_auth.db.django_models import UserSocialAuth
 
 from frigg.helpers import github
 from .managers import ProjectManager, BuildManager, BuildResultManager
-from .helpers import detect_test_runners
 
 
-logger = logging.getLogger("frigg_build_logger")
+logger = logging.getLogger(__name__)
 
 
+@python_2_unicode_compatible
 class Project(models.Model):
     name = models.CharField(max_length=100, blank=True)
     owner = models.CharField(max_length=100, blank=True)
@@ -36,7 +31,7 @@ class Project(models.Model):
 
     objects = ProjectManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return "%(owner)s / %(name)s " % self.__dict__
 
     @property
@@ -62,23 +57,14 @@ class Project(models.Model):
         except IndexError:
             return 0
 
-    @property
-    def working_directory(self):
-        return os.path.join(settings.PROJECT_TMP_DIRECTORY, self.owner, self.name)
-
     def start_build(self, data):
-        build = Build.objects.create(
+        return Build.objects.create(
             project=self,
             build_number=self.last_build_number + 1,
             pull_request_id=data['pull_request_id'],
             branch=data['branch'],
             sha=data["sha"]
-        )
-
-        t = threading.Thread(target=build.run_tests)
-        t.setDaemon(True)
-        t.start()
-        return build
+        ).start()
 
     @classmethod
     def token_for_url(cls, repo_url):
@@ -90,20 +76,20 @@ class Project(models.Model):
         return token
 
 
+@python_2_unicode_compatible
 class Build(models.Model):
     project = models.ForeignKey(Project, related_name='builds', null=True)
     build_number = models.IntegerField(db_index=True)
     pull_request_id = models.IntegerField(max_length=150, default=0)
     branch = models.CharField(max_length=100, default="master")
     sha = models.CharField(max_length=150)
-    is_pending = models.BooleanField(default=True)
 
     objects = BuildManager()
 
     class Meta:
         unique_together = ('project', 'build_number')
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s / %s " % (self.project, self.branch)
 
     def get_absolute_url(self):
@@ -119,6 +105,10 @@ class Build(models.Model):
     @property
     def commit_url(self):
         return github.get_commit_url(self)
+    
+    @property
+    def is_pending(self):
+        return not hasattr(self, 'result')
 
     @property
     def color(self):
@@ -128,121 +118,48 @@ class Build(models.Model):
             return 'green'
         return 'red'
 
-    @cached_property
-    def settings(self):
-        path = os.path.join(self.working_directory, '.frigg.yml')
-        # Default value for project .frigg.yml
-        settings = {
-            'webhooks': [],
-            'comment': False
+    @property
+    def comment_message(self):
+        if self.succeeded:
+            return "All gooodie good\n\n%s" % self.get_absolute_url()
+        else:
+            return "Be careful.. the tests failed\n\n%s" % self.get_absolute_url()
+
+    @property
+    def queue_object(self):
+        return {
+            'id': self.pk,
+            'branch': self.branch,
+            'sha': self.sha,
+            'clone_url': self.project.clone_url,
+            'owner': self.project.owner,
+            'name': self.project.name
         }
 
-        try:
-            with open(path) as f:
-                settings.update(yaml.load(f))
-        except IOError:
-            settings['tasks'] = detect_test_runners(self)
-        return settings
-
-    def run_tests(self):
-        github.set_commit_status(self, pending=True)
-        BuildResult.objects.create(build=self)
+    def start(self):
+        if hasattr(self, 'result'):
+            self.result.delete()
 
         if not self.project.approved:
-            self.result.result_log = 'This project is not approved.'
-            self.result.succeeded = False
-            self.result.save()
-            return github.set_commit_status(self, error='This project is not approved')
+            return BuildResult.create_not_approved(self)
 
-        if not self._clone_repo():
-            self.is_pending = False
-            self.save()
-            return github.set_commit_status(self, error='Access denied')
+        github.set_commit_status(self, pending=True)
 
-        self.add_comment("Running tests.. be patient :)\n\n%s" %
-                         self.get_absolute_url())
-        try:
+        r = redis.Redis(**settings.REDIS_SETTINGS)
+        r.lpush(settings.FRIGG_WORKER_QUEUE, json.dumps(self.queue_object))
 
-            for task in self.settings['tasks']:
-                self._run_task(task)
-                if not self.result.succeeded:
-                    # if one task fails, we do not care about the rest
-                    break
+        return self
 
-            github.set_commit_status(self)
-            self.add_comment(self.result.get_comment_message(self.get_absolute_url()))
+    def handle_worker_report(self, payload):
+        BuildResult.create_from_worker_payload(self, payload)
 
-        except AttributeError, e:
-            self.result.succeeded = False
-            self.result.result_log = str(e)
-            self.result.save()
-            github.set_commit_status(self, error=e)
-            self.add_comment("I was not able to perform the tests.. Sorry. \n "
-                             "More information: \n\n %s" % str(e))
-        finally:
-            self.is_pending = False
-            self.save()
+        github.set_commit_status(self)
+        if 'comment' in payload and payload['comment']:
+            github.comment_on_commit(self, self.comment_message)
 
-            for url in self.settings['webhooks']:
+        if 'webhooks' in payload:
+            for url in payload['webhooks']:
                 self.send_webhook(url)
-
-    def deploy(self):
-        with lcd(self.working_directory):
-            local("./deploy.sh")
-
-    def _clone_repo(self, depth=1):
-        # Cleanup old if exists..
-        self._delete_tmp_folder()
-        local("mkdir -p %s" % settings.PROJECT_TMP_DIRECTORY)
-        with fabric_settings(warn_only=True):
-            clone = local("git clone --depth=%s --branch=%s %s %s" % (
-                depth,
-                self.branch,
-                self.project.clone_url,
-                self.working_directory
-            ), capture=True)
-            if not clone.succeeded:
-                message = "Access denied to %s/%s" % (self.project.owner, self.project.name)
-                self.result.succeeded = False
-                self.result.return_code = 128
-                self.result.result_log = message
-                self.result.save()
-                logger.error(message)
-            return clone.succeeded
-
-    def _run_task(self, task_command):
-        with fabric_settings(warn_only=True):
-            with lcd(self.working_directory):
-                run_result = local(task_command, capture=True)
-
-                self.result.succeeded = run_result.succeeded
-                self.result.return_code = "%s,%s," % (self.result.return_code,
-                                                      run_result.return_code)
-
-                log = 'Task: {0}\n'.format(task_command)
-                log += '------------------------------------\n'
-                log += run_result
-                log += '------------------------------------\n'
-                log += 'Exited with exit code: %s\n\n' % run_result.return_code
-
-                self.result.result_log += log
-                self.result.save()
-
-    def add_comment(self, message):
-        if bool(self.settings.get('comment', True)):
-            github.comment_on_commit(self, message)
-
-    def _delete_tmp_folder(self):
-        if os.path.exists(self.working_directory):
-            local("rm -rf %s" % self.working_directory)
-
-    def testlog(self):
-        try:
-            with file("%s/frigg_testlog" % self.working_directory, "r") as f:
-                return f.read()
-        except IOError:
-            logger.error(traceback.format_exc())
-            return ""
 
     def send_webhook(self, url):
         return requests.post(url, data=json.dumps({
@@ -254,11 +171,8 @@ class Build(models.Model):
             'return_code': self.result.return_code
         }))
 
-    @cached_property
-    def working_directory(self):
-        return os.path.join(self.project.working_directory, str(self.id))
 
-
+@python_2_unicode_compatible
 class BuildResult(models.Model):
     build = models.OneToOneField(Build, related_name='result')
     result_log = models.TextField()
@@ -267,11 +181,46 @@ class BuildResult(models.Model):
 
     objects = BuildResultManager()
 
-    def __unicode__(self):
-        return "%s - %s" % (self.build, self.build.build_number)
+    def __str__(self):
+        return '%s - %s' % (self.build, self.build.build_number)
 
-    def get_comment_message(self, url):
-        if self.succeeded:
-            return "All gooodie good\n\n%s" % url
-        else:
-            return "Be careful.. the tests failed\n\n%s" % url
+    @property
+    def return_codes(self):
+        return [int(code) for code in self.return_code.split(',')]
+
+    @classmethod
+    def create_not_approved(cls, build):
+        cls.objects.create(build=build, result_log='This project is not approved.', succeeded=False)
+        github.set_commit_status(build, error='This project is not approved')
+
+    @classmethod
+    def create_from_worker_payload(cls, build, payload):
+        result = cls.objects.create(build_id=build.pk, return_code='', result_log='')
+        return_codes = []
+        for r in payload['results']:
+            if 'return_code' in r:
+                return_codes.append(r['return_code'])
+            result.result_log += cls.create_log_string_for_task(r)
+
+        result.succeeded = BuildResult.evaluate_results(payload['results'])
+        result.return_code = ",".join([str(code) for code in return_codes])
+        result.save()
+
+    @classmethod
+    def evaluate_results(cls, results):
+        succeeded = True
+        for r in results:
+            if 'succeeded' in r:
+                succeeded = succeeded and r['succeeded']
+        return succeeded
+
+    @classmethod
+    def create_log_string_for_task(cls, result):
+        data = {'task': '', 'log': '', 'return_code': ''}
+        data.update(result)
+
+        return ('Task: %(task)s\n'
+                '\n------------------------------------\n'
+                '%(log)s'
+                '\n------------------------------------\n'
+                'Exited with exit code: %(return_code)s\n\n') % data

@@ -7,6 +7,7 @@ admin.autodiscover()
 urlpatterns = patterns(
     '',
     url(r'^webhooks/github/$', 'frigg.builds.api.github_webhook'),
+    url(r'^api/workers/report/$', 'frigg.builds.api.report_build', name='worker_api_report_build'),
     url(r'^admin/', include(admin.site.urls)),
 
     url(

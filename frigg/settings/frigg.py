@@ -7,3 +7,11 @@ GITHUB_ACCESS_TOKEN = ''
 # Available options:
 # assigned, unassigned, labeled, unlabeled, opened, closed, reopened, or synchronized.
 IGNORED_PULL_REQUEST_ACTIONS = ['closed', 'assigned', 'unassigned', 'labeled', 'unlabeled']
+
+FRIGG_WORKER_QUEUE = 'frigg:queue'
+
+REDIS_SETTINGS = {
+    'host': '127.0.0.1',
+    'port': '6379',
+    'db': 2
+}

@@ -14,12 +14,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AddField(
-            model_name='build',
-            name='is_pending',
-            field=models.BooleanField(default=True),
-            preserve_default=True,
-        ),
-        migrations.AddField(
             model_name='project',
             name='approved',
             field=models.BooleanField(default=False),

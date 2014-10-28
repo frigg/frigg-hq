@@ -20,7 +20,5 @@ urlpatterns = patterns(
         r'^(?P<owner>[^/]+)/(?P<name>[^/]+)/(?P<build_number>\d+)/$',
         'view_build',
         name="view_build"
-    ),
-
-    url(r'^deploy/(?P<build_id>\d+)/$', 'deploy_master_branch', name="deploy_master_branch"),
+    )
 )

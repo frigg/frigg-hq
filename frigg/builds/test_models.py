@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 from django.test import TestCase
 
-from .models import Project
+from .models import Project, BuildResult
 
 
 class ProjectTestCase(TestCase):
@@ -23,3 +23,13 @@ class ProjectTestCase(TestCase):
         self.assertEqual(Project.objects.all().count(), 1)
         Project.objects.get_or_create_from_url(url)
         self.assertEqual(Project.objects.all().count(), 1)
+
+
+class BuildResultTestCase(TestCase):
+
+    def test_evaluate_results(self):
+        self.assertTrue(BuildResult.evaluate_results([{'succeeded': True}]))
+        self.assertTrue(BuildResult.evaluate_results([{'succeeded': True}, {}]))
+        self.assertFalse(BuildResult.evaluate_results([{'succeeded': True}, {'succeeded': False}]))
+        self.assertFalse(BuildResult.evaluate_results([{'succeeded': False}, {'succeeded': True}]))
+        self.assertFalse(BuildResult.evaluate_results([{'succeeded': False}, {}]))
