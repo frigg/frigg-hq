@@ -20,6 +20,11 @@ clean:
 venv:
 	virtualenv venv
 
+load_prod_data:
+	scp web@ron.frigg.io:hourly-dump.json .
+	python manage.py loaddata hourly-dump.json
+	rm hourly-dump.json
+
 frigg/settings/local.py:
 	cp frigg/settings/local_dummy.py frigg/settings/local.py
 

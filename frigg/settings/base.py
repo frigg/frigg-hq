@@ -92,7 +92,6 @@ PIPELINE_CSS = {
 }
 
 
-
 # Social auth
 LOGIN_URL = '/auth/login/github'
 LOGIN_REDIRECT_URL = '/'

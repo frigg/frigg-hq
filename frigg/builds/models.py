@@ -88,6 +88,7 @@ class Build(models.Model):
 
     class Meta:
         unique_together = ('project', 'build_number')
+        ordering = ['-id']
 
     def __str__(self):
         return "%s / %s " % (self.project, self.branch)
@@ -105,7 +106,7 @@ class Build(models.Model):
     @property
     def commit_url(self):
         return github.get_commit_url(self)
-    
+
     @property
     def is_pending(self):
         return not hasattr(self, 'result')

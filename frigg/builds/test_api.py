@@ -2,6 +2,7 @@
 from django.contrib.staticfiles import finders
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
+
 from frigg.builds.models import BuildResult
 
 
@@ -23,7 +24,8 @@ class BadgeTestCase(TestCase):
         self.assertStatusCode(response)
         self.assertEquals(response.content, self.success)
 
-        response = self.client.get(reverse('build_badge', args=['frigg', 'frigg', 'another-branch']))
+        response = self.client.get(reverse('build_badge',
+                                           args=['frigg', 'frigg', 'another-branch']))
         self.assertStatusCode(response)
         self.assertEquals(response.content, self.success)
 
@@ -33,7 +35,8 @@ class BadgeTestCase(TestCase):
         self.assertStatusCode(response)
         self.assertEquals(response.content, self.failure)
 
-        response = self.client.get(reverse('build_badge', args=['frigg', 'frigg', 'another-branch']))
+        response = self.client.get(reverse('build_badge',
+                                           args=['frigg', 'frigg', 'another-branch']))
         self.assertStatusCode(response)
         self.assertEquals(response.content, self.failure)
 
