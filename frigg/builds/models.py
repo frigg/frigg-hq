@@ -152,6 +152,7 @@ class Build(models.Model):
         return self
 
     def handle_worker_report(self, payload):
+        logger.info('Handle worker report: %s' % payload)
         BuildResult.create_from_worker_payload(self, payload)
 
         github.set_commit_status(self)
