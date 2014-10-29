@@ -25,6 +25,15 @@
     pull_request_id: 0
     sha: 6ebe61b9e030ff7f23d514f9f9ee7b1760b548c8
 
+- model: builds.build
+  pk: 3
+  fields:
+    branch: another-branch
+    build_number: 3
+    project: 1
+    pull_request_id: 0
+    sha: 6ebe61b9e030ff7f23d514f9f9ee7b1760b548c8
+
 - model: builds.buildresult
   pk: 1
   fields:
@@ -33,3 +42,10 @@
     return_code: '0'
     succeeded: true
 
+- model: builds.buildresult
+  pk: 2
+  fields:
+    build: 3
+    result_log: 'All ok'
+    return_code: '0'
+    succeeded: true
