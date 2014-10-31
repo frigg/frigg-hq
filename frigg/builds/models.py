@@ -142,7 +142,8 @@ class Build(models.Model):
             self.result.delete()
 
         if not self.project.approved:
-            return BuildResult.create_not_approved(self)
+            BuildResult.create_not_approved(self)
+            return self
 
         github.set_commit_status(self, pending=True)
 
