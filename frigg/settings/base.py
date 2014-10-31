@@ -32,7 +32,8 @@ INSTALLED_APPS = (
     'pipeline',
     'django_extensions',
 
-    'frigg.builds'
+    'frigg.builds',
+    'frigg.webhooks',
 )
 
 MIDDLEWARE_CLASSES = (
