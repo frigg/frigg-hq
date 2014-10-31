@@ -9,7 +9,7 @@ from frigg.helpers import github
 
 
 @csrf_exempt
-def github(request):
+def github_webhook(request):
     try:
         event = request.META['HTTP_X_GITHUB_EVENT']
     except KeyError:
