@@ -30,6 +30,7 @@ INSTALLED_APPS = (
 
     'social_auth',
     'pipeline',
+    'django_extensions',
 
     'frigg.builds'
 )
