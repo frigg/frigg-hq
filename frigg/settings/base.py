@@ -31,7 +31,8 @@ INSTALLED_APPS = (
     'social_auth',
     'pipeline',
 
-    'frigg.builds'
+    'frigg.builds',
+    'frigg.stats'
 )
 
 MIDDLEWARE_CLASSES = (
