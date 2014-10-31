@@ -5,3 +5,4 @@ redis
 
 django-social-auth
 django-pipeline
+django-extensions
