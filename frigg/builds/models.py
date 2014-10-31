@@ -68,11 +68,9 @@ class Project(models.Model):
         ).start()
 
     def get_badge(self, branch='master'):
-        try:
-            build = self.builds.filter(branch=branch).exclude(result=None)[0]
+        build = self.builds.filter(branch=branch).exclude(result=None).first()
+        if build:
             return get_badge(build.result.succeeded)
-        except IndexError:
-            return None
 
     @classmethod
     def token_for_url(cls, repo_url):
