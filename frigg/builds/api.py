@@ -4,6 +4,7 @@ import json
 from django.http import HttpResponse, Http404
 from django.http.response import JsonResponse
 from django.shortcuts import get_object_or_404
+from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
 
 from frigg.decorators import token_required
@@ -24,6 +25,7 @@ def report_build(request):
     return response
 
 
+@never_cache
 @csrf_exempt
 def build_badge(request, owner, project, branch='master'):
     project = get_object_or_404(Project, owner=owner, name=project)
