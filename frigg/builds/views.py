@@ -9,7 +9,7 @@ from .models import Build, Project
 
 @login_required
 def overview(request):
-    if Project.objects.filter(approved=False).exists():
+    if Project.objects.permitted(request.user).filter(approved=False).exists():
         messages.info(request, 'One or more projects needs approval before any builds will run.')
     return render(request, "builds/overview.html", {
         'builds': Build.objects.permitted(request.user).order_by('-id')

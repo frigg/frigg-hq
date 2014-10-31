@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+  <div class="pure-u-1 text-center">
+    <h1>{% trans "Total builds" %}: {{ number_of_builds }}</h1>
+  </div>
+  <div class="pure-u-1-3 text-center green">
+    <div class="stats-big-number">{{ number_of_success }}</div>
+    {% trans "Successful builds" %}
+  </div>
+  <div class="pure-u-1-3 text-center red">
+    <div class="stats-big-number">{{ number_of_failure }}</div>
+    {% trans "Failed builds" %}
+  </div>
+  <div class="pure-u-1-3 text-center orange">
+    <div class="stats-big-number">{{ number_of_pending }}</div>
+    {% trans "Pending builds" %}
+  </div>
+  <div class="pure-u-1-3 text-center green">
+    <div class="stats-big-number">{{ approved_projects }}</div>
+    {% trans "Approved projects" %}
+  </div>
+  <div class="pure-u-1-3 text-center red">
+    <div class="stats-big-number">{{ unapproved_projects }}</div>
+    {% trans "Not approved projects" %}
+  </div>
+  <div class="pure-u-1-3 text-center orange">
+  </div>
+{% endblock %}

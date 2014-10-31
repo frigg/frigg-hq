@@ -25,5 +25,6 @@ urlpatterns += patterns(
         name='logout'
     ),
     url(r'^auth/', include('social_auth.urls')),
+    url(r'stats/', include('frigg.stats.urls')),
     url(r'^', include('frigg.builds.urls')),
 )

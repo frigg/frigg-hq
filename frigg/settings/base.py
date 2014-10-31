@@ -33,6 +33,7 @@ INSTALLED_APPS = (
     'django_extensions',
 
     'frigg.builds',
+    'frigg.stats'
     'frigg.webhooks',
 )
 
