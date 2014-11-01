@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block js %}
   <script src="{{ STATIC_URL }}js/ansi_up.js"></script>
@@ -12,7 +13,15 @@
       <a href="{{ build.pull_request_url }}" class="no-underline"><i class="fa fa-github"></i></a>
     </h3>
     <strong>Branch:</strong> {{ build.branch }} <br/>
-    <strong>Commit hash:</strong> {{ build.sha }}
+    <strong>Commit hash:</strong> {{ build.sha }} <br/>
+    <strong>State:</strong>
+    {% if not build.result %}
+      {% trans 'pending' %}
+    {% elif build.result.succeeded %}
+      {% trans 'success' %}
+    {% else %}
+      {% trans 'failure' %}
+    {% endif %}
   </div>
 
   <div class="pure-u-1">
