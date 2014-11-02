@@ -11,6 +11,7 @@ from django.utils.encoding import python_2_unicode_compatible
 from social_auth.db.django_models import UserSocialAuth
 
 from frigg.helpers import github
+from frigg.helpers.badges import get_badge
 from .managers import ProjectManager, BuildManager, BuildResultManager
 
 
@@ -65,6 +66,11 @@ class Project(models.Model):
             branch=data['branch'],
             sha=data["sha"]
         ).start()
+
+    def get_badge(self, branch='master'):
+        build = self.builds.filter(branch=branch).exclude(result=None).first()
+        if build:
+            return get_badge(build.result.succeeded)
 
     @classmethod
     def token_for_url(cls, repo_url):

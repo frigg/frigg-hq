@@ -1,13 +1,14 @@
 # -*- coding: utf8 -*-
 import json
-from django.contrib.staticfiles import finders
 
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.http.response import JsonResponse
+from django.shortcuts import get_object_or_404
+from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
 
 from frigg.decorators import token_required
-from .models import Build
+from .models import Build, Project
 
 
 @token_required
@@ -24,23 +25,12 @@ def report_build(request):
     return response
 
 
+@never_cache
 @csrf_exempt
 def build_badge(request, owner, project, branch='master'):
-    response = HttpResponse()
-    try:
-        build = Build.objects.filter(project__owner=owner, project__name=project, branch=branch)\
-                             .exclude(result=None)[0]
+    project = get_object_or_404(Project, owner=owner, name=project)
+    badge = project.get_badge(branch)
+    if badge is None:
+        raise Http404
 
-        if build.result.succeeded:
-            path = finders.find('badges/build-success.svg')
-        else:
-            path = finders.find('badges/build-failure.svg')
-
-        with open(path) as f:
-            response.content = f.read()
-            response['Content-Type'] = 'image/svg+xml'
-
-    except IndexError:
-        response.status_code = 404
-
-    return response
+    return HttpResponse(content=badge, content_type='image/svg+xml')
