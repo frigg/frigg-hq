@@ -17,13 +17,13 @@ class PermittedObjectsTestCase(TestCase):
         Project.objects.all().delete()
 
     def test_project_permitted_objects(self):
-        self.assertEqual(Project.objects.all().count(), 2)
-        self.assertEqual(Project.objects.permitted(self.user).count(), 1)
+        self.assertEqual(Project.objects.all().count(), 3)
+        self.assertEqual(Project.objects.permitted(self.user).count(), 2)
 
     def test_build_permitted_objects(self):
-        self.assertEqual(Build.objects.all().count(), 3)
-        self.assertEqual(Build.objects.permitted(self.user).count(), 2)
+        self.assertEqual(Build.objects.all().count(), 4)
+        self.assertEqual(Build.objects.permitted(self.user).count(), 3)
 
     def test_build_result_permitted_objects(self):
-        self.assertEqual(BuildResult.objects.all().count(), 3)
-        self.assertEqual(BuildResult.objects.permitted(self.user).count(), 2)
+        self.assertEqual(BuildResult.objects.all().count(), 4)
+        self.assertEqual(BuildResult.objects.permitted(self.user).count(), 3)
