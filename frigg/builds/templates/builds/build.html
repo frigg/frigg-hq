@@ -28,7 +28,12 @@
     {% if build.is_pending %}
       {% include "builds/partials/loading.html" %}
     {% else %}
-      <pre><code class="colorify">{{ build.result.result_log }}</code></pre>
+      <div class="build-logs">
+        {% for task, log, return_code in build.result.tasks %}
+          <h3>{{ task }} <span class="meta">Return code: {{ return_code }}</span></h3>
+          <pre><code class="colorify">{{ log }}</code></pre>
+        {% endfor %}
+      </div>
     {% endif %}
   </div>
 {% endblock %}

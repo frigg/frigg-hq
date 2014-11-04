@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 import json
 import logging
+import re
 import redis
 
 import requests
@@ -196,6 +197,15 @@ class BuildResult(models.Model):
     @property
     def return_codes(self):
         return [int(code) for code in self.return_code.split(',')]
+
+    @property
+    def tasks(self):
+        return re.findall(
+            r'Task: ([a-zA-Z0-9_\- ]+)\n\n------------------------------------\n'
+            r'((?:(?!Task:).*\n)*)'
+            r'------------------------------------\nExited with exit code: (\d+)',
+            str(self.result_log)
+        )
 
     @classmethod
     def create_not_approved(cls, build):
