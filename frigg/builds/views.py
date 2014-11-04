@@ -7,7 +7,6 @@ from django.shortcuts import render, get_object_or_404
 from .models import Build, Project
 
 
-@login_required
 def overview(request):
     if Project.objects.permitted(request.user).filter(approved=False).exists():
         messages.info(request, 'One or more projects needs approval before any builds will run.')

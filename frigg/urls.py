@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 from django.conf.urls import patterns, include, url
-
 from django.contrib import admin
+from django.views.generic import RedirectView
 
 admin.autodiscover()
 
@@ -18,10 +18,11 @@ urlpatterns += patterns(
     url(r'^admin/', include(admin.site.urls)),
     url(r'^webhooks/', include('frigg.webhooks.urls')),
 
+    url(r'^auth/login/?$', RedirectView.as_view(url='/auth/login/github/'), name='login'),
     url(
         r'^auth/logout/$',
         'django.contrib.auth.views.logout',
-        {'next_page': 'https://frigg.io'},
+        {'next_page': '/'},
         name='logout'
     ),
     url(r'^auth/', include('social_auth.urls')),
