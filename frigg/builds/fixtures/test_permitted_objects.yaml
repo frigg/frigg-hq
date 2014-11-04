@@ -28,6 +28,16 @@
     user: null
   model: builds.project
   pk: 3
+- fields:
+    average_time: 0
+    git_repository: git@github.com:frigg/frigg-worker.git
+    members: [1]
+    name: frigg-worker
+    owner: frigg
+    private: false
+    user: 1
+  model: builds.project
+  pk: 4
 - fields: {branch: master, build_number: 1, project: 1, pull_request_id: 0, sha: 1kjfkjsdf}
   model: builds.build
   pk: 1
@@ -40,6 +50,9 @@
 - fields: {branch: master, build_number: 1, project: 3, pull_request_id: 0, sha: fjkds}
   model: builds.build
   pk: 4
+- fields: {branch: master, build_number: 1, project: 4, pull_request_id: 0, sha: fjkds}
+  model: builds.build
+  pk: 5
 - fields: {build: 1, result_log: '...', return_code: '0', succeeded: true}
   model: builds.buildresult
   pk: 1
@@ -52,3 +65,6 @@
 - fields: {build: 4, result_log: .., return_code: '0', succeeded: true}
   model: builds.buildresult
   pk: 4
+- fields: {build: 5, result_log: .., return_code: '0', succeeded: true}
+  model: builds.buildresult
+  pk: 5

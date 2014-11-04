@@ -17,7 +17,6 @@ def overview(request):
     })
 
 
-@login_required
 def view_organization(request, owner):
     builds = Build.objects.permitted(request.user).filter(project__owner=owner)\
                                                   .select_related('project', 'result')
@@ -30,7 +29,6 @@ def view_organization(request, owner):
     })
 
 
-@login_required
 def view_project(request, owner, name):
     return render(request, "builds/project.html", {
         'project': get_object_or_404(
@@ -41,7 +39,6 @@ def view_project(request, owner, name):
     })
 
 
-@login_required
 def view_build(request, owner, name, build_number):
     return render(request, "builds/build.html", {
         'build': get_object_or_404(

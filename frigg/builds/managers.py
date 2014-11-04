@@ -17,14 +17,23 @@ class ProjectManager(models.Manager):
         return item
 
     def permitted(self, user):
-        return self.filter(Q(private=False) | Q(members=user))
+        query = Q(private=False)
+        if user.is_authenticated():
+            query |= Q(members=user)
+        return self.filter(query).distinct()
 
 
 class BuildManager(models.Manager):
     def permitted(self, user):
-        return self.filter(Q(project__private=False) | Q(project__members=user))
+        query = Q(project__private=False)
+        if user.is_authenticated():
+            query |= Q(project__members=user)
+        return self.filter(query).distinct()
 
 
 class BuildResultManager(models.Manager):
     def permitted(self, user):
-        return self.filter(Q(build__project__private=False) | Q(build__project__members=user))
+        query = Q(build__project__private=False)
+        if user.is_authenticated():
+            query |= Q(build__project__members=user)
+        return self.filter(query).distinct()
