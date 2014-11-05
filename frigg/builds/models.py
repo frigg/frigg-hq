@@ -204,7 +204,7 @@ class BuildResult(models.Model):
             r'Task: ([a-zA-Z0-9_\- ]+)\n\n------------------------------------\n'
             r'((?:(?!Task:).*\n)*)'
             r'------------------------------------\nExited with exit code: (\d+)',
-            str(self.result_log)
+            str(self.result_log.encode('utf-8'))
         )
 
     @classmethod
