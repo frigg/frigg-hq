@@ -135,15 +135,17 @@ class Build(models.Model):
 
     @property
     def queue_object(self):
-        return {
+        obj = {
             'id': self.pk,
             'branch': self.branch,
             'sha': self.sha,
             'clone_url': self.project.clone_url,
             'owner': self.project.owner,
             'name': self.project.name,
-            'pull_request_id': self.pull_request_id
         }
+        if self.pull_request_id > 0:
+            obj['pull_request_id'] = self.pull_request_id
+        return obj
 
     def start(self):
         if hasattr(self, 'result'):
