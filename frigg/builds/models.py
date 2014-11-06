@@ -141,7 +141,8 @@ class Build(models.Model):
             'sha': self.sha,
             'clone_url': self.project.clone_url,
             'owner': self.project.owner,
-            'name': self.project.name
+            'name': self.project.name,
+            'pull_request_id': self.pull_request_id
         }
 
     def start(self):
