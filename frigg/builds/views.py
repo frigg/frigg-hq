@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 from django.contrib import messages
 from django.http import Http404
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 
 from .models import Build, Project
 
@@ -35,6 +35,11 @@ def view_project(request, owner, name):
             name=name
         )
     })
+
+
+def last_build(request, owner, name):
+    return redirect(Build.objects.permitted(request.user)
+                         .filter(project__owner=owner, project__name=name).first())
 
 
 def view_build(request, owner, name, build_number):
