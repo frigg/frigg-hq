@@ -100,6 +100,12 @@ def get_commit_url(build):
     )
 
 
+def list_collaborators(project):
+    url = '%s/%s/collaborators' % (project.owner, project.name)
+    data = json.loads(api_request(url, project.github_token))
+    return [collaborator['login'] for collaborator in data]
+
+
 def set_commit_status(build, pending=False, error=None):
     if settings.DEBUG:
         return

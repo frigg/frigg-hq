@@ -2,6 +2,7 @@
 import json
 import logging
 import re
+from django.contrib.auth import get_user_model
 import redis
 
 import requests
@@ -72,6 +73,11 @@ class Project(models.Model):
         build = self.builds.filter(branch=branch).exclude(result=None).first()
         if build:
             return get_badge(build.result.succeeded)
+
+    def update_members(self):
+        collaborators = github.list_collaborators(self)
+        users = get_user_model().objects.filter(username__in=collaborators)
+        self.members = users
 
     @classmethod
     def token_for_url(cls, repo_url):
