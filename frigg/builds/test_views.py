@@ -8,7 +8,7 @@ from django.test.utils import override_settings
 
 from .api import report_build
 from frigg.builds.models import Build
-from .views import overview, view_build, view_organization, view_project
+from .views import overview, view_build, view_organization, view_project, last_build
 
 
 class SmokeTestCase(TestCase):
@@ -53,6 +53,13 @@ class SmokeTestCase(TestCase):
         self.add_request_fields(request)
         response = view_build(request, 'frigg', 'frigg', '1')
         self.assertStatusCode(response)
+
+    def test_last_build_view(self):
+        request = self.factory.get(reverse('last_build', args=['frigg', 'frigg']))
+        self.add_request_fields(request)
+        response = last_build(request, 'frigg', 'frigg')
+        self.assertStatusCode(response, 302)
+        self.assertTrue(response.url.endswith(reverse('view_build', args=['frigg', 'frigg', 3])))
 
 
 class APITestCase(TestCase):

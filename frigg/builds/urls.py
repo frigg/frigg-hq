@@ -9,16 +9,21 @@ urlpatterns = patterns(
     url(
         r'^(?P<owner>[^/]+)/$',
         'view_organization',
-        name="view_organization"
+        name='view_organization'
     ),
     url(
         r'^(?P<owner>[^/]+)/(?P<name>[^/]+)/$',
         'view_project',
-        name="view_project"
+        name='view_project'
+    ),
+    url(
+        r'^(?P<owner>[^/]+)/(?P<name>[^/]+)/last/$',
+        'last_build',
+        name='last_build'
     ),
     url(
         r'^(?P<owner>[^/]+)/(?P<name>[^/]+)/(?P<build_number>\d+)/$',
         'view_build',
-        name="view_build"
+        name='view_build'
     )
 )
