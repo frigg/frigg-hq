@@ -25,7 +25,8 @@ urlpatterns += patterns(
         {'next_page': '/'},
         name='logout'
     ),
-    url(r'^auth/', include('social_auth.urls')),
+    url(r'^auth/', include('social.apps.django_app.urls', namespace='social')),
+    url(r'^auth/', include('django.contrib.auth.urls')),
     url(r'stats/', include('frigg.stats.urls')),
     url(r'^', include('frigg.builds.urls')),
 )

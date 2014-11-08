@@ -10,7 +10,6 @@ from django.db import models
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.encoding import python_2_unicode_compatible
-from social_auth.db.django_models import UserSocialAuth
 
 from frigg.helpers import github
 from frigg.helpers.badges import get_badge
@@ -40,9 +39,11 @@ class Project(models.Model):
     @property
     def github_token(self):
         try:
-            token = UserSocialAuth.objects.get(user=self.user,
-                                               provider='github').extra_data['access_token']
-        except UserSocialAuth.DoesNotExist:
+            token = self.user.github_token
+        except AttributeError:
+            token = None
+
+        if not token:
             token = getattr(settings, 'GITHUB_ACCESS_TOKEN', ':')
         return token
 

@@ -28,7 +28,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'social_auth',
+    'social.apps.django_app.default',
     'pipeline',
     'django_extensions',
 
@@ -46,9 +46,14 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
-TEMPLATE_CONTEXT_PROCESSORS = (DJANGO_TEMPLATE_CONTEXT_PROCESSORS +
-                               ('django.core.context_processors.debug',
-                                'django.core.context_processors.request',))
+TEMPLATE_CONTEXT_PROCESSORS = (
+    DJANGO_TEMPLATE_CONTEXT_PROCESSORS + (
+        'django.core.context_processors.debug',
+        'django.core.context_processors.request',
+        'social.apps.django_app.context_processors.backends',
+        'social.apps.django_app.context_processors.login_redirect',
+    )
+)
 
 ROOT_URLCONF = 'frigg.urls'
 
@@ -56,7 +61,7 @@ WSGI_APPLICATION = 'frigg.wsgi.application'
 
 AUTH_USER_MODEL = 'authentication.User'
 AUTHENTICATION_BACKENDS = (
-    'social_auth.backends.contrib.github.GithubBackend',
+    'social.backends.github.GithubOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
 
@@ -102,11 +107,8 @@ LOGIN_URL = '/auth/login/github'
 LOGIN_REDIRECT_URL = '/'
 LOGIN_ERROR_URL = '/auth/error/'
 
-SOCIAL_AUTH_DEFAULT_USERNAME = 'new_social_auth_user'
-SOCIAL_AUTH_UID_LENGTH = 16
-SOCIAL_AUTH_ASSOCIATION_HANDLE_LENGTH = 16
-SOCIAL_AUTH_NONCE_SERVER_URL_LENGTH = 16
-SOCIAL_AUTH_ASSOCIATION_SERVER_URL_LENGTH = 16
-SOCIAL_AUTH_ENABLED_BACKENDS = 'github',
 
-GITHUB_EXTENDED_PERMISSIONS = ['repo', 'read:org']
+# python social auth
+SOCIAL_AUTH_URL_NAMESPACE = 'social'
+SOCIAL_AUTH_STORAGE = 'social.apps.django_app.default.models.DjangoStorage'
+SOCIAL_AUTH_GITHUB_SCOPE = ['repo', 'read:org']
