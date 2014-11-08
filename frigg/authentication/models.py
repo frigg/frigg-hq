@@ -1,12 +1,19 @@
 # -*- coding: utf8 -*-
 from django.contrib.auth.models import AbstractUser
-from django.db import models
+from django.utils.functional import cached_property
+from social.apps.django_app.default.models import UserSocialAuth
 
 from frigg.helpers import github
 
 
 class User(AbstractUser):
-    github_token = models.TextField(blank=True)
+
+    @cached_property
+    def github_token(self):
+        try:
+            return self.social_auth.get(provider='github').extra_data['access_token']
+        except UserSocialAuth.DoesNotExist:
+            return
 
     def save(self, *args, **kwargs):
         create = hasattr(self, 'id')
