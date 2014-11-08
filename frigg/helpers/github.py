@@ -120,6 +120,10 @@ def set_commit_status(build, pending=False, error=None):
     })
 
 
+def update_repo_permissions(user):
+    raise NotImplementedError
+
+
 def _get_status_from_build(build, pending, error):
     if pending:
         status = 'pending'

@@ -32,6 +32,7 @@ INSTALLED_APPS = (
     'pipeline',
     'django_extensions',
 
+    'frigg.authentication',
     'frigg.builds',
     'frigg.stats',
     'frigg.webhooks',
@@ -53,6 +54,7 @@ ROOT_URLCONF = 'frigg.urls'
 
 WSGI_APPLICATION = 'frigg.wsgi.application'
 
+AUTH_USER_MODEL = 'authentication.User'
 AUTHENTICATION_BACKENDS = (
     'social_auth.backends.contrib.github.GithubBackend',
     'django.contrib.auth.backends.ModelBackend',
