@@ -11,7 +11,7 @@ from .frigg import *
 
 try:
     from .local import *
-except ImportError, e:
+except ImportError as e:
     if not TESTING:
         raise ImportError("Couldn't load local settings frigg.settings.local")
 

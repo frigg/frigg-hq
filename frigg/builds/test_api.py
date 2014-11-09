@@ -15,9 +15,9 @@ class BadgeTestCase(TestCase):
     def setUp(self):
         self.client = Client()
         with open(finders.find('badges/build-success.svg')) as f:
-            self.success = f.read()
+            self.success = bytes(f.read(), encoding='utf-8')
         with open(finders.find('badges/build-failure.svg')) as f:
-            self.failure = f.read()
+            self.failure = bytes(f.read(), encoding='utf-8')
 
     def test_success(self):
         response = self.client.get(reverse('build_badge', args=['frigg', 'frigg']))

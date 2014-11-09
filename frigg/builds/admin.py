@@ -20,7 +20,7 @@ class BuildInline(admin.TabularInline):
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('__unicode__', 'git_repository', 'average_time', 'user', 'last_build_number')
+    list_display = ('__str__', 'git_repository', 'average_time', 'user', 'last_build_number')
     inlines = [BuildInline]
 
 
@@ -32,4 +32,4 @@ class BuildAdmin(admin.ModelAdmin):
 
 @admin.register(BuildResult)
 class BuildResultAdmin(admin.ModelAdmin):
-    list_display = ('__unicode__', 'succeeded', 'return_code')
+    list_display = ('__str__', 'succeeded', 'return_code')

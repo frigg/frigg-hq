@@ -1,6 +1,5 @@
 # -*- coding: utf8 -*-
 import json
-import re
 
 import requests
 from django.conf import settings
@@ -196,6 +195,6 @@ def api_request(url, token, data=None, page=None):
         response = requests.post(url, data=json.dumps(data), headers=headers)
 
     if settings.DEBUG:
-        print(response.headers.get('X-RateLimit-Remaining'))
+        print((response.headers.get('X-RateLimit-Remaining')))
 
     return response

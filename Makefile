@@ -18,7 +18,7 @@ clean:
 	find . -name "*.pyc" -exec rm -rf {} \;
 
 venv:
-	virtualenv venv
+	virtualenv venv -p `which python3`
 
 load_prod_data:
 	scp web@ron.frigg.io:hourly-dump.json .

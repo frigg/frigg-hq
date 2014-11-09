@@ -1,15 +1,14 @@
 # -*- coding: utf8 -*-
+import re
 import json
 import logging
-import re
-from django.contrib.auth import get_user_model
-import redis
 
+import redis
 import requests
 from django.db import models
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.utils.encoding import python_2_unicode_compatible
+from django.contrib.auth import get_user_model
 
 from frigg.helpers import github
 from frigg.helpers.badges import get_badge
@@ -19,7 +18,6 @@ from .managers import ProjectManager, BuildManager, BuildResultManager
 logger = logging.getLogger(__name__)
 
 
-@python_2_unicode_compatible
 class Project(models.Model):
     name = models.CharField(max_length=100, blank=True)
     owner = models.CharField(max_length=100, blank=True)
@@ -90,7 +88,6 @@ class Project(models.Model):
         return token
 
 
-@python_2_unicode_compatible
 class Build(models.Model):
     project = models.ForeignKey(Project, related_name='builds', null=True)
     build_number = models.IntegerField(db_index=True)
@@ -192,7 +189,6 @@ class Build(models.Model):
         }))
 
 
-@python_2_unicode_compatible
 class BuildResult(models.Model):
     build = models.OneToOneField(Build, related_name='result')
     result_log = models.TextField()
@@ -214,7 +210,7 @@ class BuildResult(models.Model):
             r'Task: ([a-zA-Z0-9_\- ]+)\n\n------------------------------------\n'
             r'((?:(?!Task:).*\n)*)'
             r'------------------------------------\nExited with exit code: (\d+)',
-            str(self.result_log.encode('utf-8'))
+            str(self.result_log)
         )
 
     @classmethod

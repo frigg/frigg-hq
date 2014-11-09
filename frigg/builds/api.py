@@ -15,7 +15,7 @@ from .models import Build, Project
 @csrf_exempt
 def report_build(request):
     try:
-        payload = json.loads(request.body)
+        payload = json.loads(str(request.body, encoding='utf-8'))
         build = Build.objects.get(pk=payload['id'])
         build.handle_worker_report(payload)
         response = JsonResponse({'message': 'Thanks for building it'})
