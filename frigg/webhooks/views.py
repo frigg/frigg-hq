@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 import json
-from django.contrib.auth import get_user_model
 
+from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
@@ -17,7 +17,19 @@ def github_webhook(request):
         return HttpResponse('Missing HTTP_X_GITHUB_EVENT')
 
     data = json.loads(str(request.body, encoding='utf-8'))
-    if event == 'issue_comment':
+    if event == 'ping':
+        project = Project.objects.get_or_create_from_url(data['repo_url'])
+        try:
+            user = get_user_model().objects.get(username=project.owner)
+            project.user = user
+            project.update_members()  # This can only be done if user is set
+        except get_user_model().DoesNotExist:
+            pass
+        project.private = data['private']
+        project.save()
+        return HttpResponse('Added project %s' % project)
+
+    elif event == 'issue_comment':
         data = github.parse_comment_payload(data)
 
         # if this comment is on a pull request, build it
