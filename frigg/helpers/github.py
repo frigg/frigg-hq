@@ -107,7 +107,7 @@ def list_collaborators(project):
 
 
 def set_commit_status(build, pending=False, error=None):
-    if settings.DEBUG:
+    if settings.DEBUG or getattr(settings, 'STAGING', False):
         return
     url = "repos/%s/%s/statuses/%s" % (build.project.owner, build.project.name, build.sha)
     status, description = _get_status_from_build(build, pending, error)

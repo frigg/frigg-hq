@@ -16,7 +16,7 @@ def github_webhook(request):
     except KeyError:
         return HttpResponse('Missing HTTP_X_GITHUB_EVENT')
 
-    data = json.loads(request.body.decode('utf-8'))
+    data = json.loads(str(request.body, encoding='utf-8'))
     if event == 'issue_comment':
         data = github.parse_comment_payload(data)
 
