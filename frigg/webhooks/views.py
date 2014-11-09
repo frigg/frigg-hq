@@ -18,6 +18,7 @@ def github_webhook(request):
 
     data = json.loads(str(request.body, encoding='utf-8'))
     if event == 'ping':
+        data = github.parse_ping_payload(data)
         project = Project.objects.get_or_create_from_url(data['repo_url'])
         try:
             user = get_user_model().objects.get(username=project.owner)

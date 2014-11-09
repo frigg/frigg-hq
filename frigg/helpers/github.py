@@ -77,6 +77,20 @@ def parse_push_payload(data):
         }
 
 
+def parse_ping_payload(data):
+    repo_url = "git@github.com:%s/%s.git" % (
+        data['repository']['owner']['login'],
+        data['repository']['name']
+    )
+
+    return {
+        'repo_url': repo_url,
+        'repo_name': data['repository']['name'],
+        'repo_owner': data['repository']['owner']['login'],
+        'private': data['repository']['private'],
+    }
+
+
 def comment_on_commit(build, message):
     if settings.DEBUG or not hasattr(settings, 'GITHUB_ACCESS_TOKEN'):
         return
