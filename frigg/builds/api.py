@@ -7,11 +7,9 @@ from django.shortcuts import get_object_or_404
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
 
-from frigg.decorators import token_required
 from .models import Build, Project
 
 
-@token_required
 @csrf_exempt
 def report_build(request):
     try:
