@@ -1,4 +1,4 @@
 -r base.txt
 
 psycopg2
-pylibmc
+python-memcached
