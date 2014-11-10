@@ -14,6 +14,13 @@ production: venv
 	${MANAGE} migrate
 	${MANAGE} collectstatic --noinput
 
+deploy:
+	${PIP} install -r requirements/prod.txt
+	${MANAGE} migrate
+	bower install
+	${MANAGE} collectstatic --noinput
+	sudo touch /etc/uwsgi/apps-enabled/frigg.ini
+
 clean:
 	find . -name "*.pyc" -exec rm -rf {} \;
 
