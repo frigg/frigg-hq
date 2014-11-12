@@ -20,13 +20,14 @@ def github_webhook(request):
     if event == 'ping':
         data = github.parse_ping_payload(data)
         project = Project.objects.get_or_create_from_url(data['repo_url'])
+        project.private = data['private']
         try:
             user = get_user_model().objects.get(username=project.owner)
             project.user = user
             project.update_members()  # This can only be done if user is set
         except get_user_model().DoesNotExist:
-            pass
-        project.private = data['private']
+            if data.private is False:
+                project.update_members()
         project.save()
         return HttpResponse('Added project %s' % project)
 
