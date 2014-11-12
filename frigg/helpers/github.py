@@ -116,7 +116,7 @@ def get_commit_url(build):
 
 def list_collaborators(project):
     url = 'repos/%s/%s/collaborators' % (project.owner, project.name)
-    data = json.loads(api_request(url, project.github_token))
+    data = json.loads(api_request(url, project.github_token).text)
     return [collaborator['login'] for collaborator in data]
 
 
