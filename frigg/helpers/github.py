@@ -77,10 +77,24 @@ def parse_push_payload(data):
         }
 
 
+def parse_ping_payload(data):
+    repo_url = "git@github.com:%s/%s.git" % (
+        data['repository']['owner']['login'],
+        data['repository']['name']
+    )
+
+    return {
+        'repo_url': repo_url,
+        'repo_name': data['repository']['name'],
+        'repo_owner': data['repository']['owner']['login'],
+        'private': data['repository']['private'],
+    }
+
+
 def comment_on_commit(build, message):
     if settings.DEBUG or not hasattr(settings, 'GITHUB_ACCESS_TOKEN'):
         return
-    url = "%s/%s/commits/%s/comments" % (build.project.owner, build.project.name, build.sha)
+    url = "repos/%s/%s/commits/%s/comments" % (build.project.owner, build.project.name, build.sha)
     return api_request(url, settings.GITHUB_ACCESS_TOKEN, {'body': message, 'sha': build.sha})
 
 
@@ -100,10 +114,16 @@ def get_commit_url(build):
     )
 
 
+def list_collaborators(project):
+    url = 'repos/%s/%s/collaborators' % (project.owner, project.name)
+    data = json.loads(api_request(url, project.github_token).text)
+    return [collaborator['login'] for collaborator in data]
+
+
 def set_commit_status(build, pending=False, error=None):
-    if settings.DEBUG:
+    if settings.DEBUG or getattr(settings, 'STAGING', False):
         return
-    url = "%s/%s/statuses/%s" % (build.project.owner, build.project.name, build.sha)
+    url = "repos/%s/%s/statuses/%s" % (build.project.owner, build.project.name, build.sha)
     status, description = _get_status_from_build(build, pending, error)
 
     return api_request(url, build.project.github_token, {
@@ -112,6 +132,49 @@ def set_commit_status(build, pending=False, error=None):
         'description': description,
         'context': 'continuous-integration/frigg'
     })
+
+
+def update_repo_permissions(user):
+    from frigg.builds.models import Project
+    repos = list_user_repos(user)
+
+    for org in list_organization(user):
+        repos += list_organization_repos(user.github_token, org['login'])
+
+    for repo in repos:
+        try:
+            project = Project.objects.get(owner=repo['owner']['login'], name=repo['name'])
+            project.members.add(user)
+        except Project.DoesNotExist:
+            pass
+
+
+def list_user_repos(user):
+    page = 1
+    output = []
+    response = api_request('user/repos', user.github_token)
+    output += json.loads(response.text)
+    while response.headers.get('link') and 'next' in response.headers.get('link'):
+        page += 1
+        response = api_request('user/repos', user.github_token, page=page)
+        output += json.loads(response.text)
+    return output
+
+
+def list_organization(user):
+    return json.loads(api_request('user/orgs', user.github_token).text)
+
+
+def list_organization_repos(token, org):
+    page = 1
+    output = []
+    response = api_request('orgs/%s/repos' % org, token)
+    output += json.loads(response.text)
+    while response.headers.get('link') and 'next' in response.headers.get('link'):
+        page += 1
+        response = api_request('orgs/%s/repos' % org, token, page=page)
+        output += json.loads(response.text)
+    return output
 
 
 def _get_status_from_build(build, pending, error):
@@ -132,13 +195,20 @@ def _get_status_from_build(build, pending, error):
     return status, description
 
 
-def api_request(url, token, data=None):
-    url = "https://api.github.com/repos/%s?access_token=%s" % (url, token)
+def api_request(url, token, data=None, page=None):
+    url = "https://api.github.com/%s?access_token=%s" % (url, token)
+    if page:
+        url += '&page=%s' % page
     if data is None:
-        return requests.get(url).text
+        response = requests.get(url)
     else:
         headers = {
             'Content-type': 'application/json',
             'Accept': 'application/vnd.github.she-hulk-preview+json'
         }
-        return requests.post(url, data=json.dumps(data), headers=headers).text
+        response = requests.post(url, data=json.dumps(data), headers=headers)
+
+    if settings.DEBUG:
+        print((response.headers.get('X-RateLimit-Remaining')))
+
+    return response

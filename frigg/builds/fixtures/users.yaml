@@ -8,5 +8,5 @@
     last_name: 'Dumbledore'
     user_permissions: []
     username: dumbledore
-  model: auth.user
+  model: authentication.user
   pk: 1

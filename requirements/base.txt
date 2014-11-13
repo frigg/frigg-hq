@@ -3,6 +3,6 @@ requests
 pyyaml
 redis
 
-django-social-auth
+python-social-auth
 django-pipeline
 django-extensions

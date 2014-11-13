@@ -9,7 +9,7 @@ from django.test import TestCase, RequestFactory
 from django.test.utils import override_settings
 
 from .api import report_build
-from frigg.builds.models import Build
+from .models import Build
 from .views import overview, view_build, view_organization, view_project, last_build
 
 

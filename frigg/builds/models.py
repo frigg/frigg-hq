@@ -1,15 +1,14 @@
 # -*- coding: utf8 -*-
+import re
 import json
 import logging
-import re
-import redis
 
+import redis
 import requests
 from django.db import models
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.utils.encoding import python_2_unicode_compatible
-from social_auth.db.django_models import UserSocialAuth
+from django.contrib.auth import get_user_model
 
 from frigg.helpers import github
 from frigg.helpers.badges import get_badge
@@ -19,7 +18,6 @@ from .managers import ProjectManager, BuildManager, BuildResultManager
 logger = logging.getLogger(__name__)
 
 
-@python_2_unicode_compatible
 class Project(models.Model):
     name = models.CharField(max_length=100, blank=True)
     owner = models.CharField(max_length=100, blank=True)
@@ -39,9 +37,11 @@ class Project(models.Model):
     @property
     def github_token(self):
         try:
-            token = UserSocialAuth.objects.get(user=self.user,
-                                               provider='github').extra_data['access_token']
-        except UserSocialAuth.DoesNotExist:
+            token = self.user.github_token
+        except AttributeError:
+            token = None
+
+        if not token:
             token = getattr(settings, 'GITHUB_ACCESS_TOKEN', ':')
         return token
 
@@ -73,6 +73,11 @@ class Project(models.Model):
         if build:
             return get_badge(build.result.succeeded)
 
+    def update_members(self):
+        collaborators = github.list_collaborators(self)
+        users = get_user_model().objects.filter(username__in=collaborators)
+        self.members = users
+
     @classmethod
     def token_for_url(cls, repo_url):
         try:
@@ -83,7 +88,6 @@ class Project(models.Model):
         return token
 
 
-@python_2_unicode_compatible
 class Build(models.Model):
     project = models.ForeignKey(Project, related_name='builds', null=True)
     build_number = models.IntegerField(db_index=True)
@@ -185,7 +189,6 @@ class Build(models.Model):
         }))
 
 
-@python_2_unicode_compatible
 class BuildResult(models.Model):
     build = models.OneToOneField(Build, related_name='result')
     result_log = models.TextField()
@@ -207,7 +210,7 @@ class BuildResult(models.Model):
             r'Task: ([a-zA-Z0-9_\- ]+)\n\n------------------------------------\n'
             r'((?:(?!Task:).*\n)*)'
             r'------------------------------------\nExited with exit code: (\d+)',
-            str(self.result_log.encode('utf-8'))
+            str(self.result_log)
         )
 
     @classmethod

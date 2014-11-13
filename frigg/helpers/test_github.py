@@ -7,7 +7,8 @@ from django.test import TestCase
 from frigg.builds.models import Build, BuildResult
 from frigg.helpers.github import _get_status_from_build
 
-from .github import parse_comment_payload, parse_push_payload, parse_pull_request_payload
+from .github import (parse_comment_payload, parse_push_payload, parse_pull_request_payload,
+                     parse_ping_payload)
 
 
 class GithubHelpersTestCase(TestCase):
@@ -15,7 +16,8 @@ class GithubHelpersTestCase(TestCase):
         self.fixtures_path = os.path.join(settings.BASE_DIR, 'helpers/fixtures/github')
 
     def test_parse_issue_comment_payload(self):
-        data = json.load(open(os.path.join(self.fixtures_path, 'issue_comment.json')))
+        data = json.load(open(os.path.join(self.fixtures_path, 'issue_comment.json'),
+                              encoding='utf-8'))
         output = parse_comment_payload(data)
 
         self.assertEquals(output['repo_url'], 'git@github.com:tind/frigg.git')
@@ -25,7 +27,8 @@ class GithubHelpersTestCase(TestCase):
         self.assertEquals(output['pull_request_id'], '29')
 
     def test_parse_pull_request_payload(self):
-        data = json.load(open(os.path.join(self.fixtures_path, 'pull_request.json')))
+        data = json.load(open(os.path.join(self.fixtures_path, 'pull_request.json'),
+                              encoding='utf-8'))
         output = parse_pull_request_payload(data)
 
         self.assertEquals(output['repo_url'], 'git@github.com:tind/frigg.git')
@@ -34,19 +37,22 @@ class GithubHelpersTestCase(TestCase):
         self.assertEquals(output['private'], False)
 
     def test_parse_pull_request_payload_labeled(self):
-        data = json.load(open(os.path.join(self.fixtures_path, 'pull_request_labeled.json')))
+        data = json.load(open(os.path.join(self.fixtures_path, 'pull_request_labeled.json'),
+                              encoding='utf-8'))
         output = parse_pull_request_payload(data)
 
         self.assertEqual(output, None)
 
     def test_parse_pull_request_payload_closed(self):
-        data = json.load(open(os.path.join(self.fixtures_path, 'pull_request_closed.json')))
+        data = json.load(open(os.path.join(self.fixtures_path, 'pull_request_closed.json'),
+                              encoding='utf-8'))
         output = parse_pull_request_payload(data)
 
         self.assertEqual(output, None)
 
     def test_parse_push_payload(self):
-        data = json.load(open(os.path.join(self.fixtures_path, 'push_master.json')))
+        data = json.load(open(os.path.join(self.fixtures_path, 'push_master.json'),
+                              encoding='utf-8'))
         output = parse_push_payload(data)
 
         self.assertEquals(output['repo_url'], 'git@github.com:tind/frigg.git')
@@ -56,8 +62,19 @@ class GithubHelpersTestCase(TestCase):
         self.assertEquals(output['private'], False)
         self.assertEquals(output['sha'], 'fddd2887efd63196e48fd5d6bc0e62e1bafa0276')
 
-        data = json.load(open(os.path.join(self.fixtures_path, 'push_branch.json')))
+        data = json.load(open(os.path.join(self.fixtures_path, 'push_branch.json'),
+                              encoding='utf-8'))
         self.assertIsNone(parse_push_payload(data))
+
+    def test_parse_ping_payload(self):
+        data = json.load(open(os.path.join(self.fixtures_path, 'ping.json'),
+                              encoding='utf-8'))
+        output = parse_ping_payload(data)
+
+        self.assertEquals(output['repo_url'], 'git@github.com:frigg/frigg.git')
+        self.assertEquals(output['repo_owner'], 'frigg')
+        self.assertEquals(output['repo_name'], 'frigg')
+        self.assertEquals(output['private'], False)
 
     def test__get_status_from_build(self):
         error = RuntimeError()

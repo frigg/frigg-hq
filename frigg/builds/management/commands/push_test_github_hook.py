@@ -15,4 +15,4 @@ class Command(BaseCommand):
         r = requests.post("http://localhost:8000/webhooks/github/",
                           data=json.dumps(data),
                           headers={'X-GitHub-Event': "push"})
-        print r.text
+        print(r.text)
