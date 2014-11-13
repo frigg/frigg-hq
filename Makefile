@@ -19,7 +19,7 @@ deploy:
 	${MANAGE} migrate
 	bower install
 	${MANAGE} collectstatic --noinput
-	sudo touch /etc/uwsgi/apps-enabled/frigg.ini
+	sudo supervisorctl restart frigg-prod
 
 clean:
 	find . -name "*.pyc" -exec rm -rf {} \;
