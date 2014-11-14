@@ -103,6 +103,8 @@ pre
     color: $meta-font-color
     a
       color: $meta-font-color
+    span:not(:first-child)
+      margin-left: 1em
 
   &.red
     background-color: #fdf7f7
@@ -138,6 +140,10 @@ pre
 
 .text-right
   text-align: right
+i.fa-slack
+  -ms-transform: rotate(19deg)
+  -webkit-transform: rotate(19deg)
+  transform: rotate(19deg)
 
 @media screen and (min-width: 35.5em)
   .mobile-only
