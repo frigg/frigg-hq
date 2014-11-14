@@ -16,7 +16,7 @@ class User(AbstractUser):
             return
 
     def save(self, *args, **kwargs):
-        create = not hasattr(self, 'id')
+        create = self.pk is None
         super(User, self).save(*args, **kwargs)
         if create:
             self.update_repo_permissions()
