@@ -5,6 +5,7 @@ import logging
 
 import redis
 import requests
+from basis.models import TimeStampModel
 from django.db import models
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -18,7 +19,7 @@ from .managers import ProjectManager, BuildManager, BuildResultManager
 logger = logging.getLogger(__name__)
 
 
-class Project(models.Model):
+class Project(TimeStampModel):
     name = models.CharField(max_length=100, blank=True)
     owner = models.CharField(max_length=100, blank=True)
     git_repository = models.CharField(max_length=150)
@@ -88,7 +89,7 @@ class Project(models.Model):
         return token
 
 
-class Build(models.Model):
+class Build(TimeStampModel):
     project = models.ForeignKey(Project, related_name='builds', null=True)
     build_number = models.IntegerField(db_index=True)
     pull_request_id = models.IntegerField(max_length=150, default=0)
@@ -189,7 +190,7 @@ class Build(models.Model):
         }))
 
 
-class BuildResult(models.Model):
+class BuildResult(TimeStampModel):
     build = models.OneToOneField(Build, related_name='result')
     result_log = models.TextField()
     succeeded = models.BooleanField(default=False)
