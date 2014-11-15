@@ -3,8 +3,10 @@ import json
 from unittest import skip
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.core.urlresolvers import reverse
+from django.http import Http404
 from django.test import TestCase, RequestFactory
 from django.test.utils import override_settings
 
@@ -26,8 +28,12 @@ class SmokeTestCase(TestCase):
     def tearDown(self):
         get_user_model().objects.all().delete()
 
-    def add_request_fields(self, request):
-        request.user = self.user
+    def add_request_fields(self, request, anonymous=False):
+        if anonymous:
+            request.user = AnonymousUser()
+        else:
+            request.user = self.user
+
         setattr(request, 'session', 'session')
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
@@ -62,6 +68,10 @@ class SmokeTestCase(TestCase):
         response = last_build(request, 'frigg', 'frigg')
         self.assertStatusCode(response, 302)
         self.assertTrue(response.url.endswith(reverse('view_build', args=['frigg', 'frigg', 3])))
+
+        request = self.factory.get(reverse('last_build', args=['frigg', 'chewie']))
+        self.add_request_fields(request, anonymous=True)
+        self.assertRaises(Http404, last_build, request, 'frigg', 'chewie')
 
 
 class APITestCase(TestCase):
