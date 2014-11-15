@@ -7,9 +7,12 @@
       </a>
     </h4>
     <div class="meta">
-      <span class="sha"><strong>commit:</strong> <a href="{{ build.commit_url }}">{{ build.sha|slice:':8' }}</a></span>
+      {% if build.created_at %}
+        <span class="timestamp"><i class="fa fa-clock-o"></i> {{ build.created_at|timesince }}</span>
+      {% endif %}
+      <span class="sha"><a href="{{ build.commit_url }}"><i class="fa fa-slack"></i> {{ build.sha|slice:':8' }}</a></span>
       {% if build.pull_request_id %}
-        <span class="pull-request"><strong>pull-request:</strong> <a href="{{ build.pull_request_url }}">#{{ build.pull_request_id }}</a></span>
+        <span class="pull-request"><a href="{{ build.pull_request_url }}"><i class="fa fa-code-fork fa-rotate-180"></i> {{ build.pull_request_id }}</a></span>
       {% endif %}
     </div>
   </div>
