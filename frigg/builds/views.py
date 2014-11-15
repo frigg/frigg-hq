@@ -38,8 +38,8 @@ def view_project(request, owner, name):
 
 
 def last_build(request, owner, name):
-    return redirect(Build.objects.permitted(request.user)
-                         .filter(project__owner=owner, project__name=name).first())
+    project = get_object_or_404(Project.objects.permitted(request.user), owner=owner, name=name)
+    return redirect(project.builds.first())
 
 
 def view_build(request, owner, name, build_number):

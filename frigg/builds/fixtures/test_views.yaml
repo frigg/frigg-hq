@@ -49,3 +49,22 @@
     result_log: 'All ok'
     return_code: '0'
     succeeded: true
+
+- model: builds.project
+  pk: 2
+  fields:
+    average_time: 0
+    git_repository: 'git@github.com:frigg/chewie.git'
+    name: frigg
+    owner: chewie
+    members: []
+    private: false
+
+- model: builds.build
+  pk: 4
+  fields:
+    branch: master
+    build_number: 1
+    project: 2
+    pull_request_id: 0
+    sha: 6ebe61b9e030ff7f23d514f9f9ee7b1760b548c8
