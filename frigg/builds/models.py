@@ -35,6 +35,11 @@ class Project(TimeStampModel):
     def __str__(self):
         return "%(owner)s / %(name)s " % self.__dict__
 
+    def save(self, *args, **kwargs):
+        if self.owner in settings.AUTO_APPROVE_OWNERS:
+            self.approved = True
+        super().save(*args, **kwargs)
+
     @property
     def github_token(self):
         try:

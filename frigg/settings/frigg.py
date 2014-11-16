@@ -15,3 +15,5 @@ REDIS_SETTINGS = {
     'port': '6379',
     'db': 2
 }
+
+AUTO_APPROVE_OWNERS = ['frigg', 'frecar', 'relekang']
