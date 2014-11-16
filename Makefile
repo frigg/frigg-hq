@@ -28,8 +28,8 @@ venv:
 	virtualenv venv -p `which python3`
 
 load_prod_data:
-	scp web@ron.frigg.io:hourly-dump.json .
-	python manage.py loaddata hourly-dump.json
+	scp web@ron.frigg.io:prod-hourly-dump.json .
+	python manage.py loaddata prod-hourly-dump.json
 	rm hourly-dump.json
 
 frigg/settings/local.py:
