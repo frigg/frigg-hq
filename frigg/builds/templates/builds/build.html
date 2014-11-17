@@ -4,6 +4,7 @@
 {% block js %}
   <script src="{{ STATIC_URL }}js/ansi_up.js"></script>
   <script src="{{ STATIC_URL }}js/colorify.js"></script>
+  <script src="{{ STATIC_URL }}js/builds.js"></script>
 {% endblock js %}
 
 {% block content %}
@@ -14,7 +15,7 @@
     </h3>
     <strong>{% trans 'Branch' %}:</strong> {{ build.branch }} <br/>
     <strong>{% trans 'Commit hash' %}:</strong> {{ build.sha }} <br/>
-    <strong>{% trans 'Timestamp' %}:</strong> {{ build.created_at }} <br/>
+    <strong>{% trans 'Timestamp' %}:</strong> <span class="timestamp">{{ build.created_at }}</span> <br/>
     <strong>{% trans 'State' %}:</strong>
     {% if not build.result %}
       {% trans 'pending' %}

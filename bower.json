@@ -16,6 +16,7 @@
     "tests"
   ],
   "dependencies": {
-    "pure": "~0.5.0"
+    "pure": "~0.5.0",
+    "moment": "~2.8.3"
   }
 }
