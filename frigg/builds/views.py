@@ -1,4 +1,5 @@
 # -*- coding: utf8 -*-
+from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
@@ -8,6 +9,9 @@ from .models import Build, Project
 
 def overview(request):
     projects_to_approve = Project.objects.permitted(request.user).filter(approved=False).count()
+
+    if projects_to_approve > 0:
+        messages.info(request, 'One or more projects needs approval before any builds will run.')
 
     return render(request, "builds/overview.html", {
         'projects_to_approve': projects_to_approve,
