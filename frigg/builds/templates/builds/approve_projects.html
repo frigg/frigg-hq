@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="pure-u-1">
+
+    {% if not projects %}
+        <h3>All projects are approved already!</h3>
+    {% else %}
+    <table class="pure-table">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>name</th>
+            <th>owner</th>
+            <th>git_repository</th>
+            <th>private</th>
+            <th>members</th>
+            <th>user</th>
+            <th>action</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        {% for project in projects %}
+        <tr>
+            <td>{{project.id}}</td>
+            <td>{{project.name}}</td>
+            <td>{{project.owner}}</td>
+            <td>{{project.git_repository}}</td>
+            <td>{{project.private}}</td>
+            <td>
+                {% for member in project.members.all %}
+                    {{member}}
+                {% endfor %}
+            </td>
+            <td>{{project.user}}</td>
+            <td><a href="{% url 'approve_project' project.id%}">approve now</a> </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+</div>
+{% endblock %}
