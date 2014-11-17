@@ -1,5 +1,4 @@
 # -*- coding: utf8 -*-
-from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
@@ -13,8 +12,7 @@ def overview(request):
     return render(request, "builds/overview.html", {
         'projects_to_approve': projects_to_approve,
         'builds': Build.objects.permitted(request.user).order_by('-id')
-                  .select_related('project', 'result')[:100]
-    })
+                  .select_related('project', 'result')[:100]})
 
 
 def approve_projects(request):
