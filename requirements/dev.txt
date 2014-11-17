@@ -3,3 +3,4 @@
 django-debug-toolbar
 responses
 mockredispy
+flake8
