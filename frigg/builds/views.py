@@ -39,7 +39,9 @@ def approve_project(request, id):
 
 
 def view_organization(request, owner):
-    builds = Build.objects.permitted(request.user).filter(project__owner=owner).select_related('project', 'result')
+    builds = Build.objects.permitted(request.user) \
+        .filter(project__owner=owner) \
+        .select_related('project', 'result')
 
     if len(builds) == 0:
         raise Http404
