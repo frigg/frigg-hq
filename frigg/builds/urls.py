@@ -6,6 +6,9 @@ urlpatterns = patterns(
     'frigg.builds.views',
 
     url(r'^$', 'overview', name='overview'),
+    url(r'^approve/$', 'approve_projects', name='approve_projects'),
+    url(r'^approve/(?P<id>[\d]+)/$', 'approve_project', name='approve_project'),
+
     url(
         r'^(?P<owner>[^/]+)/$',
         'view_organization',

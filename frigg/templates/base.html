@@ -38,7 +38,14 @@
     </div>
     <div class="pure-u-1 pure-u-md-2-5 navigation">
       <ul>
+        {% if projects_to_approve %}
+        <li><a href="/approve-projects/" class="pure-button green">
+            ({{projects_to_approve}}) new!</a>
+        </li>
+        {%endif%}
+
         <li><a href="/" class="pure-button">Overview</a></li>
+
         {% if user.is_authenticated %}
           <li><a href="{% url 'logout' %}" class="pure-button">Logout</a></li>
         {% else %}
