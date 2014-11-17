@@ -23,7 +23,7 @@ def approve_projects(request):
     if not request.user.is_superuser:
         raise Http404
 
-    projects = Project.objects.permitted(request.user).filter(approved=False)
+    projects = Project.objects.filter(approved=False)
     return render(request, "builds/approve_projects.html", {'projects': projects})
 
 
