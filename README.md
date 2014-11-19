@@ -1,7 +1,6 @@
 
 # frigg-ci
 [![Build status](https://ci.frigg.io/badges/frigg/frigg/)](https://ci.frigg.io/frigg/frigg/)
-[![Stories in Ready](https://badge.waffle.io/tind/frigg.png?label=ready&title=Ready)](https://waffle.io/tind/frigg)
 [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/frigg/frigg?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Requirements Status](https://requires.io/github/frigg/frigg/requirements.svg?branch=master)](https://requires.io/github/frigg/frigg/requirements/?branch=master)
 # Setup
