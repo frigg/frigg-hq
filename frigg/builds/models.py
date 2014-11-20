@@ -137,13 +137,6 @@ class Build(TimeStampModel):
         return 'red'
 
     @property
-    def comment_message(self):
-        if self.succeeded:
-            return "All gooodie good\n\n%s" % self.get_absolute_url()
-        else:
-            return "Be careful.. the tests failed\n\n%s" % self.get_absolute_url()
-
-    @property
     def queue_object(self):
         obj = {
             'id': self.pk,
@@ -177,8 +170,6 @@ class Build(TimeStampModel):
         BuildResult.create_from_worker_payload(self, payload)
 
         github.set_commit_status(self)
-        if 'comment' in payload and payload['comment']:
-            github.comment_on_commit(self, self.comment_message)
 
         if 'webhooks' in payload:
             for url in payload['webhooks']:
