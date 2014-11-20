@@ -1,0 +1,12 @@
+[report]
+show_missing = True
+exclude_lines =
+    raise NotImplementedError
+    if __name__ == .__main__.:
+
+omit =
+    frigg/wsgi.py
+    frigg/settings/*
+    frigg/*/migrations/*
+    frigg/*/test_*.py
+    frigg/*/management/*
