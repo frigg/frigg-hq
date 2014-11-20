@@ -170,6 +170,8 @@ class Build(TimeStampModel):
             return self
 
         github.set_commit_status(self, pending=True)
+        self.start_time = now()
+        self.save()
 
         r = redis.Redis(**settings.REDIS_SETTINGS)
         r.lpush(settings.FRIGG_WORKER_QUEUE, json.dumps(self.queue_object))
@@ -189,6 +191,9 @@ class Build(TimeStampModel):
         BuildResult.create_from_worker_payload(self, payload)
 
         github.set_commit_status(self)
+        self.end_time = now()
+        self.save()
+
         if 'comment' in payload and payload['comment']:
             github.comment_on_commit(self, self.comment_message)
 
