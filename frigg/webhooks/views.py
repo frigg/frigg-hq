@@ -26,7 +26,7 @@ def github_webhook(request):
             project.user = user
             project.update_members()  # This can only be done if user is set
         except get_user_model().DoesNotExist:
-            if data.private is False:
+            if data['private'] is False:
                 project.update_members()
         project.save()
         return HttpResponse('Added project %s' % project)
