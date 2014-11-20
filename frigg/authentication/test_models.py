@@ -19,5 +19,3 @@ class UserTestCase(TestCase):
         user.github_token = 'token'
         user.update_repo_permissions()
         self.assertTrue(mock_update_repo_permissions.called)
-
-

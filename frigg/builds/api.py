@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 import json
 
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse
 from django.http.response import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.cache import never_cache
