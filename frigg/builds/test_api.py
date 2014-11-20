@@ -111,3 +111,15 @@ class APITestCase(TestCase):
         self.assertStatusCode(response)
         response = report_build(request)
         self.assertStatusCode(response)
+
+    @override_settings(FRIGG_WORKER_TOKENS=['supertoken'])
+    def test_double_report(self):
+        self.payload['id'] = 200
+        request = self.factory.post(
+            reverse('worker_api_report_build'),
+            data=json.dumps(self.payload),
+            content_type='application/json',
+            HTTP_FRIGG_WORKER_TOKEN='supertoken'
+        )
+        response = report_build(request)
+        self.assertStatusCode(response, 404)

@@ -28,7 +28,4 @@ def report_build(request):
 def build_badge(request, owner, project, branch='master'):
     project = get_object_or_404(Project, owner=owner, name=project)
     badge = project.get_badge(branch)
-    if badge is None:
-        raise Http404
-
     return HttpResponse(content=badge, content_type='image/svg+xml')
