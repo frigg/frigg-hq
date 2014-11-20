@@ -33,7 +33,7 @@ class Project(TimeStampModel):
     objects = ProjectManager()
 
     def __str__(self):
-        return "%(owner)s / %(name)s " % self.__dict__
+        return '%(owner)s / %(name)s' % self.__dict__
 
     def save(self, *args, **kwargs):
         if self.owner in settings.AUTO_APPROVE_OWNERS:
@@ -108,7 +108,7 @@ class Build(TimeStampModel):
         ordering = ['-id']
 
     def __str__(self):
-        return "%s / %s " % (self.project, self.branch)
+        return '%s / %s' % (self.project, self.branch)
 
     def get_absolute_url(self):
         return "https://%s%s" % (
@@ -212,8 +212,9 @@ class BuildResult(TimeStampModel):
 
     @classmethod
     def create_not_approved(cls, build):
-        cls.objects.create(build=build, result_log='This project is not approved.', succeeded=False)
+        result = cls.objects.create(build=build, result_log='This project is not approved.', succeeded=False)
         github.set_commit_status(build, error='This project is not approved')
+        return result
 
     @classmethod
     def create_from_worker_payload(cls, build, payload):
