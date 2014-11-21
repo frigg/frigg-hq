@@ -6,7 +6,7 @@ from django.http import HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 
 
-def token_required(view_func):
+def worker_token_required(view_func):
     @csrf_exempt
     @wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
