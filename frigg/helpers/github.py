@@ -55,7 +55,7 @@ def parse_pull_request_payload(data):
         'private': data['repository']['private'],
         'pull_request_id': data['number'],
         'branch': data['pull_request']['head']['ref'],
-        "sha": data['pull_request']['head']['sha']
+        'sha': data['pull_request']['head']['sha']
     }
 
 
@@ -88,6 +88,21 @@ def parse_ping_payload(data):
         'repo_name': data['repository']['name'],
         'repo_owner': data['repository']['owner']['login'],
         'private': data['repository']['private'],
+    }
+
+
+def parse_member_payload(data):
+    repo_url = "git@github.com:%s/%s.git" % (
+        data['repository']['owner']['name'],
+        data['repository']['name']
+    )
+
+    return {
+        'repo_url': repo_url,
+        'repo_name': data['repository']['name'],
+        'repo_owner': data['repository']['owner']['name'],
+        'action': data['action'],
+        'username': data['member']['login'],
     }
 
 

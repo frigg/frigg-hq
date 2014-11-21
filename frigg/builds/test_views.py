@@ -4,10 +4,9 @@ from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.core.urlresolvers import reverse
 from django.http import Http404
-from django.test import TestCase, RequestFactory, Client
+from django.test import TestCase, RequestFactory
 from frigg.builds.views import approve_projects
 
-from .models import Build
 from .views import overview, view_build, view_organization, view_project, last_build
 
 
