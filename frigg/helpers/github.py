@@ -93,14 +93,14 @@ def parse_ping_payload(data):
 
 def parse_member_payload(data):
     repo_url = "git@github.com:%s/%s.git" % (
-        data['repository']['owner']['name'],
+        data['repository']['owner']['login'],
         data['repository']['name']
     )
 
     return {
         'repo_url': repo_url,
         'repo_name': data['repository']['name'],
-        'repo_owner': data['repository']['owner']['name'],
+        'repo_owner': data['repository']['owner']['login'],
         'action': data['action'],
         'username': data['member']['login'],
     }
@@ -114,11 +114,11 @@ def comment_on_commit(build, message):
 
 
 def get_pull_request_url(build):
-    if build.branch == "master":
-        return "https://github.com/%s/%s/" % (build.project.owner, build.project.name)
+    if build.pull_request_id > 0:
+        return 'https://github.com/%s/%s/pull/%s' % (build.project.owner, build.project.name,
+                                                     build.pull_request_id)
 
-    return "https://github.com/%s/%s/pull/%s" % (build.project.owner, build.project.name,
-                                                 build.pull_request_id)
+    return 'https://github.com/%s/%s' % (build.project.owner, build.project.name)
 
 
 def get_commit_url(build):
@@ -151,6 +151,7 @@ def set_commit_status(build, pending=False, error=None):
 
 def update_repo_permissions(user):
     from frigg.builds.models import Project
+
     repos = list_user_repos(user)
 
     for org in list_organization(user):
