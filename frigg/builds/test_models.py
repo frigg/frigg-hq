@@ -1,7 +1,9 @@
 # -*- coding: utf8 -*-
 from unittest import mock
+from basis.compat import get_user_model
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
+from social.apps.django_app.default.models import UserSocialAuth
 
 from .models import Project, BuildResult, Build
 
@@ -56,6 +58,18 @@ class ProjectTestCase(TestCase):
         project = Project.objects.create(owner='frigg', name='frigg-worker', private=False)
         project.update_members()
         self.assertEqual(project.members.all().count(), 1)
+
+    @override_settings(GITHUB_ACCESS_TOKEN='github-token')
+    def test_token_for_url(self):
+        self.assertEqual(Project.token_for_url('git@github.com:frigg/frigg.git'), 'github-token')
+
+        project = Project.objects.get_or_create_from_url('git@github.com:frigg/frigg.git')
+        project.user = get_user_model().objects.get(pk=1)
+        project.save()
+        social_auth = UserSocialAuth.objects.create(user=project.user, provider='github', uid='uid')
+        social_auth.extra_data = {'access_token': 'user-token'}
+        social_auth.save()
+        self.assertEqual(Project.token_for_url('git@github.com:frigg/frigg.git'), 'user-token')
 
 
 class BuildTestCase(TestCase):
