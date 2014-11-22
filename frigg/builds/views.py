@@ -1,6 +1,5 @@
 # -*- coding: utf8 -*-
 from django.contrib import messages
-from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
 
@@ -15,27 +14,21 @@ def overview(request):
 
     return render(request, "builds/overview.html", {
         'projects_to_approve': projects_to_approve,
-        'builds': Build.objects.permitted(request.user).order_by('-id')
-                  .select_related('project', 'result')[:100]})
+        'builds': Build.objects.permitted(request.user).select_related('project', 'result')[:100]})
 
 
 def approve_projects(request):
     if not request.user.is_superuser:
         raise Http404
 
-    projects = Project.objects.filter(approved=False)
-    return render(request, "builds/approve_projects.html", {'projects': projects})
+    if request.POST:
+        id = request.POST.get('id')
+        Project.objects.filter(id=id).update(approved=True)
+        redirect('approve_projects')
 
-
-def approve_project(request, id):
-    if not request.user.is_superuser:
-        raise Http404
-
-    project = get_object_or_404(Project, id=id)
-    project.approved = True
-    project.save()
-
-    return redirect(reverse(approve_projects))
+    return render(request, "builds/approve_projects.html", {
+        'projects': Project.objects.filter(approved=False)
+    })
 
 
 def view_organization(request, owner):

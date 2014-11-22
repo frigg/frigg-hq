@@ -1,3 +1,4 @@
 tasks:
   - tox
   - flake8
+  - coverage report --fail-under=90

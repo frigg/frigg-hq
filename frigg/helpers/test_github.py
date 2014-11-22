@@ -4,11 +4,11 @@ import json
 
 from django.conf import settings
 from django.test import TestCase
-from frigg.builds.models import Build, BuildResult
-from frigg.helpers.github import _get_status_from_build
+from frigg.builds.models import Build, BuildResult, Project
 
 from .github import (parse_comment_payload, parse_push_payload, parse_pull_request_payload,
-                     parse_ping_payload)
+                     parse_ping_payload, parse_member_payload, _get_status_from_build,
+                     get_pull_request_url)
 
 
 class GithubHelpersTestCase(TestCase):
@@ -24,7 +24,16 @@ class GithubHelpersTestCase(TestCase):
         self.assertEquals(output['repo_owner'], 'tind')
         self.assertEquals(output['repo_name'], 'frigg')
         self.assertEquals(output['private'], False)
-        self.assertEquals(output['pull_request_id'], '29')
+        self.assertEquals(output['pull_request_id'], 29)
+        self.assertEquals(output['branch'], 'pr')
+        self.assertEquals(output['sha'], '-')
+
+        project = Project.objects.get_or_create_from_url('git@github.com:tind/frigg.git')
+        Build.objects.create(project=project, pull_request_id=29, build_number=2, branch='issue28',
+                             sha='h')
+        output = parse_comment_payload(data)
+        self.assertEquals(output['branch'], 'issue28')
+        self.assertEquals(output['sha'], 'h')
 
     def test_parse_pull_request_payload(self):
         data = json.load(open(os.path.join(self.fixtures_path, 'pull_request.json'),
@@ -76,6 +85,17 @@ class GithubHelpersTestCase(TestCase):
         self.assertEquals(output['repo_name'], 'frigg')
         self.assertEquals(output['private'], False)
 
+    def test_parse_member_payload(self):
+        data = json.load(open(os.path.join(self.fixtures_path, 'member.json'),
+                              encoding='utf-8'))
+        output = parse_member_payload(data)
+
+        self.assertEquals(output['repo_url'], 'git@github.com:baxterthehacker/public-repo.git')
+        self.assertEquals(output['repo_owner'], 'baxterthehacker')
+        self.assertEquals(output['repo_name'], 'public-repo')
+        self.assertEquals(output['username'], 'octocat')
+        self.assertEquals(output['action'], 'added')
+
     def test__get_status_from_build(self):
         error = RuntimeError()
         build = Build.objects.create(build_number=1, branch='master', sha='sha')
@@ -92,3 +112,11 @@ class GithubHelpersTestCase(TestCase):
         build.result.save()
         status = _get_status_from_build(build, False, None)[0]
         self.assertEqual(status, 'failure')
+
+    def test_get_pull_request_url(self):
+        project = Project(owner='frigg', name='frigg-worker')
+        build = Build(project=project, branch='master')
+        self.assertEqual(get_pull_request_url(build), 'https://github.com/frigg/frigg-worker')
+        build = Build(project=project, branch='master', pull_request_id=1)
+        self.assertEqual(get_pull_request_url(build),
+                         'https://github.com/frigg/frigg-worker/pull/1')

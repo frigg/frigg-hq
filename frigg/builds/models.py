@@ -33,7 +33,7 @@ class Project(TimeStampModel):
     objects = ProjectManager()
 
     def __str__(self):
-        return "%(owner)s / %(name)s " % self.__dict__
+        return '%(owner)s / %(name)s' % self.__dict__
 
     def save(self, *args, **kwargs):
         if self.owner in settings.AUTO_APPROVE_OWNERS:
@@ -108,7 +108,7 @@ class Build(TimeStampModel):
         ordering = ['-id']
 
     def __str__(self):
-        return "%s / %s " % (self.project, self.branch)
+        return '%s / %s' % (self.project, self.branch)
 
     def get_absolute_url(self):
         return "https://%s%s" % (
@@ -135,13 +135,6 @@ class Build(TimeStampModel):
         if self.result.succeeded:
             return 'green'
         return 'red'
-
-    @property
-    def comment_message(self):
-        if self.succeeded:
-            return "All gooodie good\n\n%s" % self.get_absolute_url()
-        else:
-            return "Be careful.. the tests failed\n\n%s" % self.get_absolute_url()
 
     @property
     def queue_object(self):
@@ -177,8 +170,6 @@ class Build(TimeStampModel):
         BuildResult.create_from_worker_payload(self, payload)
 
         github.set_commit_status(self)
-        if 'comment' in payload and payload['comment']:
-            github.comment_on_commit(self, self.comment_message)
 
         if 'webhooks' in payload:
             for url in payload['webhooks']:
@@ -192,7 +183,7 @@ class Build(TimeStampModel):
             'pull_request_id': self.pull_request_id,
             'state': self.result.succeeded,
             'return_code': self.result.return_code
-        }))
+        }), headers={'content-type': 'application/json'})
 
 
 class BuildResult(TimeStampModel):
@@ -213,16 +204,18 @@ class BuildResult(TimeStampModel):
     @property
     def tasks(self):
         return re.findall(
-            r'Task: ([\w_\&\- ]+)\n\n------------------------------------\n'
+            r'Task: ([\w&=_\- ]+)\n\n------------------------------------\n'
             r'((?:(?!Task:).*\n)*)'
-            r'------------------------------------\nExited with exit code: (\d+)',
+            r'------------------------------------\nExited with exit code: (\d*)\n\n',
             str(self.result_log)
         )
 
     @classmethod
     def create_not_approved(cls, build):
-        cls.objects.create(build=build, result_log='This project is not approved.', succeeded=False)
+        result = cls.objects.create(build=build, result_log='This project is not approved.',
+                                    succeeded=False)
         github.set_commit_status(build, error='This project is not approved')
+        return result
 
     @classmethod
     def create_from_worker_payload(cls, build, payload):

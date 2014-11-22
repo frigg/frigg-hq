@@ -34,7 +34,12 @@
                 {% endfor %}
             </td>
             <td>{{project.user}}</td>
-            <td><a href="{% url 'approve_project' project.id%}">approve now</a> </td>
+            <td>
+              <form method="post">
+                <input type="hidden" name="id" value="{{ project.pk }}">
+                <button type="submit">approve now</button>
+              </form>
+            </td>
         </tr>
         {% endfor %}
         </tbody>
