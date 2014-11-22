@@ -203,3 +203,19 @@ class BuildResultTestCase(TestCase):
         self.assertEqual(result.tasks[2], ('tox', '{}\n', '0'))
         self.assertEqual(result.tasks[3], ('tox', 'tested all the stuff\n1!"#$%&/()=?\n', '11'))
         self.assertEqual(result.tasks[4], ('coverage report --fail-under=100', '\n', ''))
+
+    def test_create_log_string_for_task(self):
+        self.assertEqual(
+            BuildResult.create_log_string_for_task({
+                'task': 'tox',
+                'log': 'tested all the stuff\n1!"#$%&/()=?',
+                'return_code': 11
+            }),
+            (
+                'Task: tox\n\n'
+                '------------------------------------\n'
+                'tested all the stuff\n1!"#$%&/()=?\n'
+                '------------------------------------\n'
+                'Exited with exit code: 11\n\n'
+            )
+        )
