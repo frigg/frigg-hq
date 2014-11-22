@@ -111,7 +111,6 @@ class BuildTestCase(TestCase):
 
     @responses.activate
     def test_send_webhook(self):
-
         responses.add(
             responses.POST,
             'http://w.frigg.io',
@@ -171,3 +170,36 @@ class BuildResultTestCase(TestCase):
         result = BuildResult.create_not_approved(self.build)
         self.assertEqual(result.build_id, self.build.pk)
         self.assertFalse(result.succeeded)
+
+    def test_tasks(self):
+        result = BuildResult.objects.create(
+            build=self.build,
+            result_log=(
+                BuildResult.create_log_string_for_task({'task': 'tox'}) +
+                BuildResult.create_log_string_for_task({'task': 'tox', 'log': '{}'}) +
+                BuildResult.create_log_string_for_task({
+                    'task': 'tox',
+                    'log': '{}',
+                    'return_code': 0
+                }) +
+                BuildResult.create_log_string_for_task({
+                    'task': 'tox',
+                    'log': 'tested all the stuff\n1!"#$%&/()=?',
+                    'return_code': 11
+                }) +
+                BuildResult.create_log_string_for_task({
+                    'task': 'coverage report --fail-under=100'
+                }) +
+                BuildResult.create_log_string_for_task({
+                    'task': 'tox',
+                    'return_log': 'fail',
+                    'return_code': 'd'
+                })
+            )
+        )
+        self.assertEqual(len(result.tasks), 5)
+        self.assertEqual(result.tasks[0], ('tox', '\n', ''))
+        self.assertEqual(result.tasks[1], ('tox', '{}\n', ''))
+        self.assertEqual(result.tasks[2], ('tox', '{}\n', '0'))
+        self.assertEqual(result.tasks[3], ('tox', 'tested all the stuff\n1!"#$%&/()=?\n', '11'))
+        self.assertEqual(result.tasks[4], ('coverage report --fail-under=100', '\n', ''))
