@@ -9,6 +9,7 @@ from frigg.utils.tests import ViewTestCase
 from frigg.builds.models import Project
 
 
+@mock.patch('frigg.builds.models.Build.start', lambda x: x)
 class GithubWebhookTestCase(ViewTestCase):
     fixtures = ['frigg/builds/fixtures/users.yaml']
 

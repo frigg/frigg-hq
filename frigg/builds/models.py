@@ -183,7 +183,7 @@ class Build(TimeStampModel):
             'pull_request_id': self.pull_request_id,
             'state': self.result.succeeded,
             'return_code': self.result.return_code
-        }))
+        }), headers={'content-type': 'application/json'})
 
 
 class BuildResult(TimeStampModel):

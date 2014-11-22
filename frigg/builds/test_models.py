@@ -1,7 +1,10 @@
 # -*- coding: utf8 -*-
+import json
 from unittest import mock
 from basis.compat import get_user_model
+from mockredis import mock_redis_client
 
+import responses
 from django.test import TestCase, override_settings
 from social.apps.django_app.default.models import UserSocialAuth
 
@@ -74,7 +77,7 @@ class ProjectTestCase(TestCase):
 
 class BuildTestCase(TestCase):
     def setUp(self):
-        self.project = Project.objects.create(owner='frigg', name='frigg-worker')
+        self.project = Project.objects.create(owner='frigg', name='frigg-worker', approved=True)
 
     def tearDown(self):
         Project.objects.all().delete()
@@ -105,6 +108,42 @@ class BuildTestCase(TestCase):
         self.assertEqual(build.color, 'green')
         result.succeeded = False
         self.assertEqual(build.color, 'red')
+
+    @responses.activate
+    def test_send_webhook(self):
+
+        responses.add(
+            responses.POST,
+            'http://w.frigg.io',
+            body='Ok',
+            content_type='application/json'
+        )
+        build = Build.objects.create(project=self.project, branch='master', build_number=1)
+        BuildResult.objects.create(build=build, succeeded=True)
+        response = build.send_webhook('http://w.frigg.io')
+        request = json.loads(response.request.body)
+        self.assertEqual(request['repository'], build.project.git_repository)
+        self.assertEqual(request['sha'], build.sha)
+        self.assertEqual(request['build_url'], build.get_absolute_url())
+        self.assertEqual(request['state'], build.result.succeeded)
+        self.assertEqual(request['return_code'], build.result.return_code)
+
+    @mock.patch('frigg.helpers.github.set_commit_status')
+    @mock.patch('redis.Redis', mock_redis_client)
+    def test_start(self, mock_set_commit_status):
+        build = Build.objects.create(project=self.project, branch='master', build_number=1)
+        BuildResult.objects.create(build=build, succeeded=True)
+        build.start()
+        self.assertEqual(BuildResult.objects.all().count(), 0)
+        self.assertTrue(mock_set_commit_status.called)
+
+    @mock.patch('frigg.builds.models.BuildResult.create_not_approved')
+    @mock.patch('redis.Redis', mock_redis_client)
+    def test_start_not_approved(self, mock_create_not_approved):
+        project = Project.objects.create(owner='tind', name='frigg', approved=False)
+        build = Build.objects.create(project=project, branch='master', build_number=1)
+        build.start()
+        self.assertTrue(mock_create_not_approved.called)
 
 
 class BuildResultTestCase(TestCase):
