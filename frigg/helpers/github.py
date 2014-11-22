@@ -8,6 +8,7 @@ from .common import is_retest_comment
 
 
 def parse_comment_payload(data):
+    from frigg.builds.models import Build
     if is_retest_comment(data['comment']['body']):
         repo_name = data['repository']['name']
         repo_owner = data['repository']['owner']['login']
@@ -17,13 +18,22 @@ def parse_comment_payload(data):
             repo_name
         )
 
-        try:
-            pull_request = data['issue']['pull_request']
-            pull_request_url = pull_request['url']
-            pull_request_id = pull_request_url.split("/")[-1]
-        except KeyError:
-            pull_request_url = ""
-            pull_request_id = ""
+        pull_request = data['issue']['pull_request']
+        pull_request_url = pull_request['url']
+        pull_request_id = int(pull_request_url.split("/")[-1])
+
+        earlier_build = Build.objects.filter(
+            project__owner=repo_owner,
+            project__name=repo_name,
+            pull_request_id=pull_request_id
+        ).first()
+
+        if earlier_build:
+            branch = earlier_build.branch
+            sha = earlier_build.sha
+        else:
+            branch = 'pr'
+            sha = '-'
 
         return {
             'repo_url': repo_url,
@@ -31,7 +41,9 @@ def parse_comment_payload(data):
             'repo_owner': repo_owner,
             'private': data['repository']['private'],
             'pull_request_id': pull_request_id,
-            'pull_request_url': pull_request_url
+            'pull_request_url': pull_request_url,
+            'branch': branch,
+            'sha': sha
         }
 
 

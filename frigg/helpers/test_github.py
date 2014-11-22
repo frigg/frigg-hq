@@ -24,7 +24,16 @@ class GithubHelpersTestCase(TestCase):
         self.assertEquals(output['repo_owner'], 'tind')
         self.assertEquals(output['repo_name'], 'frigg')
         self.assertEquals(output['private'], False)
-        self.assertEquals(output['pull_request_id'], '29')
+        self.assertEquals(output['pull_request_id'], 29)
+        self.assertEquals(output['branch'], 'pr')
+        self.assertEquals(output['sha'], '-')
+
+        project = Project.objects.get_or_create_from_url('git@github.com:tind/frigg.git')
+        Build.objects.create(project=project, pull_request_id=29, build_number=2, branch='issue28',
+                             sha='h')
+        output = parse_comment_payload(data)
+        self.assertEquals(output['branch'], 'issue28')
+        self.assertEquals(output['sha'], 'h')
 
     def test_parse_pull_request_payload(self):
         data = json.load(open(os.path.join(self.fixtures_path, 'pull_request.json'),

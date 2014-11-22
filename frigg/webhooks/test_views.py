@@ -64,6 +64,13 @@ class GithubWebhookTestCase(ViewTestCase):
         self.assertStatusCode(response)
         self.assertIsNotNone(Project.objects.get(owner='frigg', name='frigg-worker', private=False))
 
+    @mock.patch('frigg.helpers.github.parse_comment_payload',
+                lambda x: GithubWebhookTestCase.issue_comment_data)
+    def test_issue_comment_handling(self):
+        response = self.post_webhook('issue_comment')
+        self.assertStatusCode(response)
+        self.assertIsNotNone(Project.objects.get(owner='frigg', name='frigg-worker', private=False))
+
     @mock.patch('frigg.helpers.github.parse_member_payload',
                 lambda x: GithubWebhookTestCase.member_data)
     def test_member_handling(self):
@@ -123,6 +130,16 @@ class GithubWebhookTestCase(ViewTestCase):
         'private': False,
         'pull_request_id': 1,
         'branch': 'patch-1',
+        'sha': 'hash that stuff'
+    }
+
+    issue_comment_data = {
+        'repo_url': 'git@github.com:frigg/frigg-worker.git',
+        'repo_name': 'frigg-worker',
+        'repo_owner': 'frigg',
+        'private': False,
+        'pull_request_id': 1,
+        'branch': 'pull-request',
         'sha': 'hash that stuff'
     }
 
