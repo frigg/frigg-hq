@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 import json
 
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse
 from django.http.response import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.cache import never_cache
@@ -28,7 +28,4 @@ def report_build(request):
 def build_badge(request, owner, project, branch='master'):
     project = get_object_or_404(Project, owner=owner, name=project)
     badge = project.get_badge(branch)
-    if badge is None:
-        raise Http404
-
     return HttpResponse(content=badge, content_type='image/svg+xml')

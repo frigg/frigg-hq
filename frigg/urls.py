@@ -16,7 +16,7 @@ urlpatterns = patterns(
 urlpatterns += patterns(
     '',
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^webhooks/', include('frigg.webhooks.urls')),
+    url(r'^webhooks/', include('frigg.webhooks.urls', namespace='webhooks', app_name='webhooks')),
 
     url(r'^auth/login/?$', RedirectView.as_view(url='/auth/login/github/'), name='login'),
     url(

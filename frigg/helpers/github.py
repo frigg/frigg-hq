@@ -8,6 +8,7 @@ from .common import is_retest_comment
 
 
 def parse_comment_payload(data):
+    from frigg.builds.models import Build
     if is_retest_comment(data['comment']['body']):
         repo_name = data['repository']['name']
         repo_owner = data['repository']['owner']['login']
@@ -17,13 +18,22 @@ def parse_comment_payload(data):
             repo_name
         )
 
-        try:
-            pull_request = data['issue']['pull_request']
-            pull_request_url = pull_request['url']
-            pull_request_id = pull_request_url.split("/")[-1]
-        except KeyError:
-            pull_request_url = ""
-            pull_request_id = ""
+        pull_request = data['issue']['pull_request']
+        pull_request_url = pull_request['url']
+        pull_request_id = int(pull_request_url.split("/")[-1])
+
+        earlier_build = Build.objects.filter(
+            project__owner=repo_owner,
+            project__name=repo_name,
+            pull_request_id=pull_request_id
+        ).first()
+
+        if earlier_build:
+            branch = earlier_build.branch
+            sha = earlier_build.sha
+        else:
+            branch = 'pr'
+            sha = '-'
 
         return {
             'repo_url': repo_url,
@@ -31,7 +41,9 @@ def parse_comment_payload(data):
             'repo_owner': repo_owner,
             'private': data['repository']['private'],
             'pull_request_id': pull_request_id,
-            'pull_request_url': pull_request_url
+            'pull_request_url': pull_request_url,
+            'branch': branch,
+            'sha': sha
         }
 
 
@@ -55,7 +67,7 @@ def parse_pull_request_payload(data):
         'private': data['repository']['private'],
         'pull_request_id': data['number'],
         'branch': data['pull_request']['head']['ref'],
-        "sha": data['pull_request']['head']['sha']
+        'sha': data['pull_request']['head']['sha']
     }
 
 
@@ -91,19 +103,27 @@ def parse_ping_payload(data):
     }
 
 
-def comment_on_commit(build, message):
-    if settings.DEBUG or not hasattr(settings, 'GITHUB_ACCESS_TOKEN'):
-        return
-    url = "repos/%s/%s/commits/%s/comments" % (build.project.owner, build.project.name, build.sha)
-    return api_request(url, settings.GITHUB_ACCESS_TOKEN, {'body': message, 'sha': build.sha})
+def parse_member_payload(data):
+    repo_url = "git@github.com:%s/%s.git" % (
+        data['repository']['owner']['login'],
+        data['repository']['name']
+    )
+
+    return {
+        'repo_url': repo_url,
+        'repo_name': data['repository']['name'],
+        'repo_owner': data['repository']['owner']['login'],
+        'action': data['action'],
+        'username': data['member']['login'],
+    }
 
 
 def get_pull_request_url(build):
-    if build.branch == "master":
-        return "https://github.com/%s/%s/" % (build.project.owner, build.project.name)
+    if build.pull_request_id > 0:
+        return 'https://github.com/%s/%s/pull/%s' % (build.project.owner, build.project.name,
+                                                     build.pull_request_id)
 
-    return "https://github.com/%s/%s/pull/%s" % (build.project.owner, build.project.name,
-                                                 build.pull_request_id)
+    return 'https://github.com/%s/%s' % (build.project.owner, build.project.name)
 
 
 def get_commit_url(build):
@@ -136,6 +156,7 @@ def set_commit_status(build, pending=False, error=None):
 
 def update_repo_permissions(user):
     from frigg.builds.models import Project
+
     repos = list_user_repos(user)
 
     for org in list_organization(user):
