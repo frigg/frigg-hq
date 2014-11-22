@@ -1,11 +1,13 @@
 # -*- coding: utf8 -*-
 import json
+from datetime import timedelta
 from unittest import mock
-from basis.compat import get_user_model
-from mockredis import mock_redis_client
 
 import responses
+from django.utils.timezone import now
+from mockredis import mock_redis_client
 from django.test import TestCase, override_settings
+from django.contrib.auth import get_user_model
 from social.apps.django_app.default.models import UserSocialAuth
 
 from .models import Project, BuildResult, Build
@@ -143,6 +145,21 @@ class BuildTestCase(TestCase):
         build = Build.objects.create(project=project, branch='master', build_number=1)
         build.start()
         self.assertTrue(mock_create_not_approved.called)
+
+    def test_has_timed_out(self):
+        url = 'git@github.com:frigg/frigg.git'
+        project = Project.objects.get_or_create_from_url(url)
+        build = Build.objects.create(project=project, build_number=1,
+                                     start_time=now() - timedelta(minutes=15))
+        self.assertTrue(build.has_timed_out())
+        build.start_time = now()
+        self.assertFalse(build.has_timed_out())
+        project.average_time = 120
+        self.assertFalse(build.has_timed_out())
+        build.start_time = now() - timedelta(seconds=60)
+        self.assertFalse(build.has_timed_out())
+        build.start_time = now() - timedelta(seconds=260)
+        self.assertTrue(build.has_timed_out())
 
 
 class BuildResultTestCase(TestCase):

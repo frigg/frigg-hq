@@ -2,6 +2,8 @@
 import re
 import json
 import logging
+from datetime import timedelta
+from django.utils.timezone import now
 
 import redis
 import requests
@@ -100,6 +102,8 @@ class Build(TimeStampModel):
     pull_request_id = models.IntegerField(max_length=150, default=0)
     branch = models.CharField(max_length=100, default="master")
     sha = models.CharField(max_length=150)
+    start_time = models.DateTimeField(null=True, blank=True)
+    end_time = models.DateTimeField(null=True, blank=True)
 
     objects = BuildManager()
 
@@ -159,17 +163,29 @@ class Build(TimeStampModel):
             return self
 
         github.set_commit_status(self, pending=True)
+        self.start_time = now()
+        self.save()
 
         r = redis.Redis(**settings.REDIS_SETTINGS)
         r.lpush(settings.FRIGG_WORKER_QUEUE, json.dumps(self.queue_object))
 
         return self
 
+    def has_timed_out(self):
+        used_time = now() - self.start_time
+        if self.project.average_time:
+            return (used_time > timedelta(seconds=self.project.average_time * 2) or
+                    used_time > timedelta(minutes=10))
+        else:
+            return used_time > timedelta(minutes=10)
+
     def handle_worker_report(self, payload):
         logger.info('Handle worker report: %s' % payload)
         BuildResult.create_from_worker_payload(self, payload)
 
         github.set_commit_status(self)
+        self.end_time = now()
+        self.save()
 
         if 'webhooks' in payload:
             for url in payload['webhooks']:
