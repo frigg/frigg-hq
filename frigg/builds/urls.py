@@ -27,5 +27,10 @@ urlpatterns = patterns(
         r'^(?P<owner>[^/]+)/(?P<name>[^/]+)/(?P<build_number>\d+)/$',
         'view_build',
         name='view_build'
+    ),
+    url(
+        r'^artifacts/(?P<owner>[^/]+)/(?P<name>[^/]+)/(?P<artifact>.*)$',
+        'download_artifact',
+        name='download_artifact'
     )
 )
