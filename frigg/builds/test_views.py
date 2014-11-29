@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from django.http import Http404
 
 from frigg.builds.models import Project
-from frigg.builds.views import approve_projects
+from frigg.builds.views import approve_projects, download_artifact
 from frigg.utils.tests import ViewTestCase
 from .views import overview, view_build, view_organization, view_project, last_build
 
@@ -75,3 +75,21 @@ class SmokeTestCase(ViewTestCase):
         response = approve_projects(request)
         self.assertStatusCode(response, 200)
         self.assertTrue(Project.objects.get(pk=42).approved)
+
+    def test_download_artifact(self):
+        request = self.factory.get(
+            reverse('download_artifact', args=['frigg', 'frigg', 'htmlcov.zip'])
+        )
+        self.add_request_fields(request)
+        response = download_artifact(request, 'frigg', 'frigg', 'htmlcov.zip')
+        self.assertStatusCode(response, 200)
+        self.assertEqual(response['X-Accel-Redirect'],
+                         '/protected/artifacts/frigg/frigg/htmlcov.zip')
+        self.assertEqual(response['Content-Disposition'],
+                         'attachment; filename="htmlcov.zip"')
+
+    def test_download_artifact_404(self):
+        response = self.client.get(
+            reverse('download_artifact', args=['frigg', 'non-existing', 'htmlcov.zip'])
+        )
+        self.assertStatusCode(response, 404)
