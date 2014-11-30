@@ -27,6 +27,6 @@ urlpatterns += patterns(
     ),
     url(r'^auth/', include('social.apps.django_app.urls', namespace='social')),
     url(r'^auth/', include('django.contrib.auth.urls')),
-    url(r'stats/', include('frigg.stats.urls')),
+    url(r'stats/', include('frigg.stats.urls', namespace='stats')),
     url(r'^', include('frigg.builds.urls')),
 )
