@@ -220,7 +220,7 @@ class BuildResult(TimeStampModel):
     @property
     def tasks(self):
         return re.findall(
-            r'Task: ([\w&=_\- ]+)\n\n------------------------------------\n'
+            r'Task: ([\w&=_\-\*\.\:\;\| ]+)\n\n------------------------------------\n'
             r'((?:(?!Task:).*\n)*)'
             r'------------------------------------\nExited with exit code: (\d*)\n\n',
             str(self.result_log)
