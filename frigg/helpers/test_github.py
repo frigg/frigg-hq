@@ -75,6 +75,11 @@ class GithubHelpersTestCase(TestCase):
                               encoding='utf-8'))
         self.assertIsNone(parse_push_payload(data))
 
+    def test_parse_push_skip_payload(self):
+        data = json.load(open(os.path.join(self.fixtures_path, 'push_master_skip.json'),
+                              encoding='utf-8'))
+        self.assertIsNone(parse_push_payload(data))
+
     def test_parse_ping_payload(self):
         data = json.load(open(os.path.join(self.fixtures_path, 'ping.json'),
                               encoding='utf-8'))

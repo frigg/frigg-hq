@@ -73,6 +73,9 @@ def parse_pull_request_payload(data):
 
 def parse_push_payload(data):
     if data['ref'] == "refs/heads/master":
+        if len(data['commits']) == 1 and '[ci skip]' in data['commits'][0]['message']:
+            return None
+
         repo_url = "git@github.com:%s/%s.git" % (
             data['repository']['owner']['name'],
             data['repository']['name']
