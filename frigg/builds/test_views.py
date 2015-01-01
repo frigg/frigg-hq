@@ -3,10 +3,10 @@ from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.http import Http404
 
-from frigg.builds.models import Project
-from frigg.builds.views import approve_projects, download_artifact
 from frigg.utils.tests import ViewTestCase
-from .views import overview, view_build, view_organization, view_project, last_build
+from .models import Project
+from .views import (overview, view_build, view_organization, view_project, last_build,
+                    approve_projects, download_artifact)
 
 
 class SmokeTestCase(ViewTestCase):
@@ -24,6 +24,10 @@ class SmokeTestCase(ViewTestCase):
         self.add_request_fields(request, anonymous=True)
         response = overview(request)
         self.assertStatusCode(response)
+
+    def test_overview_pagination(self):
+        self.assertStatusCode(self.client.get(reverse('overview', args=[1])))
+        self.assertStatusCode(self.client.get(reverse('overview', args=[10])), 404)
 
     def test_organization_view(self):
         request = self.factory.get(reverse('view_organization', args=['frigg']))
