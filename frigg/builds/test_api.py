@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 import json
 from unittest import skip
+from decimal import Decimal
 
 from django.contrib.staticfiles import finders
 from django.core.urlresolvers import reverse
@@ -91,6 +92,7 @@ class APITestCase(TestCase):
         self.assertFalse(build.is_pending)
         self.assertTrue(build.result.succeeded)
         self.assertEquals(build.result.return_codes, [0])
+        self.assertIsNone(build.result.coverage)
         self.assertEquals(
             build.result.result_log,
             'Task: make test\n\n------------------------------------\n'
@@ -111,6 +113,20 @@ class APITestCase(TestCase):
         self.assertStatusCode(response)
         response = report_build(request)
         self.assertStatusCode(response)
+
+    @override_settings(FRIGG_WORKER_TOKENS=['supertoken'])
+    def test_coverage(self):
+        self.payload['coverage'] = 99.9
+        request = self.factory.post(
+            reverse('worker_api_report_build'),
+            data=json.dumps(self.payload),
+            content_type='application/json',
+            HTTP_FRIGG_WORKER_TOKEN='supertoken'
+        )
+        response = report_build(request)
+        self.assertStatusCode(response)
+        build = Build.objects.get(pk=2)
+        self.assertEqual(build.result.coverage, Decimal('99.9'))
 
     @override_settings(FRIGG_WORKER_TOKENS=['supertoken'])
     def test_404_report(self):
