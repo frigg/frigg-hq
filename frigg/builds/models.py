@@ -207,6 +207,8 @@ class BuildResult(TimeStampModel):
     result_log = models.TextField()
     succeeded = models.BooleanField(default=False)
     return_code = models.CharField(max_length=100)
+    coverage = models.DecimalField(max_digits=5, decimal_places=2, editable=False, null=True,
+                                   blank=True)
 
     objects = BuildResultManager()
 
@@ -244,6 +246,8 @@ class BuildResult(TimeStampModel):
 
         result.succeeded = BuildResult.evaluate_results(payload['results'])
         result.return_code = ",".join([str(code) for code in return_codes])
+        if 'coverage' in payload:
+            result.coverage = payload['coverage']
         result.save()
 
     @classmethod
