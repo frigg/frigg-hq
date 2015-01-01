@@ -11,7 +11,7 @@ from .api import report_build
 from .models import BuildResult, Build
 
 
-class BadgeTestCase(TestCase):
+class BuildBadgeTestCase(TestCase):
     fixtures = ['frigg/builds/fixtures/users.yaml', 'frigg/builds/fixtures/test_views.yaml']
 
     def assertStatusCode(self, response, code=200):
@@ -48,6 +48,37 @@ class BadgeTestCase(TestCase):
     def test_404(self):
         response = self.client.get(reverse('build_badge', args=['frigg', 'nothing']))
         self.assertStatusCode(response, code=404)
+
+
+class CoverageBadgeTestCase(TestCase):
+    fixtures = ['frigg/builds/fixtures/users.yaml', 'frigg/builds/fixtures/test_views.yaml']
+
+    def assertStatusCode(self, response, code=200):
+        self.assertEqual(response.status_code, code)
+
+    def test_coverage(self):
+        BuildResult.objects.all().update(coverage=92.5)
+        response = self.client.get(reverse('coverage_badge', args=['frigg', 'frigg']))
+        self.assertStatusCode(response)
+        self.assertIsNotNone(response.content)
+        self.assertContains(response, 'coverage')
+
+        response = self.client.get(reverse('coverage_badge',
+                                           args=['frigg', 'frigg', 'another-branch']))
+        self.assertStatusCode(response)
+        self.assertIsNotNone(response.content)
+        self.assertContains(response, 'coverage')
+
+    def test_404(self):
+        response = self.client.get(reverse('coverage_badge', args=['frigg', 'nothing']))
+        self.assertStatusCode(response, code=404)
+
+    def test_unknown(self):
+        response = self.client.get(reverse('coverage_badge', args=['frigg', 'frigg']))
+        self.assertStatusCode(response)
+        self.assertIsNotNone(response.content)
+        self.assertContains(response, 'coverage')
+        self.assertContains(response, 'unknown')
 
 
 class APITestCase(TestCase):

@@ -8,6 +8,10 @@ admin.autodiscover()
 urlpatterns = patterns(
     'frigg.builds.api',
     url(r'^api/workers/report/$', 'report_build', name='worker_api_report_build'),
+    url(r'^badges/coverage/(?P<owner>[^/]+)/(?P<project>[^/]+)/$', 'coverage_badge',
+        name='coverage_badge'),
+    url(r'^badges/coverage/(?P<owner>[^/]+)/(?P<project>[^/]+)/(?P<branch>[^/]+)/$',
+        'coverage_badge', name='coverage_badge'),
     url(r'^badges/(?P<owner>[^/]+)/(?P<project>[^/]+)/$', 'build_badge', name='build_badge'),
     url(r'^badges/(?P<owner>[^/]+)/(?P<project>[^/]+)/(?P<branch>[^/]+)/$', 'build_badge',
         name='build_badge'),

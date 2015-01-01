@@ -14,7 +14,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
 
 from frigg.helpers import github
-from frigg.helpers.badges import get_badge
+from frigg.helpers.badges import get_badge, get_coverage_badge
 from .managers import ProjectManager, BuildManager, BuildResultManager
 
 
@@ -80,6 +80,11 @@ class Project(TimeStampModel):
         build = self.builds.filter(branch=branch).exclude(result=None).first()
         if build:
             return get_badge(build.result.succeeded)
+
+    def get_coverage_badge(self, branch='master'):
+        build = self.builds.filter(branch=branch).exclude(result=None).first()
+        if build:
+            return get_coverage_badge(build.result.coverage)
 
     def update_members(self):
         collaborators = github.list_collaborators(self)
