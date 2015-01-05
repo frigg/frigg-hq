@@ -17,3 +17,5 @@ REDIS_SETTINGS = {
 }
 
 AUTO_APPROVE_OWNERS = ['frigg', 'frecar', 'relekang']
+
+OVERVIEW_PAGINATION_COUNT = 100

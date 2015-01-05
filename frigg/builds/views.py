@@ -1,20 +1,31 @@
 # -*- coding: utf8 -*-
+from django.conf import settings
 from django.contrib import messages
 from django.http import Http404, HttpResponse
+from django.core.paginator import Paginator, EmptyPage
 from django.shortcuts import render, get_object_or_404, redirect
 
 from .models import Build, Project
 
 
-def overview(request):
+def overview(request, page=1):
     projects_to_approve = Project.objects.permitted(request.user).filter(approved=False).count()
 
     if projects_to_approve > 0:
         messages.info(request, 'One or more projects needs approval before any builds will run.')
 
+    build_list = Build.objects.permitted(request.user).select_related('project', 'result')
+    paginator = Paginator(build_list, settings.OVERVIEW_PAGINATION_COUNT)
+
+    try:
+        builds = paginator.page(page)
+    except EmptyPage:
+        raise Http404
+
     return render(request, "builds/overview.html", {
         'projects_to_approve': projects_to_approve,
-        'builds': Build.objects.permitted(request.user).select_related('project', 'result')[:100]})
+        'builds': builds
+    })
 
 
 def approve_projects(request):
