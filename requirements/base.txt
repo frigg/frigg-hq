@@ -4,6 +4,6 @@ pyyaml
 redis
 
 python-social-auth
-django-pipeline
+django-pipeline>=1.4
 django-extensions
 django-basis
