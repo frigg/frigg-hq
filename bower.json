@@ -17,6 +17,7 @@
   ],
   "dependencies": {
     "pure": "~0.5.0",
-    "moment": "~2.8.3"
+    "moment": "~2.8.3",
+    "chartjs": "~0.2.0"
   }
 }
