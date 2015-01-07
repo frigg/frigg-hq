@@ -90,6 +90,12 @@ MEDIA_URL = '/uploads/'
 STATICFILES_DIRS = os.path.join(BASE_DIR, 'files/'),
 STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
 
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'pipeline.finders.PipelineFinder',
+)
+
 PIPELINE_COMPILERS = (
     'pipeline.compilers.sass.SASSCompiler',
 )
