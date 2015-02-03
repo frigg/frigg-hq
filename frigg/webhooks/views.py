@@ -55,11 +55,13 @@ def github_webhook(request):
     else:
         return HttpResponse('Unknown event: %s' % event)
 
-    project = Project.objects.get_or_create_from_url(data['repo_url'])
-    project.private = data['private']
-    project.save()
-    build = project.start_build(data)
-    return HttpResponse('Handled "%s" event.\nMore info at %s' % (
-        event,
-        build.get_absolute_url()
-    ))
+    if data:
+        project = Project.objects.get_or_create_from_url(data['repo_url'])
+        project.private = data['private']
+        project.save()
+        build = project.start_build(data)
+        return HttpResponse('Handled "%s" event.\nMore info at %s' % (
+            event,
+            build.get_absolute_url()
+        ))
+    return HttpResponse('Could not handle event')
