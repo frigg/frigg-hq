@@ -8,8 +8,7 @@ setup: venv frigg/settings/local.py fab_local.py
 run:
 	${MANAGE} runserver 0.0.0.0:8000
 
-production: venv
-	echo "from frigg.settings.production import *" > frigg/settings/local.py
+production: venv frigg/settings/local.py
 	${PIP} install -r requirements/prod.txt
 	${MANAGE} migrate
 	${MANAGE} collectstatic --noinput
