@@ -36,7 +36,8 @@
             <td>{{project.user}}</td>
             <td>
               <form method="post">
-                <input type="hidden" name="id" value="{{ project.pk }}">
+                  {% csrf_token %}
+                  <input type="hidden" name="id" value="{{ project.pk }}">
                 <button type="submit">approve now</button>
               </form>
             </td>
