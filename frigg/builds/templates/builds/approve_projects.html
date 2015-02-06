@@ -35,9 +35,9 @@
             </td>
             <td>{{project.user}}</td>
             <td>
-              <form method="post">
+              <form method="post" action="{% url 'approve_project' project.pk %}">
                   {% csrf_token %}
-                  <input type="hidden" name="id" value="{{ project.pk }}">
+                <input type="hidden" name="approve" value="yes">
                 <button type="submit">approve now</button>
               </form>
             </td>
