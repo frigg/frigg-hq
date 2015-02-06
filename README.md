@@ -16,6 +16,10 @@ Add these to `frigg.settings.local`.
 * `SERVER_ADDRESS` - To get the correct domain in comments on Github etc.
 * `GITHUB_ACCESS_TOKEN` - Token needed to make the project able to post comments on Github.
 
+#### Install sass (compass) dependency
+```gem update --system```
+```gem install compass```
+
 # Add projects
 Add `http://<your frigg domain>/github-webhook` to the projects webhooks on Github.
 
