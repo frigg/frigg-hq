@@ -29,16 +29,19 @@ def overview(request, page=1):
 
 
 def approve_projects(request, project_id=None):
+
     if not request.user.is_superuser:
         raise Http404
 
-    if request.POST and project_id:
-        if request.POST.get('approve') == "yes":
-            project = Project.objects.get(id=project_id)
-            project.approved = True
-            project.save()
+    if project_id and request.method == 'POST' and request.POST.get('approve') == "yes":
+        project = Project.objects.get(id=project_id)
+        project.approved = True
+        project.save()
 
-            return redirect('approve_projects')
+        if project.builds.all():
+            project.builds.last().start()
+
+        return redirect('approve_projects_overview')
 
     return render(request, "builds/approve_projects.html", {
         'projects': Project.objects.filter(approved=False)
