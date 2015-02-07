@@ -26,4 +26,4 @@ Add `http://<your frigg domain>/github-webhook` to the projects webhooks on Gith
 ## Config file
 Frigg supports config file to give details about what kind of tasks to perform. The file
 should be named `.frigg.yml` and placed in the root of the project. More information about
-the config file can be found on [frigg.io/docs/](https://frigg.io/docs/).
+the config file can be found in the documentation on [frigg.io](https://frigg.io/).
