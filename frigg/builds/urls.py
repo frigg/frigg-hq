@@ -7,7 +7,8 @@ urlpatterns = patterns(
 
     url(r'^$', 'overview', name='overview'),
     url(r'^(?P<page>\d+)$', 'overview', name='overview'),
-    url(r'^approve/$', 'approve_projects', name='approve_projects'),
+    url(r'^projects/approve/$', 'approve_projects', name='approve_projects_overview'),
+    url(r'^projects/approve/(?P<project_id>\d+)/$', 'approve_projects', name='approve_project'),
 
     url(
         r'^(?P<owner>[^/]+)/$',

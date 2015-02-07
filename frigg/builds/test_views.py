@@ -63,22 +63,33 @@ class SmokeTestCase(ViewTestCase):
         self.assertRaises(Http404, last_build, request, 'frigg', 'chewie')
 
     def test_approve_project_404(self):
-        response = self.client.get(reverse('approve_projects'))
+        response = self.client.get(reverse('approve_projects_overview'))
         self.assertStatusCode(response, 404)
 
     def test_approve_projects_view(self):
-        request = self.factory.get(reverse('approve_projects'))
+        request = self.factory.get(reverse('approve_projects_overview'))
         self.add_request_fields(request, superuser=True)
         response = approve_projects(request)
         self.assertStatusCode(response, 200)
 
     def test_approve_projects_post_view(self):
         Project.objects.create(pk=42)
-        request = self.factory.post(reverse('approve_projects'), data={'id': 42})
+        request = self.factory.post(reverse('approve_project', args=[42]), data={'approve': 'yes'})
         self.add_request_fields(request, superuser=True)
-        response = approve_projects(request)
-        self.assertStatusCode(response, 200)
+        response = approve_projects(request, project_id=42)
+        self.assertStatusCode(response, 302)
         self.assertTrue(Project.objects.get(pk=42).approved)
+
+    def test_approve_projects_triggers_build_last(self):
+        project = Project.objects.get(pk=2)
+        last_build_start_time = project.builds.last().start_time
+        self.assertIsNone(last_build_start_time)
+
+        request = self.factory.post(reverse('approve_project', args=[1]), data={'approve': 'yes'})
+        self.add_request_fields(request, superuser=True)
+        approve_projects(request, project_id=2)
+
+        self.assertNotEqual(last_build_start_time, project.builds.last().start_time)
 
     def test_download_artifact(self):
         request = self.factory.get(
