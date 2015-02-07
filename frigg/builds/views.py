@@ -37,7 +37,6 @@ def approve_projects(request, project_id=None):
         project = Project.objects.get(id=project_id)
         project.approved = True
         project.save()
-
         if project.builds.all():
             project.builds.last().start()
 

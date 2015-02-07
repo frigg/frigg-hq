@@ -1,5 +1,4 @@
 # -*- coding: utf8 -*-
-from datetime import datetime
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.http import Http404
@@ -80,6 +79,17 @@ class SmokeTestCase(ViewTestCase):
         response = approve_projects(request, project_id=42)
         self.assertStatusCode(response, 302)
         self.assertTrue(Project.objects.get(pk=42).approved)
+
+    def test_approve_projects_triggers_build_last(self):
+        project = Project.objects.get(pk=2)
+        last_build_start_time = project.builds.last().start_time
+        self.assertIsNone(last_build_start_time)
+
+        request = self.factory.post(reverse('approve_project', args=[1]), data={'approve': 'yes'})
+        self.add_request_fields(request, superuser=True)
+        approve_projects(request, project_id=2)
+
+        self.assertNotEqual(last_build_start_time, project.builds.last().start_time)
 
     def test_download_artifact(self):
         request = self.factory.get(
