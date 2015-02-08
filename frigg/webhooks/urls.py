@@ -1,7 +1,7 @@
-# -*- coding: utf8 -*-
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
-urlpatterns = patterns(
-    'frigg.webhooks.views',
-    url(r'^github/$', 'github_webhook', name='github'),
-)
+from . import views
+
+urlpatterns = [
+    url(r'^github/$', views.github_webhook, name='github'),
+]

@@ -1,8 +1,8 @@
-# -*- coding: utf8 -*-
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
-urlpatterns = patterns(
-    'frigg.stats.views',
+from . import views
 
-    url(r'^$', 'overview', name='overview'),
-)
+
+urlpatterns = [
+    url(r'^$', views.overview, name='overview'),
+]
