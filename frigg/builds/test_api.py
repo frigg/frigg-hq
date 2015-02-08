@@ -1,14 +1,14 @@
 # -*- coding: utf8 -*-
 import json
-from unittest import skip
 from decimal import Decimal
+from unittest import skip
 
 from django.contrib.staticfiles import finders
 from django.core.urlresolvers import reverse
-from django.test import TestCase, Client, RequestFactory, override_settings
+from django.test import Client, RequestFactory, TestCase, override_settings
 
 from .api import report_build
-from .models import BuildResult, Build
+from .models import Build, BuildResult
 
 
 class BuildBadgeTestCase(TestCase):

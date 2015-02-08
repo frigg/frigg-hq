@@ -2,7 +2,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.storage.fallback import FallbackStorage
-from django.test import TestCase, RequestFactory
+from django.test import RequestFactory, TestCase
 
 
 class ViewTestCase(TestCase):

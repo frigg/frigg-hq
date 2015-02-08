@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import unittest
+
 from frigg.helpers.badges import _coverage_color
 
 

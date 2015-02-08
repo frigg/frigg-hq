@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.test import RequestFactory
 from django.test.testcases import TestCase
 from django.test.utils import override_settings
+
 from frigg.authentication.decorators import worker_token_required
 
 

@@ -1,16 +1,16 @@
 # -*- coding: utf8 -*-
 import json
-from datetime import timedelta, datetime
+from datetime import datetime, timedelta
 from unittest import mock
 
 import responses
-from django.utils.timezone import now, get_current_timezone
-from mockredis import mock_redis_client
-from django.test import TestCase, override_settings
 from django.contrib.auth import get_user_model
+from django.test import TestCase, override_settings
+from django.utils.timezone import get_current_timezone, now
+from mockredis import mock_redis_client
 from social.apps.django_app.default.models import UserSocialAuth
 
-from .models import Project, BuildResult, Build
+from .models import Build, BuildResult, Project
 
 
 class ProjectTestCase(TestCase):

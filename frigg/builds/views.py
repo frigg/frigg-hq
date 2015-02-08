@@ -1,9 +1,9 @@
 # -*- coding: utf8 -*-
 from django.conf import settings
 from django.contrib import messages
+from django.core.paginator import EmptyPage, Paginator
 from django.http import Http404, HttpResponse
-from django.core.paginator import Paginator, EmptyPage
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 
 from .models import Build, Project
 

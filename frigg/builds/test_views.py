@@ -4,9 +4,10 @@ from django.core.urlresolvers import reverse
 from django.http import Http404
 
 from frigg.utils.tests import ViewTestCase
+
 from .models import Project
-from .views import (overview, view_build, view_organization, view_project, last_build,
-                    approve_projects, download_artifact)
+from .views import (approve_projects, download_artifact, last_build, overview, view_build,
+                    view_organization, view_project)
 
 
 class SmokeTestCase(ViewTestCase):

@@ -1,9 +1,11 @@
 # -*- coding: utf8 -*-
 from unittest import skipIf
+
 from django.conf import settings
 from django.core.urlresolvers import reverse
 
 from frigg.utils.tests import ViewTestCase
+
 from .views import overview
 
 

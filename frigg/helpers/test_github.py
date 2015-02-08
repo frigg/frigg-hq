@@ -1,14 +1,15 @@
 # -*- coding: utf8 -*-
-import os
 import json
+import os
 
 from django.conf import settings
 from django.test import TestCase
+
 from frigg.builds.models import Build, BuildResult, Project
 
-from .github import (parse_comment_payload, parse_push_payload, parse_pull_request_payload,
-                     parse_ping_payload, parse_member_payload, _get_status_from_build,
-                     get_pull_request_url)
+from .github import (_get_status_from_build, get_pull_request_url, parse_comment_payload,
+                     parse_member_payload, parse_ping_payload, parse_pull_request_payload,
+                     parse_push_payload)
 
 
 class GithubHelpersTestCase(TestCase):

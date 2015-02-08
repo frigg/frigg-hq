@@ -1,6 +1,7 @@
 tasks:
   - tox
   - flake8
+  - isort -c -rc frigg
   - coverage report --fail-under=90
   - coverage xml
 
