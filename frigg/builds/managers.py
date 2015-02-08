@@ -5,7 +5,17 @@ from django.db import models
 from django.db.models import Q
 
 
-class ProjectManager(models.Manager):
+class PermittedManager(models.Manager):
+
+    def permitted_query(self, user):
+        raise NotImplementedError
+
+    def permitted(self, user):
+        return self.filter(self.permitted_query(user)).distinct()
+
+
+class ProjectManager(PermittedManager):
+
     def get_or_create_from_url(self, url):
         item, created = self.get_or_create(git_repository=url)
         if created:
@@ -16,24 +26,26 @@ class ProjectManager(models.Manager):
             item.save()
         return item
 
-    def permitted(self, user):
+    def permitted_query(self, user):
         query = Q(private=False)
         if user.is_authenticated():
             query |= Q(members=user)
-        return self.filter(query).distinct()
+        return query
 
 
-class BuildManager(models.Manager):
-    def permitted(self, user):
+class BuildManager(PermittedManager):
+
+    def permitted_query(self, user):
         query = Q(project__private=False)
         if user.is_authenticated():
             query |= Q(project__members=user)
-        return self.filter(query).distinct()
+        return query
 
 
-class BuildResultManager(models.Manager):
-    def permitted(self, user):
+class BuildResultManager(PermittedManager):
+
+    def permitted_query(self, user):
         query = Q(build__project__private=False)
         if user.is_authenticated():
             query |= Q(build__project__members=user)
-        return self.filter(query).distinct()
+        return query
