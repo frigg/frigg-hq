@@ -16,6 +16,12 @@
     <strong>{% trans 'Branch' %}:</strong> {{ build.branch }} <br/>
     <strong>{% trans 'Commit hash' %}:</strong> {{ build.sha }} <br/>
     <strong>{% trans 'Timestamp' %}:</strong> <span class="timestamp">{{ build.created_at }}</span> <br/>
+    {% if build.result.coverage %}
+      <strong>{% trans 'Coverage' %}:</strong> {{ build.result.coverage }}% <br/>
+      <strong>{% trans 'Coverage difference from last master build' %}:</strong>
+      {% if build.result.coverage_diff > 0 %} + {% endif %}
+      {{ build.result.coverage_diff }}% <br/>
+    {% endif %}
     <strong>{% trans 'State' %}:</strong>
     {% if not build.result %}
       {% trans 'pending' %}

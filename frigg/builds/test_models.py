@@ -1,10 +1,10 @@
 # -*- coding: utf8 -*-
 import json
-from datetime import timedelta
+from datetime import timedelta, datetime
 from unittest import mock
 
 import responses
-from django.utils.timezone import now
+from django.utils.timezone import now, get_current_timezone
 from mockredis import mock_redis_client
 from django.test import TestCase, override_settings
 from django.contrib.auth import get_user_model
@@ -236,3 +236,27 @@ class BuildResultTestCase(TestCase):
                 'Exited with exit code: 11\n\n'
             )
         )
+
+    def test_coverage_diff(self):
+        start_time = datetime(2012, 12, 12, tzinfo=get_current_timezone())
+        b1 = Build.objects.create(project=self.project, branch='i', build_number=4,
+                                  start_time=start_time)
+        positive_change = BuildResult.objects.create(build=b1, coverage=100)
+        self.assertEqual(positive_change.coverage_diff, 100)
+
+        master = Build.objects.create(project=self.project, branch='master', build_number=3,
+                                      end_time=start_time - timedelta(hours=1))
+        BuildResult.objects.create(build=master, coverage=20)
+
+        # Need to fetch again to come around cached_property
+        self.assertEqual(BuildResult.objects.get(pk=positive_change.pk).coverage_diff, 80)
+
+        b2 = Build.objects.create(project=self.project, branch='i', build_number=5,
+                                  start_time=start_time)
+        negative_change = BuildResult.objects.create(build=b2, coverage=10)
+        self.assertEqual(negative_change.coverage_diff, -10)
+
+        b3 = Build.objects.create(project=self.project, branch='i', build_number=6,
+                                  start_time=start_time)
+        no_change = BuildResult.objects.create(build=b3, coverage=20)
+        self.assertEqual(no_change.coverage_diff, 0)
