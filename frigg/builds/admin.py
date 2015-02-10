@@ -32,4 +32,4 @@ class BuildAdmin(admin.ModelAdmin):
 
 @admin.register(BuildResult)
 class BuildResultAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'succeeded', 'return_code')
+    list_display = ('__str__', 'succeeded', 'return_code', 'coverage')

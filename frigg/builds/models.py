@@ -3,6 +3,7 @@ import re
 import json
 import logging
 from datetime import timedelta
+from django.utils.functional import cached_property
 from django.utils.timezone import now
 
 import redis
@@ -223,6 +224,16 @@ class BuildResult(TimeStampModel):
     @property
     def return_codes(self):
         return [int(code) for code in self.return_code.split(',')]
+
+    @cached_property
+    def coverage_diff(self):
+        master_build = self.build.project.builds.filter(
+            branch='master',
+            end_time__lt=self.build.start_time
+        ).exclude(result=None).first()
+        if master_build:
+            return self.coverage - (master_build.result.coverage or 0)
+        return self.coverage
 
     @property
     def tasks(self):
