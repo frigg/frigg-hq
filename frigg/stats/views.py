@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 from datetime import timedelta
 
+from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import Count
 from django.shortcuts import render
@@ -12,13 +13,14 @@ from frigg.builds.models import Build, Project
 @staff_member_required
 def overview(request):
     builds_per_day = {'labels': [], 'values': [], 'succeeded': []}
-    data = Build.objects.filter(start_time__gte=(now() - timedelta(weeks=30))) \
-                        .extra({"day": "date_trunc('day', start_time)"}) \
-                        .values("day").order_by("day").annotate(count=Count("id"))
+    if 'psycopg2' in settings.DATABASES['default']['ENGINE']:
+        data = Build.objects.filter(start_time__gte=(now() - timedelta(weeks=30))) \
+                            .extra({"day": "date_trunc('day', start_time)"}) \
+                            .values("day").order_by("day").annotate(count=Count("id"))
 
-    for point in data:
-        builds_per_day['labels'].append(point['day'].day)
-        builds_per_day['values'].append(point['count'])
+        for point in data:
+            builds_per_day['labels'].append(point['day'].day)
+            builds_per_day['values'].append(point['count'])
 
     return render(request, 'stats/overview.html', {
         'number_of_builds': Build.objects.all().count(),
