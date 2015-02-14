@@ -1,8 +1,8 @@
 # -*- coding: utf8 -*-
 import os
 
-from django.conf.global_settings import (TEMPLATE_CONTEXT_PROCESSORS as
-                                         DJANGO_TEMPLATE_CONTEXT_PROCESSORS)
+from django.conf.global_settings import \
+    TEMPLATE_CONTEXT_PROCESSORS as DJANGO_TEMPLATE_CONTEXT_PROCESSORS
 from django.contrib import messages
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))

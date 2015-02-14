@@ -1,12 +1,12 @@
 # -*- coding: utf8 -*-
 import json
 from unittest import mock
-from django.contrib.auth import get_user_model
 
+from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 
-from frigg.utils.tests import ViewTestCase
 from frigg.builds.models import Project
+from frigg.utils.tests import ViewTestCase
 
 
 @mock.patch('frigg.builds.models.Build.start', lambda x: x)

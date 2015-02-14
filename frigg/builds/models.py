@@ -1,23 +1,23 @@
 # -*- coding: utf8 -*-
-import re
 import json
 import logging
+import re
 from datetime import timedelta
-from django.utils.functional import cached_property
-from django.utils.timezone import now
 
 import redis
 import requests
 from basis.models import TimeStampModel
-from django.db import models
 from django.conf import settings
-from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
+from django.core.urlresolvers import reverse
+from django.db import models
+from django.utils.functional import cached_property
+from django.utils.timezone import now
 
 from frigg.helpers import github
 from frigg.helpers.badges import get_badge, get_coverage_badge
-from .managers import ProjectManager, BuildManager, BuildResultManager
 
+from .managers import BuildManager, BuildResultManager, ProjectManager
 
 logger = logging.getLogger(__name__)
 

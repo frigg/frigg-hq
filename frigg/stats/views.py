@@ -1,9 +1,11 @@
 # -*- coding: utf8 -*-
 from datetime import timedelta
+
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import Count
 from django.shortcuts import render
 from django.utils.timezone import now
+
 from frigg.builds.models import Build, Project
 
 
