@@ -1,8 +1,8 @@
 from rest_framework import viewsets
 
-from frigg.builds.filters import ProjectPermissionFilter, BuildPermissionFilter
-from frigg.builds.models import Project, Build
-from frigg.builds.serializers import ProjectSerializer, PaginatedBuildSerializer, BuildSerializer
+from frigg.builds.filters import BuildPermissionFilter, ProjectPermissionFilter
+from frigg.builds.models import Build, Project
+from frigg.builds.serializers import BuildSerializer, PaginatedBuildSerializer, ProjectSerializer
 
 
 class ProjectViewSet(viewsets.ModelViewSet):

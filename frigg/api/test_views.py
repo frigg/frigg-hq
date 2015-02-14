@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 import json
+
 from django.contrib.auth import get_user_model
 from rest_framework.test import APITestCase
 
-from frigg.builds.models import Project, BuildResult
+from frigg.builds.models import BuildResult, Project
 
 
 class APITestMixin(object):

@@ -1,7 +1,6 @@
-from rest_framework import serializers
-from rest_framework import pagination
+from rest_framework import pagination, serializers
 
-from .models import Project, Build, BuildResult
+from .models import Build, BuildResult, Project
 
 
 class ProjectSerializer(serializers.ModelSerializer):

@@ -4,8 +4,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from django.test import TestCase
 
-from .filters import ProjectPermissionFilter, BuildPermissionFilter
-from .models import Project, Build
+from .filters import BuildPermissionFilter, ProjectPermissionFilter
+from .models import Build, Project
 
 
 class FiltersTestCase(TestCase):

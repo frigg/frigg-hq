@@ -1,5 +1,6 @@
 from rest_framework import filters
-from frigg.builds.models import Project, Build
+
+from frigg.builds.models import Build, Project
 
 
 class ProjectPermissionFilter(filters.BaseFilterBackend):
