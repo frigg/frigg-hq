@@ -2,9 +2,21 @@
 {% load i18n %}
 
 {% block js %}
+  {{ block.super }}
   <script src="{{ STATIC_URL }}js/ansi_up.js"></script>
   <script src="{{ STATIC_URL }}js/colorify.js"></script>
   <script src="{{ STATIC_URL }}js/builds.js"></script>
+  {% if not build.result %}
+    <script>
+      $(document).ready(function() {
+        setInterval(function () {
+          $.getJSON('/api/builds/{{ build.pk }}/', function (build) {
+            if(build.result) window.location = '{% url 'view_build' build.project.owner build.project.name build.build_number %}';
+          });
+        }, 1000);
+      });
+    </script>
+  {% endif %}
 {% endblock js %}
 
 {% block content %}
@@ -54,4 +66,5 @@
       </div>
     {% endif %}
   </div>
+
 {% endblock %}
