@@ -110,6 +110,7 @@ class Build(TimeStampModel):
     sha = models.CharField(max_length=150)
     start_time = models.DateTimeField(null=True, blank=True)
     end_time = models.DateTimeField(null=True, blank=True)
+    message = models.TextField(null=True, blank=True, editable=False)
 
     objects = BuildManager()
 
@@ -137,6 +138,10 @@ class Build(TimeStampModel):
     @property
     def is_pending(self):
         return not hasattr(self, 'result')
+
+    @property
+    def short_message(self):
+        return self.message.split('\n')[0]
 
     @property
     def color(self):

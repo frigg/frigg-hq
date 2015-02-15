@@ -7,6 +7,9 @@
       </a>
     </h4>
     <div class="meta">
+      {% if build.message %}
+        <span class="message">{{ build.short_message }}</span>
+      {% endif %}
       {% if build.created_at %}
         <span class="timestamp"><i class="fa fa-clock-o"></i> {{ build.created_at|timesince }}</span>
       {% endif %}

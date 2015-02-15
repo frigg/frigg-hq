@@ -126,7 +126,8 @@ class GithubWebhookTestCase(ViewTestCase):
         'private': False,
         'pull_request_id': 0,
         'branch': 'master',
-        'sha': 'hash that stuff'
+        'sha': 'hash that stuff',
+        'message': 'great message'
     }
 
     pull_request_data = {
@@ -136,7 +137,8 @@ class GithubWebhookTestCase(ViewTestCase):
         'private': False,
         'pull_request_id': 1,
         'branch': 'patch-1',
-        'sha': 'hash that stuff'
+        'sha': 'hash that stuff',
+        'message': 'great message'
     }
 
     issue_comment_data = {

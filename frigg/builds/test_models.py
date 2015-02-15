@@ -161,6 +161,22 @@ class BuildTestCase(TestCase):
         build.start_time = now() - timedelta(seconds=260)
         self.assertTrue(build.has_timed_out())
 
+    def test_short_message(self):
+        build = Build(
+            project=self.project,
+            branch='master',
+            build_number=1,
+            message='Multi\nLine\nMessage'
+        )
+        self.assertEqual(build.short_message, 'Multi')
+        build = Build(
+            project=self.project,
+            branch='master',
+            build_number=1,
+            message='Single line message'
+        )
+        self.assertEqual(build.short_message, 'Single line message')
+
 
 class BuildResultTestCase(TestCase):
     def setUp(self):

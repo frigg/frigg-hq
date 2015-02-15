@@ -13,6 +13,9 @@
       {{ build.project.owner }} / {{ build.project.name }} / {{ build.branch }}
       <a href="{{ build.pull_request_url }}" class="no-underline"><i class="fa fa-github"></i></a>
     </h3>
+  </div>
+
+  <div class="pure-u-1-2">
     <strong>{% trans 'Branch' %}:</strong> {{ build.branch }} <br/>
     <strong>{% trans 'Commit hash' %}:</strong> {{ build.sha }} <br/>
     <strong>{% trans 'Timestamp' %}:</strong> <span class="timestamp">{{ build.created_at }}</span> <br/>
@@ -29,6 +32,13 @@
       {% trans 'success' %}
     {% else %}
       {% trans 'failure' %}
+    {% endif %}
+  </div>
+
+  <div class="pure-u-1-2">
+    {% if build.message %}
+      <strong>Message:</strong><br/>
+      {{ build.message }}
     {% endif %}
   </div>
 

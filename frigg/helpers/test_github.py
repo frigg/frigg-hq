@@ -45,6 +45,12 @@ class GithubHelpersTestCase(TestCase):
         self.assertEquals(output['repo_owner'], 'tind')
         self.assertEquals(output['repo_name'], 'frigg')
         self.assertEquals(output['private'], False)
+        self.assertEquals(
+            output['message'],
+            'Add model for projects\n'
+            '### Todo:\r\n- [x] Fix templates\r\n- [x] Add filtering of projects #30\r\n'
+            '- [x] Add filtering of branches within projects #30\r\n'
+        )
 
     def test_parse_pull_request_payload_labeled(self):
         data = json.load(open(os.path.join(self.fixtures_path, 'pull_request_labeled.json'),
@@ -71,6 +77,10 @@ class GithubHelpersTestCase(TestCase):
         self.assertEquals(output['branch'], 'master')
         self.assertEquals(output['private'], False)
         self.assertEquals(output['sha'], 'fddd2887efd63196e48fd5d6bc0e62e1bafa0276')
+        self.assertEquals(
+            output['message'],
+            'Add Project model and automatically create projects\n\nrelated to #24'
+        )
 
         data = json.load(open(os.path.join(self.fixtures_path, 'push_branch.json'),
                               encoding='utf-8'))
