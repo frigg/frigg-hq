@@ -78,12 +78,12 @@ class Project(TimeStampModel):
         ).start()
 
     def get_badge(self, branch='master'):
-        build = self.builds.filter(branch=branch).exclude(result=None).first()
+        build = self.builds.filter(branch=branch, pull_request_id=0).exclude(result=None).first()
         if build:
             return get_badge(build.result.succeeded)
 
     def get_coverage_badge(self, branch='master'):
-        build = self.builds.filter(branch=branch).exclude(result=None).first()
+        build = self.builds.filter(branch=branch, pull_request_id=0).exclude(result=None).first()
         if build:
             return get_coverage_badge(build.result.coverage)
 
