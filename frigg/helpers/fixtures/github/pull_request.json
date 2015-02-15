@@ -31,7 +31,7 @@
             "type": "User",
             "site_admin": false
         },
-        "body": "### Todo:\r\n- [x] Fix templates\r\n- [x] Add filtering of projects #30\r\n- [x] Add filtering of branches within projects #30\r\n- [ ] Tests\r\n  - [x] Tests for ´frigg.helpers.github`\r\n  - [x] Tests for views\r\n  - [ ] Fixtures",
+        "body": "### Todo:\r\n- [x] Fix templates\r\n- [x] Add filtering of projects #30\r\n- [x] Add filtering of branches within projects #30\r\n",
         "created_at": "2014-10-06T22:20:14Z",
         "updated_at": "2014-10-09T23:25:27Z",
         "closed_at": null,
