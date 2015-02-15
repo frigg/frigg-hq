@@ -31,6 +31,7 @@ INSTALLED_APPS = (
     'social.apps.django_app.default',
     'pipeline',
     'django_extensions',
+    'rest_framework',
 
     'frigg.authentication',
     'frigg.builds',

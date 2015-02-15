@@ -3,6 +3,8 @@ from django.conf.urls import include, patterns, url
 from django.contrib import admin
 from django.views.generic import RedirectView
 
+from frigg.api.urls import router as api_router
+
 admin.autodiscover()
 
 urlpatterns = patterns(
@@ -31,6 +33,7 @@ urlpatterns += patterns(
     ),
     url(r'^auth/', include('social.apps.django_app.urls', namespace='social')),
     url(r'^auth/', include('django.contrib.auth.urls')),
-    url(r'stats/', include('frigg.stats.urls', namespace='stats')),
+    url(r'^stats/', include('frigg.stats.urls', namespace='stats')),
+    url(r'^api/', include(api_router.urls)),
     url(r'^', include('frigg.builds.urls')),
 )

@@ -9,6 +9,9 @@ from .base import *
 # settings variables introduced in frigg
 from .frigg import *
 
+if 'rest_framework' in INSTALLED_APPS:
+    from .rest_framework import *
+
 try:
     from .local import *
 except ImportError as e:
