@@ -1,4 +1,4 @@
-from rest_framework import viewsets
+from rest_framework import permissions, viewsets
 
 from frigg.builds.filters import BuildPermissionFilter, ProjectPermissionFilter
 from frigg.builds.models import Build, Project
@@ -9,6 +9,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
     filter_backends = [ProjectPermissionFilter]
+    permission_classes = permissions.DjangoModelPermissionsOrAnonReadOnly,
 
 
 class BuildViewSet(viewsets.ModelViewSet):
@@ -17,3 +18,4 @@ class BuildViewSet(viewsets.ModelViewSet):
     pagination_serializer_class = PaginatedBuildSerializer
     paginate_by = 50
     filter_backends = [BuildPermissionFilter]
+    permission_classes = permissions.DjangoModelPermissionsOrAnonReadOnly,
