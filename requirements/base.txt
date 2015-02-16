@@ -2,6 +2,7 @@ django>=1.7,<1.8
 requests
 pyyaml
 redis
+markdown
 
 python-social-auth
 django-pipeline>=1.4

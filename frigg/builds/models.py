@@ -3,6 +3,8 @@ import json
 import logging
 import re
 from datetime import timedelta
+from django.utils.safestring import mark_safe
+from markdown import markdown
 
 import redis
 import requests
@@ -150,6 +152,10 @@ class Build(TimeStampModel):
     @property
     def short_message(self):
         return self.message.split('\n')[0]
+
+    @property
+    def rendered_message(self):
+        return mark_safe(markdown(self.message, safe_mode='remove').replace('<p></p>', ''))
 
     @property
     def color(self):
