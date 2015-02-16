@@ -3,8 +3,6 @@ import json
 import logging
 import re
 from datetime import timedelta
-from django.utils.safestring import mark_safe
-from markdown import markdown
 
 import redis
 import requests
@@ -14,7 +12,9 @@ from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.functional import cached_property
+from django.utils.safestring import mark_safe
 from django.utils.timezone import now
+from markdown import markdown
 
 from frigg.helpers import github
 from frigg.helpers.badges import get_badge, get_coverage_badge
