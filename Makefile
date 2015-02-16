@@ -11,7 +11,9 @@ run:
 production: venv frigg/settings/local.py
 	${PIP} install -r requirements/prod.txt
 	${MANAGE} migrate
+	bower install
 	${MANAGE} collectstatic --noinput
+	sudo supervisorctl restart frigg-prod
 
 deploy:
 	${PIP} install -r requirements/prod.txt
