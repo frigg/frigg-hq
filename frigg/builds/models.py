@@ -29,11 +29,15 @@ class Project(TimeStampModel):
     average_time = models.IntegerField(null=True)
     private = models.BooleanField(default=True)
     approved = models.BooleanField(default=False)
-    members = models.ManyToManyField(settings.AUTH_USER_MODEL, null=True, blank=True)
+    members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='projects', null=True,
+                                     blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='authx1_projects', null=True,
                              blank=True, help_text='A user with access to the repository.')
 
     objects = ProjectManager()
+
+    class Meta:
+        ordering = ['owner', 'name']
 
     def __str__(self):
         return '%(owner)s / %(name)s' % self.__dict__
