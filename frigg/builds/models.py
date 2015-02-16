@@ -78,7 +78,8 @@ class Project(TimeStampModel):
             build_number=self.last_build_number + 1,
             pull_request_id=data['pull_request_id'],
             branch=data['branch'],
-            sha=data["sha"]
+            sha=data['sha'],
+            message=data['message']
         ).start()
 
     def get_badge(self, branch='master'):
