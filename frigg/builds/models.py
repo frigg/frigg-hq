@@ -73,6 +73,9 @@ class Project(TimeStampModel):
             return 0
 
     def start_build(self, data):
+        if 'message' not in data:
+            data['message'] = None
+
         return Build.objects.create(
             project=self,
             build_number=self.last_build_number + 1,
