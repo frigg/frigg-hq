@@ -30,6 +30,9 @@
   <div class="pure-u-1 pure-u-lg-1-2">
     <strong>{% trans 'Branch' %}:</strong> {{ build.branch }} <br/>
     <strong>{% trans 'Commit hash' %}:</strong> {{ build.sha }} <br/>
+    {% if build.author %}
+      <strong>{% trans 'Author' %}:</strong> {{ build.author }} <br/>
+    {% endif %}
     <strong>{% trans 'Timestamp' %}:</strong> <span class="timestamp">{{ build.created_at }}</span> <br/>
     {% if build.result.coverage %}
       <strong>{% trans 'Coverage' %}:</strong> {{ build.result.coverage }}% <br/>

@@ -45,6 +45,7 @@ class GithubHelpersTestCase(TestCase):
         self.assertEquals(output['repo_owner'], 'tind')
         self.assertEquals(output['repo_name'], 'frigg')
         self.assertEquals(output['private'], False)
+        self.assertEquals(output['author'], 'relekang')
         self.assertEquals(
             output['message'],
             'Add model for projects\n'
@@ -77,6 +78,7 @@ class GithubHelpersTestCase(TestCase):
         self.assertEquals(output['branch'], 'master')
         self.assertEquals(output['private'], False)
         self.assertEquals(output['sha'], 'fddd2887efd63196e48fd5d6bc0e62e1bafa0276')
+        self.assertEquals(output['author'], 'relekang')
         self.assertEquals(
             output['message'],
             'Add Project model and automatically create projects\n\nrelated to #24'
