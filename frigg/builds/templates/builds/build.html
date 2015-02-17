@@ -17,6 +17,12 @@
       });
     </script>
   {% endif %}
+
+  <script>
+    $('.build-logs h3').on('click', function() {
+      $(this).parent().find('pre').slideToggle();
+    });
+  </script>
 {% endblock js %}
 
 {% block content %}
@@ -60,8 +66,12 @@
     {% else %}
       <div class="build-logs">
         {% for task, log, return_code in build.result.tasks %}
-          <h3>{{ task }} <span class="meta">Return code: {{ return_code }}</span></h3>
-          <pre><code class="colorify">{{ log }}</code></pre>
+          <div>
+            <h3>{{ task }} <span class="meta">Return code: {{ return_code }}</span></h3>
+            <pre{% if return_code == '' or return_code == '0' and 'install' in task %} style="display: none;"{% endif %}>
+              <code class="colorify">{{ log }}</code>
+            </pre>
+          </div>
         {% endfor %}
       </div>
     {% endif %}
