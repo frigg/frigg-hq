@@ -78,6 +78,8 @@ class ProjectTestCase(TestCase):
 
 
 class BuildTestCase(TestCase):
+    fixtures = ['frigg/builds/fixtures/users.yaml']
+
     def setUp(self):
         self.project = Project.objects.create(owner='frigg', name='frigg-worker', approved=True)
 
@@ -160,6 +162,16 @@ class BuildTestCase(TestCase):
         self.assertFalse(build.has_timed_out())
         build.start_time = now() - timedelta(seconds=260)
         self.assertTrue(build.has_timed_out())
+
+    def test_author_user(self):
+        user = get_user_model().objects.get(pk=1)
+        build = Build(
+            project=self.project,
+            branch='master',
+            build_number=1,
+            author=user.username
+        )
+        self.assertEqual(build.author_user, user)
 
     def test_short_message(self):
         build = Build(

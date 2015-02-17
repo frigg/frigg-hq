@@ -127,6 +127,7 @@ class GithubWebhookTestCase(ViewTestCase):
         'pull_request_id': 0,
         'branch': 'master',
         'sha': 'hash that stuff',
+        'author': 'relekang',
         'message': 'great message'
     }
 
@@ -138,6 +139,7 @@ class GithubWebhookTestCase(ViewTestCase):
         'pull_request_id': 1,
         'branch': 'patch-1',
         'sha': 'hash that stuff',
+        'author': 'relekang',
         'message': 'great message'
     }
 

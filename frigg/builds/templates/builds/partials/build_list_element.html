@@ -14,6 +14,11 @@
         <span class="timestamp"><i class="fa fa-clock-o"></i> {{ build.created_at|timesince }}</span>
       {% endif %}
       <span class="sha"><a href="{{ build.commit_url }}"><i class="fa fa-slack"></i> {{ build.sha|slice:':8' }}</a></span>
+      {% if build.author %}
+        <span class="author"><a href="https://github.com/{{ build.author }}">
+          <i class="fa fa-user"></i> {{ build.author }}
+        </a></span>
+      {% endif %}
       {% if build.pull_request_id %}
         <span class="pull-request"><a href="{{ build.pull_request_url }}"><i class="fa fa-code-fork fa-rotate-180"></i> {{ build.pull_request_id }}</a></span>
       {% endif %}

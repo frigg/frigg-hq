@@ -68,6 +68,7 @@ def parse_pull_request_payload(data):
         'pull_request_id': data['number'],
         'branch': data['pull_request']['head']['ref'],
         'sha': data['pull_request']['head']['sha'],
+        'author': data['pull_request']['user']['login'],
         'message': '{}\n{}'.format(data['pull_request']['title'], data['pull_request']['body'])
     }
 
@@ -90,6 +91,7 @@ def parse_push_payload(data):
             'pull_request_id': 0,
             'branch': 'master',
             'sha': data['after'],
+            'author': data['commits'][0]['author']['username'],
             'message': data['commits'][0]['message']
         }
 

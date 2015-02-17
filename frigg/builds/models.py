@@ -77,6 +77,8 @@ class Project(TimeStampModel):
     def start_build(self, data):
         if 'message' not in data:
             data['message'] = None
+        if 'author' not in data:
+            data['author'] = ''
 
         return Build.objects.create(
             project=self,
@@ -84,6 +86,7 @@ class Project(TimeStampModel):
             pull_request_id=data['pull_request_id'],
             branch=data['branch'],
             sha=data['sha'],
+            author=data['author'],
             message=data['message']
         ).start()
 
@@ -120,6 +123,7 @@ class Build(TimeStampModel):
     sha = models.CharField(max_length=150)
     start_time = models.DateTimeField(null=True, blank=True)
     end_time = models.DateTimeField(null=True, blank=True)
+    author = models.CharField(max_length=150, blank=True)
     message = models.TextField(null=True, blank=True, editable=False)
 
     objects = BuildManager()
@@ -156,6 +160,13 @@ class Build(TimeStampModel):
     @property
     def rendered_message(self):
         return mark_safe(markdown(self.message, safe_mode='remove').replace('<p></p>', ''))
+
+    @property
+    def author_user(self):
+        try:
+            return get_user_model().objects.get(username=self.author)
+        except get_user_model().DoesNotExist:
+            return None
 
     @property
     def color(self):
