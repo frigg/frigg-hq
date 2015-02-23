@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 from django.conf import settings
 from django.contrib import messages
+from django.core.cache import cache
 from django.core.paginator import EmptyPage, Paginator
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -9,7 +10,10 @@ from .models import Build, Project
 
 
 def overview(request, page=1):
-    projects_to_approve = Project.objects.permitted(request.user).filter(approved=False).count()
+    projects_to_approve = cache.get('projects:unapproved:count')
+    if projects_to_approve is None:
+        projects_to_approve = Project.objects.permitted(request.user).filter(approved=False).count()
+        cache.set('projects:unapproved:count', projects_to_approve, 60 * 60 * 24)
 
     if projects_to_approve > 0:
         messages.info(request, 'One or more projects needs approval before any builds will run.')
@@ -29,7 +33,6 @@ def overview(request, page=1):
 
 
 def approve_projects(request, project_id=None):
-
     if not request.user.is_superuser:
         raise Http404
 

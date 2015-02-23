@@ -11,7 +11,7 @@ SECRET_KEY = 'v8aa$cb0knx6)vyo!%tn6k6_g($!n1yq_v+4bg9v4*n@&dpu0w'
 DEBUG = True
 TEMPLATE_DEBUG = True
 ALLOWED_HOSTS = []
-INTERNAL_IPS = ('127.0.0.1:8000',)
+INTERNAL_IPS = ('127.0.0.1',)
 
 MESSAGE_TAGS = {
     messages.ERROR: 'danger'  # Makes messages play nice with bootstrap 3

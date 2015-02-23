@@ -9,6 +9,7 @@ import requests
 from basis.models import TimeStampModel
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.functional import cached_property
@@ -45,6 +46,7 @@ class Project(TimeStampModel):
         return '%(owner)s / %(name)s' % self.__dict__
 
     def save(self, *args, **kwargs):
+        cache.delete('projects:unapproved:count')
         if self.owner in settings.AUTO_APPROVE_OWNERS:
             self.approved = True
         super().save(*args, **kwargs)
