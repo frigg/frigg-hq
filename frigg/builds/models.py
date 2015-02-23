@@ -30,8 +30,8 @@ class Project(TimeStampModel):
     owner = models.CharField(max_length=100, blank=True)
     git_repository = models.CharField(max_length=150)
     average_time = models.IntegerField(null=True)
-    private = models.BooleanField(default=True)
-    approved = models.BooleanField(default=False)
+    private = models.BooleanField(default=True, db_index=True)
+    approved = models.BooleanField(default=False, db_index=True)
     members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='projects', null=True,
                                      blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='authx1_projects', null=True,
