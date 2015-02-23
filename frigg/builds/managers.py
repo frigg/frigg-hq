@@ -44,7 +44,7 @@ class BuildManager(PermittedManager):
                 from frigg.builds.models import Project  # isort:skip # noqa
                 projects = [p.pk for p in Project.objects.permitted(user)]
                 cache.set('projects:permitted:{}'.format(user.username), projects, 60 * 10)
-            query |= Q(project_id__in=projects)
+            query = Q(project_id__in=projects)
         return query
 
 
