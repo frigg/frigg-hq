@@ -1,5 +1,6 @@
 # -*- coding: utf8 -*-
 from django.contrib.auth.models import AbstractUser
+from django.core.cache import cache
 from django.utils.functional import cached_property
 from social.apps.django_app.default.models import UserSocialAuth
 
@@ -18,9 +19,11 @@ class User(AbstractUser):
     def save(self, *args, **kwargs):
         create = self.pk is None
         super(User, self).save(*args, **kwargs)
+        cache.delete('projects:permitted:{}'.format(self.username))
         if create:
             self.update_repo_permissions()
 
     def update_repo_permissions(self):
         if self.github_token:
             github.update_repo_permissions(self)
+            cache.delete('projects:permitted:{}'.format(self.username))
