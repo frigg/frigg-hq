@@ -29,6 +29,7 @@ class ProjectAdmin(admin.ModelAdmin):
 class BuildAdmin(admin.ModelAdmin):
     list_display = ('build_number', 'project', 'branch', 'pull_request_id', 'sha', 'color')
     inlines = [BuildResultInline]
+    list_filter = ['project']
 
 
 @admin.register(BuildResult)
