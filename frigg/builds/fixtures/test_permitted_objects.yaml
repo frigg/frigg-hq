@@ -5,7 +5,6 @@
     name: frigg
     owner: frigg
     private: true
-    user: 1
   model: builds.project
   pk: 1
 - fields:
@@ -15,7 +14,6 @@
     name: frigg.github.io
     owner: frigg
     private: true
-    user: null
   model: builds.project
   pk: 2
 - fields:
@@ -25,7 +23,6 @@
     name: frigg.github.io
     owner: frigg
     private: false
-    user: null
   model: builds.project
   pk: 3
 - fields:
@@ -35,7 +32,6 @@
     name: frigg-worker
     owner: frigg
     private: false
-    user: 1
   model: builds.project
   pk: 4
 - fields: {branch: master, build_number: 1, project: 1, pull_request_id: 0, sha: 1kjfkjsdf}

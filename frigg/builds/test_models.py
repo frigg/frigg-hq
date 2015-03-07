@@ -69,9 +69,10 @@ class ProjectTestCase(TestCase):
         self.assertEqual(Project.token_for_url('git@github.com:frigg/frigg.git'), 'github-token')
 
         project = Project.objects.get_or_create_from_url('git@github.com:frigg/frigg.git')
-        project.user = get_user_model().objects.get(pk=1)
+        user = get_user_model().objects.get(pk=1)
         project.save()
-        social_auth = UserSocialAuth.objects.create(user=project.user, provider='github', uid='uid')
+        project.members.add(user)
+        social_auth = UserSocialAuth.objects.create(user=user, provider='github', uid='uid')
         social_auth.extra_data = {'access_token': 'user-token'}
         social_auth.save()
         self.assertEqual(Project.token_for_url('git@github.com:frigg/frigg.git'), 'user-token')

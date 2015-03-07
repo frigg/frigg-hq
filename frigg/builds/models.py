@@ -34,9 +34,6 @@ class Project(TimeStampModel):
     approved = models.BooleanField(default=False, db_index=True)
     members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='projects', null=True,
                                      blank=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='authx1_projects', null=True,
-                             blank=True, help_text='A user with access to the repository.')
-
     objects = ProjectManager()
 
     class Meta:
@@ -54,7 +51,7 @@ class Project(TimeStampModel):
     @property
     def github_token(self):
         try:
-            token = self.user.github_token
+            token = self.members.first().github_token
         except AttributeError:
             token = None
 
