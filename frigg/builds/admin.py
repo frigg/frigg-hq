@@ -22,6 +22,7 @@ class BuildInline(admin.TabularInline):
 class ProjectAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'git_repository', 'average_time', 'user', 'last_build_number')
     inlines = [BuildInline]
+    list_filter = ['owner']
 
 
 @admin.register(Build)
