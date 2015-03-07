@@ -8,4 +8,4 @@ python-social-auth
 django-pipeline>=1.4
 django-extensions
 django-basis
-djangorestframework
+djangorestframework==3.0.4
