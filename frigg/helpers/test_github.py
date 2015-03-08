@@ -78,11 +78,8 @@ class GithubHelpersTestCase(TestCase):
         self.assertEquals(output['branch'], 'master')
         self.assertEquals(output['private'], False)
         self.assertEquals(output['sha'], 'fddd2887efd63196e48fd5d6bc0e62e1bafa0276')
-        self.assertEquals(output['author'], 'relekang')
-        self.assertEquals(
-            output['message'],
-            'Add Project model and automatically create projects\n\nrelated to #24'
-        )
+        self.assertEquals(output['author'], 'frecar')
+        self.assertEquals(output['message'], 'Rebased master, cleaned up imports')
 
         data = json.load(open(os.path.join(self.fixtures_path, 'push_branch.json'),
                               encoding='utf-8'))
