@@ -23,8 +23,10 @@ def github_webhook(request):
         project.private = data['private']
         try:
             user = get_user_model().objects.get(username=project.owner)
-            project.user = user
-            project.update_members()  # This can only be done if user is set
+
+            # Must add a user before checking for more
+            project.members.add(user)
+            project.update_members()
         except get_user_model().DoesNotExist:
             if data['private'] is False:
                 project.update_members()
