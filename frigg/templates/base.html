@@ -48,6 +48,7 @@
 
       {% if user.is_staff %}
         <li><a href="{% url 'stats:overview' %}" class="pure-button">Stats</a></li>
+        <li><a href="{% url 'admin:index' %}" class="pure-button">Admin</a></li>
       {% endif %}
 
         {% if user.is_authenticated %}
