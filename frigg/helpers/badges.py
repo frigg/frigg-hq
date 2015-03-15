@@ -26,7 +26,7 @@ def get_coverage_badge(coverage):
         if coverage is None:
             url = 'https://img.shields.io/badge/coverage-unknown-lightgrey.svg'
         else:
-            url = 'https://img.shields.io/badge/coverage-{}-{}.svg?style=flat'.format(
+            url = 'https://img.shields.io/badge/coverage-{}%-{}.svg?style=flat'.format(
                 coverage,
                 _coverage_color(coverage)
             )
