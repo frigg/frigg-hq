@@ -9,3 +9,4 @@ django-pipeline>=1.4
 django-extensions
 django-basis
 djangorestframework==3.0.4
+django-cachalot==1.0.0
