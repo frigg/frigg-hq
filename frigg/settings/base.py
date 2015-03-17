@@ -32,6 +32,7 @@ INSTALLED_APPS = (
     'pipeline',
     'django_extensions',
     'rest_framework',
+    'cachalot',
 
     'frigg.authentication',
     'frigg.builds',
