@@ -1,4 +1,4 @@
-from rest_framework import pagination, serializers
+from rest_framework import serializers
 
 from .models import Build, BuildResult, Project
 
@@ -47,8 +47,3 @@ class BuildSerializer(serializers.ModelSerializer):
             'start_time',
             'end_time',
         )
-
-
-class PaginatedBuildSerializer(pagination.PaginationSerializer):
-    class Meta:
-        object_serializer_class = BuildSerializer
