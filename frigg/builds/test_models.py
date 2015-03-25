@@ -16,9 +16,6 @@ from .models import Build, BuildResult, Project
 class ProjectTestCase(TestCase):
     fixtures = ['frigg/builds/fixtures/users.yaml']
 
-    def tearDown(self):
-        Project.objects.all().delete()
-
     def test___str__(self):
         project = Project.objects.create(owner='frigg', name='frigg-worker')
         self.assertEqual(str(project), 'frigg / frigg-worker')
@@ -33,14 +30,16 @@ class ProjectTestCase(TestCase):
         self.assertFalse(project.approved)
         self.assertEqual(Project.objects.all().count(), 1)
 
+    @mock.patch('frigg.builds.models.Project.github_token', '')
     def test_clone_url(self):
-        project = Project.objects.create(owner='frigg', name='frigg-worker', private=False)
+        project = Project(owner='frigg', name='frigg-worker', private=False)
         self.assertEqual(project.clone_url, 'https://github.com/frigg/frigg-worker')
-        project = Project.objects.create(owner='frigg', name='chewie', private=True)
+        project = Project(owner='frigg', name='chewie', private=True)
         self.assertEqual(project.clone_url, 'https://@github.com/frigg/chewie')
 
     def test_last_build_number(self):
-        project = Project.objects.create(owner='frigg', name='frigg-worker', private=False)
+        project = Project.objects.create(owner='frigg', name='frigg-worker', private=False,
+                                         git_repository='git@github.com:frigg/frigg-worker.git')
         self.assertEqual(project.last_build_number, 0)
         Build.objects.create(project=project, build_number=42)
         self.assertEqual(project.last_build_number, 42)
@@ -83,10 +82,6 @@ class BuildTestCase(TestCase):
 
     def setUp(self):
         self.project = Project.objects.create(owner='frigg', name='frigg-worker', approved=True)
-
-    def tearDown(self):
-        Project.objects.all().delete()
-        Build.objects.all().delete()
 
     def test___str__(self):
         build = Build.objects.create(project=self.project, branch='master', build_number=1)
@@ -144,7 +139,8 @@ class BuildTestCase(TestCase):
     @mock.patch('frigg.builds.models.BuildResult.create_not_approved')
     @mock.patch('redis.Redis', mock_redis_client)
     def test_start_not_approved(self, mock_create_not_approved):
-        project = Project.objects.create(owner='tind', name='frigg', approved=False)
+        project = Project.objects.create(owner='tind', name='frigg', approved=False,
+                                         git_repository='git@github.com:tind/frigg.git')
         build = Build.objects.create(project=project, branch='master', build_number=1)
         build.start()
         self.assertTrue(mock_create_not_approved.called)
@@ -195,11 +191,6 @@ class BuildResultTestCase(TestCase):
     def setUp(self):
         self.project = Project.objects.create(owner='frigg', name='frigg-worker')
         self.build = Build.objects.create(project=self.project, branch='master', build_number=1)
-
-    def tearDown(self):
-        Project.objects.all().delete()
-        Build.objects.all().delete()
-        BuildResult.objects.all().delete()
 
     def test___str__(self):
         result = BuildResult.objects.create(build=self.build)

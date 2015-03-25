@@ -18,9 +18,9 @@
   pk: 2
 - fields:
     average_time: 0
-    git_repository: git@github.com:frigg/frigg.github.io.git
+    git_repository: git@github.com:frigg/frigg-common.git
     members: []
-    name: frigg.github.io
+    name: frigg-common
     owner: frigg
     private: false
   model: builds.project
