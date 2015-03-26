@@ -26,9 +26,9 @@ logger = logging.getLogger(__name__)
 
 
 class Project(TimeStampModel):
-    name = models.CharField(max_length=100, blank=True)
-    owner = models.CharField(max_length=100, blank=True)
-    git_repository = models.CharField(max_length=150)
+    name = models.CharField(max_length=100, db_index=True, blank=True)
+    owner = models.CharField(max_length=100, db_index=True, blank=True)
+    git_repository = models.CharField(unique=True, db_index=True, max_length=150)
     average_time = models.IntegerField(null=True)
     private = models.BooleanField(default=True, db_index=True)
     approved = models.BooleanField(default=False, db_index=True)
@@ -38,6 +38,7 @@ class Project(TimeStampModel):
 
     class Meta:
         ordering = ['owner', 'name']
+        unique_together = ('owner', 'name')
 
     def __str__(self):
         return '%(owner)s / %(name)s' % self.__dict__
