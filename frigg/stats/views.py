@@ -12,6 +12,7 @@ from frigg.builds.models import Build, Project
 
 @staff_member_required
 def overview(request):
+    graph_top = 0
     builds_per_day = {'labels': [], 'values': [], 'succeeded': []}
     if 'psycopg2' in settings.DATABASES['default']['ENGINE']:
         data = Build.objects.filter(start_time__gte=(now() - timedelta(weeks=30))) \
@@ -19,6 +20,7 @@ def overview(request):
                             .values("day").order_by("day").annotate(count=Count("id"))
 
         for point in data:
+            graph_top = max([graph_top, point['count']])
             builds_per_day['labels'].append(point['day'].day)
             builds_per_day['values'].append(point['count'])
 
@@ -29,5 +31,6 @@ def overview(request):
         'number_of_pending': Build.objects.filter(result=None).count(),
         'approved_projects': Project.objects.filter(approved=True).count(),
         'unapproved_projects': Project.objects.filter(approved=False).count(),
-        'builds_per_day': builds_per_day
+        'builds_per_day': builds_per_day,
+        'graph_top': graph_top
     })

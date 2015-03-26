@@ -51,8 +51,9 @@
       ]
     }, {
       scaleOverride: true,
+
       scaleSteps: 10,
-      scaleStepWidth: 5,
+      scaleStepWidth: Math.ceil({{ graph_top }} / 10),
       scaleStartValue: 0,
       animation: false,
       responsive: true
