@@ -1,4 +1,4 @@
-django==1.7.6
+django==1.7.7
 requests==2.6.0
 pyyaml==3.11
 redis==2.10.3
