@@ -34,6 +34,7 @@ class Project(TimeStampModel):
     approved = models.BooleanField(default=False, db_index=True)
     members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='projects', null=True,
                                      blank=True)
+    queue_name = models.CharField(max_length=200, default=settings.FRIGG_WORKER_QUEUE)
     objects = ProjectManager()
 
     class Meta:
@@ -203,7 +204,7 @@ class Build(TimeStampModel):
         self.save()
 
         r = redis.Redis(**settings.REDIS_SETTINGS)
-        r.lpush(settings.FRIGG_WORKER_QUEUE, json.dumps(self.queue_object))
+        r.lpush(self.project.queue_name, json.dumps(self.queue_object))
 
         return self
 
