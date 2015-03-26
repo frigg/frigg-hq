@@ -64,7 +64,11 @@
   </div>
 
   <div class="pure-u-1">
-    {% if build.is_pending %}
+    {% if not build.project.approved %}
+      <p class="lead text-center">
+        {% trans 'This project is not approved, and needs to be approved before a build can run.' %}
+      </p>
+    {% elif build.is_pending %}
       {% include "builds/partials/loading.html" %}
     {% else %}
       <div class="build-logs">
