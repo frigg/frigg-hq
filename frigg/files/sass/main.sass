@@ -5,6 +5,9 @@ $meta-font-color: #999
 $code-background-color: #ededed
 $transparent: rgba(0, 0, 0, 0)
 
+$green: #468847
+$red: #d9534f
+
 body
   background: $background-color
   font-size: 17px
@@ -115,10 +118,10 @@ pre
 
   &.red
     background-color: #fdf7f7
-    border-left-color: #d9534f
+    border-left-color: $red
   &.green
     background-color: #dff0d8
-    border-left-color: #468847
+    border-left-color: $green
   &.orange
     background-color: #fcf8f2
     border-left-color: #f0ad4e
@@ -126,6 +129,17 @@ pre
 .build-logs
   h3
     cursor: pointer
+
+    .fa
+      font-size: 0.8em
+
+      &.green
+        color: $green
+        background: transparent
+
+      &.red
+        color: $red
+        background: transparent
 
   .meta
     font-size: 0.6em
@@ -150,6 +164,7 @@ pre
 
 .text-right
   text-align: right
+
 i.fa-slack
   -ms-transform: rotate(19deg)
   -webkit-transform: rotate(19deg)
