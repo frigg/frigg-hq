@@ -188,6 +188,15 @@ class BuildTestCase(TestCase):
         )
         self.assertEqual(build.short_message, 'Single line message')
 
+    def test_rendered_message(self):
+        build = Build(
+            project=self.project,
+            branch='master',
+            build_number=1,
+            message='Single **line** message'
+        )
+        self.assertEqual(build.rendered_message, '<p>Single <strong>line</strong> message</p>')
+
 
 class BuildResultTestCase(TestCase):
     def setUp(self):
