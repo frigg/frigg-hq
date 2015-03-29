@@ -69,7 +69,10 @@ def parse_pull_request_payload(data):
         'branch': data['pull_request']['head']['ref'],
         'sha': data['pull_request']['head']['sha'],
         'author': data['pull_request']['user']['login'],
-        'message': '{}\n{}'.format(data['pull_request']['title'], data['pull_request']['body'])
+        'message': '{}\n{}'.format(
+            data['pull_request']['title'] or '',
+            data['pull_request']['body'] or ''
+        )
     }
 
 

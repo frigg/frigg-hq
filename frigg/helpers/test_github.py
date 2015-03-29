@@ -53,6 +53,12 @@ class GithubHelpersTestCase(TestCase):
             '- [x] Add filtering of branches within projects #30\r\n'
         )
 
+    def test_parse_pull_request_payload_(self):
+        data = json.load(open(os.path.join(self.fixtures_path, 'pull_request_no_message.json'),
+                              encoding='utf-8'))
+        output = parse_pull_request_payload(data)
+        self.assertEqual(output['message'], 'Add model for projects\n')
+
     def test_parse_pull_request_payload_labeled(self):
         data = json.load(open(os.path.join(self.fixtures_path, 'pull_request_labeled.json'),
                               encoding='utf-8'))
