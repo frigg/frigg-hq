@@ -197,6 +197,31 @@ class BuildTestCase(TestCase):
         )
         self.assertEqual(build.rendered_message, '<p>Single <strong>line</strong> message</p>')
 
+    @mock.patch('frigg.builds.models.Build.send_webhook')
+    @mock.patch('frigg.helpers.github.set_commit_status')
+    def test_handle_worker_report(self, mock_set_commit_status, mock_send_webhook):
+        build = Build.objects.create(
+            project=self.project,
+            branch='master',
+            build_number=1,
+        )
+        build.handle_worker_report({
+            'sha': 'superbhash',
+            'clone_url': 'https://github.com/frigg/frigg-worker.git',
+            'name': 'frigg-worker',
+            'branch': 'master',
+            'owner': 'frigg',
+            'id': 1,
+            'results': [
+                {'task': 'make test', 'return_code': 0, 'succeeded': True, 'log': 'log'},
+                {'task': 'make test'}
+            ],
+            'webhooks': ['http://example.com']
+        })
+        self.assertIsNotNone(Build.objects.get(pk=build.id).end_time)
+        mock_set_commit_status.asset_called_once_with(build)
+        mock_send_webhook.asset_called_once_with('http://example.com')
+
 
 class BuildResultTestCase(TestCase):
     def setUp(self):
