@@ -169,6 +169,8 @@ class BuildTestCase(TestCase):
             author=user.username
         )
         self.assertEqual(build.author_user, user)
+        build.author = 'i'
+        self.assertIsNone(build.author_user)
 
     def test_short_message(self):
         build = Build(
