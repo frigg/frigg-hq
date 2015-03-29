@@ -13,12 +13,15 @@ from .github import (_get_status_from_build, get_pull_request_url, parse_comment
 
 
 class GithubHelpersTestCase(TestCase):
+
+    def load_fixture(self, fixture):
+        return json.load(open(os.path.join(self.fixtures_path, fixture), encoding='utf-8'))
+
     def setUp(self):
         self.fixtures_path = os.path.join(settings.BASE_DIR, 'helpers/fixtures/github')
 
     def test_parse_issue_comment_payload(self):
-        data = json.load(open(os.path.join(self.fixtures_path, 'issue_comment.json'),
-                              encoding='utf-8'))
+        data = self.load_fixture('issue_comment.json')
         output = parse_comment_payload(data)
 
         self.assertEquals(output['repo_url'], 'git@github.com:tind/frigg.git')
@@ -37,8 +40,7 @@ class GithubHelpersTestCase(TestCase):
         self.assertEquals(output['sha'], 'h')
 
     def test_parse_pull_request_payload(self):
-        data = json.load(open(os.path.join(self.fixtures_path, 'pull_request.json'),
-                              encoding='utf-8'))
+        data = self.load_fixture('pull_request.json')
         output = parse_pull_request_payload(data)
 
         self.assertEquals(output['repo_url'], 'git@github.com:tind/frigg.git')
@@ -54,28 +56,24 @@ class GithubHelpersTestCase(TestCase):
         )
 
     def test_parse_pull_request_payload_(self):
-        data = json.load(open(os.path.join(self.fixtures_path, 'pull_request_no_message.json'),
-                              encoding='utf-8'))
+        data = self.load_fixture('pull_request_no_message.json')
         output = parse_pull_request_payload(data)
         self.assertEqual(output['message'], 'Add model for projects\n')
 
     def test_parse_pull_request_payload_labeled(self):
-        data = json.load(open(os.path.join(self.fixtures_path, 'pull_request_labeled.json'),
-                              encoding='utf-8'))
+        data = self.load_fixture('pull_request_labeled.json')
         output = parse_pull_request_payload(data)
 
         self.assertEqual(output, None)
 
     def test_parse_pull_request_payload_closed(self):
-        data = json.load(open(os.path.join(self.fixtures_path, 'pull_request_closed.json'),
-                              encoding='utf-8'))
+        data = self.load_fixture('pull_request_closed.json')
         output = parse_pull_request_payload(data)
 
         self.assertEqual(output, None)
 
     def test_parse_push_payload(self):
-        data = json.load(open(os.path.join(self.fixtures_path, 'push_master.json'),
-                              encoding='utf-8'))
+        data = self.load_fixture('push_master.json')
         output = parse_push_payload(data)
 
         self.assertEquals(output['repo_url'], 'git@github.com:tind/frigg.git')
@@ -87,18 +85,15 @@ class GithubHelpersTestCase(TestCase):
         self.assertEquals(output['author'], 'frecar')
         self.assertEquals(output['message'], 'Rebased master, cleaned up imports')
 
-        data = json.load(open(os.path.join(self.fixtures_path, 'push_branch.json'),
-                              encoding='utf-8'))
+        data = self.load_fixture('push_branch.json')
         self.assertIsNone(parse_push_payload(data))
 
     def test_parse_push_skip_payload(self):
-        data = json.load(open(os.path.join(self.fixtures_path, 'push_master_skip.json'),
-                              encoding='utf-8'))
+        data = self.load_fixture('push_master_skip.json')
         self.assertIsNone(parse_push_payload(data))
 
     def test_parse_ping_payload(self):
-        data = json.load(open(os.path.join(self.fixtures_path, 'ping.json'),
-                              encoding='utf-8'))
+        data = self.load_fixture('ping.json')
         output = parse_ping_payload(data)
 
         self.assertEquals(output['repo_url'], 'git@github.com:frigg/frigg.git')
@@ -107,8 +102,7 @@ class GithubHelpersTestCase(TestCase):
         self.assertEquals(output['private'], False)
 
     def test_parse_member_payload(self):
-        data = json.load(open(os.path.join(self.fixtures_path, 'member.json'),
-                              encoding='utf-8'))
+        data = self.load_fixture('member.json')
         output = parse_member_payload(data)
 
         self.assertEquals(output['repo_url'], 'git@github.com:baxterthehacker/public-repo.git')
