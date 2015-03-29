@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import json
-from unittest import skip
 
 from django.contrib.auth import get_user_model
 from rest_framework.test import APITestCase
@@ -8,7 +7,6 @@ from rest_framework.test import APITestCase
 from frigg.builds.models import Build, BuildResult, Project
 
 
-@skip('unreliable')
 class APITestMixin(object):
     def assertProject(self, obj, project_id):
         project = Project.objects.get(pk=project_id)
@@ -36,10 +34,9 @@ class APITestMixin(object):
 
     def assertNotAllowed(self, method, url):
         response = getattr(self.client, method)(url)
-        self.assertEqual(response.status_code, 405)
+        self.assertEqual(response.status_code, 403)
 
 
-@skip('unreliable')
 class ProjectAPITestCase(APITestCase, APITestMixin):
     fixtures = ['frigg/builds/fixtures/users.yaml', 'frigg/api/fixtures/test_views.yaml']
 
@@ -55,8 +52,8 @@ class ProjectAPITestCase(APITestCase, APITestMixin):
         self.assertEqual(response.status_code, 200)
         json_response = json.loads(response.content.decode())
         self.assertEqual(len(json_response), 2)
-        self.assertProject(json_response[0], 4)
-        self.assertProject(json_response[1], 3)
+        self.assertProject(json_response[0], 3)
+        self.assertProject(json_response[1], 4)
 
     def test_get_projects_authenticated(self):
         self.client.force_authenticate(user=self.user)
@@ -65,8 +62,8 @@ class ProjectAPITestCase(APITestCase, APITestMixin):
         json_response = json.loads(response.content.decode())
         self.assertEqual(len(json_response), 3)
         self.assertProject(json_response[0], 1)
-        self.assertProject(json_response[1], 4)
-        self.assertProject(json_response[2], 3)
+        self.assertProject(json_response[1], 3)
+        self.assertProject(json_response[2], 4)
         response = self.client.get('/api/projects/2/')
         self.assertEqual(response.status_code, 404)
 

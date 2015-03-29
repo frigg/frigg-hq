@@ -14,14 +14,13 @@
     name: frigg.github.io
     owner: frigg
     private: true
-    user: null
   model: builds.project
   pk: 2
 - fields:
     average_time: 0
-    git_repository: git@github.com:frigg/frigg.github.io.git
+    git_repository: git@github.com:frigg/frigg-dispatcher.git
     members: []
-    name: frigg.github.io
+    name: frigg-dispatcher
     owner: frigg
     private: false
   model: builds.project
