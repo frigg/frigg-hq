@@ -19,6 +19,8 @@ def github_webhook(request):
     data = json.loads(str(request.body, encoding='utf-8'))
     if event == 'ping':
         data = github.parse_ping_payload(data)
+        if data is None:
+            return HttpResponse('Organization ping event received')
         project = Project.objects.get_or_create_from_url(data['repo_url'])
         project.private = data['private']
         try:

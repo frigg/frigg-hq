@@ -1,0 +1,50 @@
+{
+  "zen": "Favor focus over features.",
+  "hook_id": 3594947,
+  "hook": {
+    "url": "https://api.github.com/orgs/frigg/hooks/3594947",
+    "id": 3594947,
+    "name": "web",
+    "active": true,
+    "events": [
+      "*"
+    ],
+    "config": {
+      "url": "https://ci.frigg.io/webhooks/github/",
+      "content_type": "json",
+      "insecure_ssl": "0",
+      "secret": ""
+    },
+    "updated_at": "2014-12-04T08:15:07Z",
+    "created_at": "2014-12-04T08:15:07Z"
+  },
+  "organization": {
+    "login": "frigg",
+    "id": 9164846,
+    "url": "https://api.github.com/orgs/frigg",
+    "repos_url": "https://api.github.com/orgs/frigg/repos",
+    "events_url": "https://api.github.com/orgs/frigg/events",
+    "members_url": "https://api.github.com/orgs/frigg/members{/member}",
+    "public_members_url": "https://api.github.com/orgs/frigg/public_members{/member}",
+    "avatar_url": "https://avatars.githubusercontent.com/u/9164846?v=3"
+  },
+  "sender": {
+    "login": "relekang",
+    "id": 476364,
+    "avatar_url": "https://avatars.githubusercontent.com/u/476364?v=3",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/relekang",
+    "html_url": "https://github.com/relekang",
+    "followers_url": "https://api.github.com/users/relekang/followers",
+    "following_url": "https://api.github.com/users/relekang/following{/other_user}",
+    "gists_url": "https://api.github.com/users/relekang/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/relekang/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/relekang/subscriptions",
+    "organizations_url": "https://api.github.com/users/relekang/orgs",
+    "repos_url": "https://api.github.com/users/relekang/repos",
+    "events_url": "https://api.github.com/users/relekang/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/relekang/received_events",
+    "type": "User",
+    "site_admin": false
+  }
+}

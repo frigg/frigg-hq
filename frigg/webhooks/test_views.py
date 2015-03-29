@@ -50,6 +50,12 @@ class GithubWebhookTestCase(ViewTestCase):
         self.assertContains(response, 'Added project dumbledore / da')
         self.assertIsNotNone(Project.objects.get(owner='dumbledore', name='da', private=False))
 
+    @mock.patch('frigg.helpers.github.parse_ping_payload', lambda x: None)
+    def test_ping_handling_of_organization_ping(self):
+        response = self.post_webhook('ping')
+        self.assertStatusCode(response)
+        self.assertContains(response, 'Organization ping event received')
+
     @mock.patch('frigg.helpers.github.parse_push_payload',
                 lambda x: GithubWebhookTestCase.push_data)
     def test_push_handling(self):
