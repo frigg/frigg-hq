@@ -100,17 +100,18 @@ def parse_push_payload(data):
 
 
 def parse_ping_payload(data):
-    repo_url = "git@github.com:%s/%s.git" % (
-        data['repository']['owner']['login'],
-        data['repository']['name']
-    )
+    if 'repository' in data:
+        repo_url = "git@github.com:%s/%s.git" % (
+            data['repository']['owner']['login'],
+            data['repository']['name']
+        )
 
-    return {
-        'repo_url': repo_url,
-        'repo_name': data['repository']['name'],
-        'repo_owner': data['repository']['owner']['login'],
-        'private': data['repository']['private'],
-    }
+        return {
+            'repo_url': repo_url,
+            'repo_name': data['repository']['name'],
+            'repo_owner': data['repository']['owner']['login'],
+            'private': data['repository']['private'],
+        }
 
 
 def parse_member_payload(data):

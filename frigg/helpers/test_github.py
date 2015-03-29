@@ -101,6 +101,10 @@ class GithubHelpersTestCase(TestCase):
         self.assertEquals(output['repo_name'], 'frigg')
         self.assertEquals(output['private'], False)
 
+    def test_parse_ping_payload_organization(self):
+        data = self.load_fixture('ping_organization.json')
+        self.assertIsNone(parse_ping_payload(data))
+
     def test_parse_member_payload(self):
         data = self.load_fixture('member.json')
         output = parse_member_payload(data)
