@@ -6,7 +6,7 @@ from .models import Build, BuildResult, Project
 
 class BuildResultInline(admin.StackedInline):
     model = BuildResult
-    readonly_fields = ('result_log', 'succeeded', 'return_code')
+    readonly_fields = ('result_log', 'succeeded')
     extra = 0
     max_num = 0
 
@@ -34,4 +34,4 @@ class BuildAdmin(admin.ModelAdmin):
 
 @admin.register(BuildResult)
 class BuildResultAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'succeeded', 'return_code', 'coverage')
+    list_display = ('__str__', 'succeeded', 'coverage')

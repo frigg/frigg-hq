@@ -122,14 +122,34 @@ class APITestCase(TestCase):
         build = Build.objects.get(pk=2)
         self.assertFalse(build.is_pending)
         self.assertTrue(build.result.succeeded)
-        self.assertEquals(build.result.return_codes, [0])
+        self.assertFalse(build.result.still_running)
         self.assertIsNone(build.result.coverage)
         self.assertEquals(
-            build.result.result_log,
-            'Task: make test\n\n------------------------------------\n'
-            'log\n------------------------------------\nExited with exit code: 0\n\n'
-            'Task: make test\n\n------------------------------------\n'
-            '\n------------------------------------\nExited with exit code: \n\n'
+            json.loads(build.result.result_log),
+            self.payload['results']
+        )
+
+    @override_settings(FRIGG_WORKER_TOKENS=['supertoken'])
+    def test_report_pending(self):
+        self.payload['finished'] = False
+        self.payload['results'].append({'task': 'flake8', 'pending': True})
+        request = self.factory.post(
+            reverse('worker_api_report_build'),
+            data=json.dumps(self.payload),
+            content_type='application/json',
+            HTTP_FRIGG_WORKER_TOKEN='supertoken'
+        )
+        response = report_build(request)
+        self.assertStatusCode(response)
+        self.assertContains(response, 'Thanks for building it')
+        build = Build.objects.get(pk=2)
+        self.assertFalse(build.is_pending)
+        self.assertTrue(build.result.succeeded)
+        self.assertTrue(build.result.still_running)
+        self.assertIsNone(build.result.coverage)
+        self.assertEquals(
+            json.loads(build.result.result_log),
+            self.payload['results']
         )
 
     @override_settings(FRIGG_WORKER_TOKENS=['supertoken'])

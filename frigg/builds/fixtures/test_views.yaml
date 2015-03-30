@@ -38,7 +38,6 @@
   fields:
     build: 1
     result_log: 'All ok'
-    return_code: '0'
     succeeded: true
 
 - model: builds.buildresult
@@ -46,7 +45,6 @@
   fields:
     build: 3
     result_log: 'All ok'
-    return_code: '0'
     succeeded: true
 
 - model: builds.project

@@ -25,7 +25,6 @@ class BuildResultSerializer(serializers.ModelSerializer):
             'id',
             'coverage',
             'succeeded',
-            'return_code',
             'tasks',
         )
 
