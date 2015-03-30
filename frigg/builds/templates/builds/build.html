@@ -77,17 +77,17 @@
       {% include "builds/partials/loading.html" %}
     {% else %}
       <div class="build-logs">
-        {% for task, log, return_code in build.result.tasks %}
+        {% for task in build.result.tasks %}
           <div>
-            {% if log == 'pending' %}
-              <h3><i class="fa fa-check fa-spinner fa-spin orange"></i> {{ task }}</h3>
+            {% if task.pending %}
+              <h3><i class="fa fa-check fa-spinner fa-spin orange"></i> {{ task.task }}</h3>
             {% else %}
               <h3>
-                <i class="fa {% if return_code == '0' or return_code == '' %}fa-check green{% else %}fa-times red{% endif %}"></i>
-                {{ task }} <span class="meta">Return code: {{ return_code }}</span>
+                <i class="fa {% if task.return_code == 0 or task.return_code == '' %}fa-check green{% else %}fa-times red{% endif %}"></i>
+                {{ task.task }} <span class="meta">Return code: {{ task.return_code }}</span>
               </h3>
-              <pre{% if return_code == '' or return_code == '0' %} style="display: none;"{% endif %}>
-                <code class="colorify">{{ log }}</code>
+              <pre{% if task.return_code == 0 or task.return_code == '' %} style="display: none;"{% endif %}>
+                <code class="colorify">{{ task.log }}</code>
               </pre>
             {% endif %}
           </div>

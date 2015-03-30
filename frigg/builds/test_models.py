@@ -297,53 +297,17 @@ class BuildResultTestCase(TestCase):
         self.assertFalse(result.succeeded)
 
     def test_tasks(self):
+        data = [
+            {'task': 'tox', 'log': '{}', 'return_code': 0},
+            {'task': 'tox', 'log': 'tested all the stuff\n1!"#$%&/()=?', 'return_code': 11},
+            {'task': 'tox', 'return_log': 'fail', 'return_code': 'd'}
+        ]
         result = BuildResult.objects.create(
             build=self.build,
-            result_log=(
-                BuildResult.create_log_string_for_task({'task': 'tox'}) +
-                BuildResult.create_log_string_for_task({'task': 'tox', 'log': '{}'}) +
-                BuildResult.create_log_string_for_task({
-                    'task': 'tox',
-                    'log': '{}',
-                    'return_code': 0
-                }) +
-                BuildResult.create_log_string_for_task({
-                    'task': 'tox',
-                    'log': 'tested all the stuff\n1!"#$%&/()=?',
-                    'return_code': 11
-                }) +
-                BuildResult.create_log_string_for_task({
-                    'task': 'coverage report --fail-under=100'
-                }) +
-                BuildResult.create_log_string_for_task({
-                    'task': 'tox',
-                    'return_log': 'fail',
-                    'return_code': 'd'
-                })
-            )
+            result_log=json.dumps(data)
         )
-        self.assertEqual(len(result.tasks), 5)
-        self.assertEqual(result.tasks[0], ('tox', '\n', ''))
-        self.assertEqual(result.tasks[1], ('tox', '{}\n', ''))
-        self.assertEqual(result.tasks[2], ('tox', '{}\n', '0'))
-        self.assertEqual(result.tasks[3], ('tox', 'tested all the stuff\n1!"#$%&/()=?\n', '11'))
-        self.assertEqual(result.tasks[4], ('coverage report --fail-under=100', '\n', ''))
-
-    def test_create_log_string_for_task(self):
-        self.assertEqual(
-            BuildResult.create_log_string_for_task({
-                'task': 'tox',
-                'log': 'tested all the stuff\n1!"#$%&/()=?',
-                'return_code': 11
-            }),
-            (
-                'Task: tox\n\n'
-                '------------------------------------\n'
-                'tested all the stuff\n1!"#$%&/()=?\n'
-                '------------------------------------\n'
-                'Exited with exit code: 11\n\n'
-            )
-        )
+        self.assertEqual(len(result.tasks), 3)
+        self.assertEqual(result.tasks, data)
 
     def test_coverage_diff(self):
         start_time = datetime(2012, 12, 12, tzinfo=get_current_timezone())

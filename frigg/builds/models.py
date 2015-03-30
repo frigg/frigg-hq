@@ -1,7 +1,6 @@
 # -*- coding: utf8 -*-
 import json
 import logging
-import re
 from datetime import timedelta
 
 import redis
@@ -279,34 +278,15 @@ class BuildResult(TimeStampModel):
 
     @property
     def tasks(self):
-        # FIXME, after deploying and converting all the old logs to json this should be
-        #        changed to only do json.loads(self.result_log)
-        try:
-            log = json.loads(self.result_log)
-            return [self.unpack_log_item(item) for item in log]
-        except ValueError:
-            return re.findall(
-                r'Task: ([\w&=_\-\*\.\:\;\|/ ]+)\n\n------------------------------------\n'
-                r'((?:(?!Task:).*\n)*)'
-                r'------------------------------------\nExited with exit code: (\d*)\n\n',
-                str(self.result_log)
-            )
-
-    @classmethod
-    def unpack_log_item(cls, item):
-        if 'pending' in item and item['pending']:
-            return item['task'], 'pending', None
-        else:
-            return (
-                item['task'],
-                item['log'] if 'log' in item else '',
-                item['return_code'] if 'return_code' in item else ''
-            )
+        return json.loads(self.result_log)
 
     @classmethod
     def create_not_approved(cls, build):
-        result = cls.objects.create(build=build, result_log='This project is not approved.',
-                                    succeeded=False)
+        result = cls.objects.create(
+            build=build,
+            result_log='{"error": "This project is not approved."}',
+            succeeded=False
+        )
         github.set_commit_status(build, error='This project is not approved')
         return result
 
@@ -334,14 +314,3 @@ class BuildResult(TimeStampModel):
             if 'succeeded' in r:
                 succeeded = succeeded and r['succeeded']
         return succeeded
-
-    @classmethod
-    def create_log_string_for_task(cls, result):
-        # FIXME, remove when self.tasks only use json (this is used in test_tasks)
-        data = {'task': '', 'log': '', 'return_code': ''}
-        data.update(result)
-        return ('Task: %(task)s\n'
-                '\n------------------------------------\n'
-                '%(log)s'
-                '\n------------------------------------\n'
-                'Exited with exit code: %(return_code)s\n\n') % data
