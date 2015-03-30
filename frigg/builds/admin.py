@@ -1,5 +1,6 @@
 # -*- coding: utf8 -*-
 from django.contrib import admin
+from django.template.defaultfilters import pluralize
 
 from .models import Build, BuildResult, Project
 
@@ -30,6 +31,18 @@ class BuildAdmin(admin.ModelAdmin):
     list_display = ('build_number', 'project', 'branch', 'pull_request_id', 'sha', 'color')
     inlines = [BuildResultInline]
     list_filter = ['project']
+    actions = ['restart_build']
+
+    def restart_build(self, request, queryset):
+        for build in queryset:
+            build.start()
+
+        self.message_user(
+            request,
+            '{} build{} was restarted'.format(len(queryset), pluralize(len(queryset)))
+        )
+
+    restart_build.short_description = 'Restart selected builds'
 
 
 @admin.register(BuildResult)
