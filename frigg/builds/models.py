@@ -82,7 +82,7 @@ class Project(TimeStampModel):
             if build.start_time and build.end_time:
                 timings.append((build.end_time - build.start_time).total_seconds())
         if timings:
-            return timedelta(seconds=int(sum(timings)/len(timings)))
+            return timedelta(seconds=int(sum(timings) / len(timings)))
 
     def start_build(self, data):
         if 'message' not in data:
@@ -187,7 +187,7 @@ class Build(TimeStampModel):
 
     @property
     def color(self):
-        if self.is_pending:
+        if self.is_pending or self.result.still_running:
             return 'orange'
         if self.result.succeeded:
             return 'green'
@@ -234,15 +234,15 @@ class Build(TimeStampModel):
 
     def handle_worker_report(self, payload):
         logger.info('Handle worker report: %s' % payload)
-        BuildResult.create_from_worker_payload(self, payload)
+        result = BuildResult.create_from_worker_payload(self, payload)
+        if not result.still_running:
+            github.set_commit_status(self)
+            self.end_time = now()
+            self.save()
 
-        github.set_commit_status(self)
-        self.end_time = now()
-        self.save()
-
-        if 'webhooks' in payload:
-            for url in payload['webhooks']:
-                self.send_webhook(url)
+            if 'webhooks' in payload:
+                for url in payload['webhooks']:
+                    self.send_webhook(url)
 
     def send_webhook(self, url):
         return requests.post(url, data=json.dumps({
@@ -251,7 +251,6 @@ class Build(TimeStampModel):
             'build_url': self.get_absolute_url(),
             'pull_request_id': self.pull_request_id,
             'state': self.result.succeeded,
-            'return_code': self.result.return_code
         }), headers={'content-type': 'application/json'})
 
 
@@ -259,7 +258,7 @@ class BuildResult(TimeStampModel):
     build = models.OneToOneField(Build, related_name='result')
     result_log = models.TextField()
     succeeded = models.BooleanField(default=False)
-    return_code = models.CharField(max_length=100)
+    still_running = models.BooleanField(default=False)
     coverage = models.DecimalField(max_digits=5, decimal_places=2, editable=False, null=True,
                                    blank=True)
 
@@ -267,10 +266,6 @@ class BuildResult(TimeStampModel):
 
     def __str__(self):
         return '%s - %s' % (self.build, self.build.build_number)
-
-    @property
-    def return_codes(self):
-        return [int(code) for code in self.return_code.split(',')]
 
     @cached_property
     def coverage_diff(self):
@@ -284,12 +279,29 @@ class BuildResult(TimeStampModel):
 
     @property
     def tasks(self):
-        return re.findall(
-            r'Task: ([\w&=_\-\*\.\:\;\|/ ]+)\n\n------------------------------------\n'
-            r'((?:(?!Task:).*\n)*)'
-            r'------------------------------------\nExited with exit code: (\d*)\n\n',
-            str(self.result_log)
-        )
+        # FIXME, after deploying and converting all the old logs to json this should be
+        #        changed to only do json.loads(self.result_log)
+        try:
+            log = json.loads(self.result_log)
+            return [self.unpack_log_item(item) for item in log]
+        except ValueError:
+            return re.findall(
+                r'Task: ([\w&=_\-\*\.\:\;\|/ ]+)\n\n------------------------------------\n'
+                r'((?:(?!Task:).*\n)*)'
+                r'------------------------------------\nExited with exit code: (\d*)\n\n',
+                str(self.result_log)
+            )
+
+    @classmethod
+    def unpack_log_item(cls, item):
+        if 'pending' in item and item['pending']:
+            return item['task'], 'pending', None
+        else:
+            return (
+                item['task'],
+                item['log'] if 'log' in item else '',
+                item['return_code'] if 'return_code' in item else ''
+            )
 
     @classmethod
     def create_not_approved(cls, build):
@@ -301,17 +313,19 @@ class BuildResult(TimeStampModel):
     @classmethod
     def create_from_worker_payload(cls, build, payload):
         result = cls.objects.get_or_create(build_id=build.pk)[0]
-        return_codes = []
-        for r in payload['results']:
-            if 'return_code' in r:
-                return_codes.append(r['return_code'])
-            result.result_log += cls.create_log_string_for_task(r)
-
+        result.result_log = json.dumps(payload['results'])
         result.succeeded = BuildResult.evaluate_results(payload['results'])
-        result.return_code = ",".join([str(code) for code in return_codes])
+
+        if 'finished' in payload:
+            result.still_running = not payload['finished']
+        else:
+            result.still_running = False
+
         if 'coverage' in payload:
             result.coverage = payload['coverage']
+
         result.save()
+        return result
 
     @classmethod
     def evaluate_results(cls, results):
@@ -323,9 +337,9 @@ class BuildResult(TimeStampModel):
 
     @classmethod
     def create_log_string_for_task(cls, result):
+        # FIXME, remove when self.tasks only use json (this is used in test_tasks)
         data = {'task': '', 'log': '', 'return_code': ''}
         data.update(result)
-
         return ('Task: %(task)s\n'
                 '\n------------------------------------\n'
                 '%(log)s'

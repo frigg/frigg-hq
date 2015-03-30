@@ -118,6 +118,9 @@ class BuildTestCase(TestCase):
         self.assertEqual(build.color, 'orange')
         result = BuildResult.objects.create(build=build, succeeded=True)
         self.assertEqual(build.color, 'green')
+        result.still_running = True
+        self.assertEqual(build.color, 'orange')
+        result.still_running = False
         result.succeeded = False
         self.assertEqual(build.color, 'red')
 
@@ -137,7 +140,6 @@ class BuildTestCase(TestCase):
         self.assertEqual(request['sha'], build.sha)
         self.assertEqual(request['build_url'], build.get_absolute_url())
         self.assertEqual(request['state'], build.result.succeeded)
-        self.assertEqual(request['return_code'], build.result.return_code)
 
     @mock.patch('frigg.helpers.github.set_commit_status')
     @mock.patch('redis.Redis', mock_redis_client)
@@ -231,8 +233,35 @@ class BuildTestCase(TestCase):
             'webhooks': ['http://example.com']
         })
         self.assertIsNotNone(Build.objects.get(pk=build.id).end_time)
-        mock_set_commit_status.asset_called_once_with(build)
-        mock_send_webhook.asset_called_once_with('http://example.com')
+        mock_set_commit_status.assert_called_once_with(build)
+        mock_send_webhook.assert_called_once_with('http://example.com')
+
+    @mock.patch('frigg.builds.models.Build.send_webhook')
+    @mock.patch('frigg.helpers.github.set_commit_status')
+    def test_handle_worker_report_still_running(self, mock_set_commit_status, mock_send_webhook):
+        build = Build.objects.create(
+            project=self.project,
+            branch='master',
+            build_number=1,
+        )
+        build.handle_worker_report({
+            'sha': 'superbhash',
+            'clone_url': 'https://github.com/frigg/frigg-worker.git',
+            'name': 'frigg-worker',
+            'branch': 'master',
+            'owner': 'frigg',
+            'finished': False,
+            'id': 1,
+            'results': [
+                {'task': 'make test', 'return_code': 0, 'succeeded': True, 'log': 'log'},
+                {'task': 'flake8', 'pending': True},
+                {'task': 'make test'}
+            ],
+            'webhooks': ['http://example.com']
+        })
+        self.assertIsNone(Build.objects.get(pk=build.id).end_time)
+        self.assertFalse(mock_set_commit_status.called)
+        self.assertFalse(mock_send_webhook.called)
 
     @mock.patch('frigg.builds.models.Project.average_time', timedelta(minutes=10))
     def test_estimated_finish_time(self):
