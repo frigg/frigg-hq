@@ -24,13 +24,16 @@ def overview(request):
             builds_per_day['labels'].append(point['day'].day)
             builds_per_day['values'].append(point['count'])
 
+    pending_builds = Build.objects.filter(result=None)
+
     return render(request, 'stats/overview.html', {
         'number_of_builds': Build.objects.all().count(),
         'number_of_success': Build.objects.filter(result__succeeded=True).count(),
         'number_of_failure': Build.objects.filter(result__succeeded=False).count(),
-        'number_of_pending': Build.objects.filter(result=None).count(),
+        'number_of_pending': len(pending_builds),
         'approved_projects': Project.objects.filter(approved=True).count(),
         'unapproved_projects': Project.objects.filter(approved=False).count(),
         'builds_per_day': builds_per_day,
-        'graph_top': graph_top
+        'graph_top': graph_top,
+        'pending_builds': pending_builds
     })
