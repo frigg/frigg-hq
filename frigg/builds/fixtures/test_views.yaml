@@ -1,7 +1,6 @@
 - model: builds.project
   pk: 1
   fields:
-    average_time: 0
     git_repository: 'git@github.com:frigg/frigg.git'
     name: frigg
     owner: frigg
@@ -53,7 +52,6 @@
 - model: builds.project
   pk: 2
   fields:
-    average_time: 0
     git_repository: 'git@github.com:frigg/chewie.git'
     name: frigg
     owner: chewie

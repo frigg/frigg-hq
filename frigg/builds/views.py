@@ -67,7 +67,7 @@ def view_organization(request, owner):
 def view_project(request, owner, name):
     return render(request, "builds/project.html", {
         'project': get_object_or_404(
-            Project.objects.permitted(request.user).prefetch_related('builds'),
+            Project.objects.permitted(request.user).prefetch_related('builds', 'builds__result'),
             owner=owner,
             name=name
         )

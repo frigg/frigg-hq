@@ -1,5 +1,4 @@
 - fields:
-    average_time: 0
     git_repository: git@github.com:frigg/frigg.git
     members: [1]
     name: frigg
@@ -8,7 +7,6 @@
   model: builds.project
   pk: 1
 - fields:
-    average_time: 0
     git_repository: git@github.com:frigg/frigg.github.io.git
     members: []
     name: frigg.github.io
@@ -17,7 +15,6 @@
   model: builds.project
   pk: 2
 - fields:
-    average_time: 0
     git_repository: git@github.com:frigg/frigg-common.git
     members: []
     name: frigg-common
@@ -26,7 +23,6 @@
   model: builds.project
   pk: 3
 - fields:
-    average_time: 0
     git_repository: git@github.com:frigg/frigg-worker.git
     members: [1]
     name: frigg-worker

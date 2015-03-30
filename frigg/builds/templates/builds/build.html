@@ -69,6 +69,11 @@
         {% trans 'This project is not approved, and needs to be approved before a build can run.' %}
       </p>
     {% elif build.is_pending %}
+      {% if build.estimated_finish_time %}
+        <p class="lead text-center">
+          This build has not yet finished and is estimated to finish in {{ build.estimated_finish_time|timeuntil }}.
+        </p>
+      {% endif %}
       {% include "builds/partials/loading.html" %}
     {% else %}
       <div class="build-logs">

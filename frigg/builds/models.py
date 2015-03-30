@@ -29,7 +29,6 @@ class Project(TimeStampModel):
     name = models.CharField(max_length=100, db_index=True, blank=True)
     owner = models.CharField(max_length=100, db_index=True, blank=True)
     git_repository = models.CharField(unique=True, db_index=True, max_length=150)
-    average_time = models.IntegerField(null=True)
     private = models.BooleanField(default=True, db_index=True)
     approved = models.BooleanField(default=False, db_index=True)
     members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='projects', null=True,
@@ -74,6 +73,16 @@ class Project(TimeStampModel):
             return self.builds.all().order_by('-build_number')[0].build_number
         except IndexError:
             return 0
+
+    @cached_property
+    def average_time(self):
+        timings = []
+        builds = self.builds.all()[:10]
+        for build in builds:
+            if build.start_time and build.end_time:
+                timings.append((build.end_time - build.start_time).total_seconds())
+        if timings:
+            return timedelta(seconds=int(sum(timings)/len(timings)))
 
     def start_build(self, data):
         if 'message' not in data:
@@ -157,6 +166,13 @@ class Build(TimeStampModel):
     @property
     def short_message(self):
         return self.message.split('\n')[0]
+
+    @property
+    def estimated_finish_time(self):
+        if self.start_time and self.project.average_time:
+            eta = self.start_time + self.project.average_time
+            if now() < eta:
+                return eta
 
     @property
     def rendered_message(self):

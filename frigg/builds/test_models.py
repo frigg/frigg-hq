@@ -76,6 +76,18 @@ class ProjectTestCase(TestCase):
         social_auth.save()
         self.assertEqual(Project.token_for_url('git@github.com:frigg/frigg.git'), 'user-token')
 
+    def test_average_time(self):
+        project = Project.objects.create(owner='frigg', name='frigg-worker', private=False)
+        build_options = dict(project=project, build_number=1,
+                             start_time=datetime(2015, 5, 5, 5, 5, tzinfo=get_current_timezone()),
+                             end_time=datetime(2015, 5, 5, 5, 15, tzinfo=get_current_timezone()))
+        builds = [Build.objects.create(**build_options)]
+        build_options = dict(project=project, build_number=2,
+                             start_time=datetime(2015, 5, 5, 5, 5, tzinfo=get_current_timezone()),
+                             end_time=datetime(2015, 5, 5, 5, 25, tzinfo=get_current_timezone()))
+        builds += [Build.objects.create(**build_options)]
+        self.assertEqual(project.average_time, timedelta(minutes=15))
+
 
 class BuildTestCase(TestCase):
     fixtures = ['frigg/builds/fixtures/users.yaml']
@@ -221,6 +233,17 @@ class BuildTestCase(TestCase):
         self.assertIsNotNone(Build.objects.get(pk=build.id).end_time)
         mock_set_commit_status.asset_called_once_with(build)
         mock_send_webhook.asset_called_once_with('http://example.com')
+
+    @mock.patch('frigg.builds.models.Project.average_time', timedelta(minutes=10))
+    def test_estimated_finish_time(self):
+        build = Build(
+            project=self.project,
+        )
+        self.assertEqual(build.estimated_finish_time, None)
+        build.start_time = now()
+        self.assertEqual(build.estimated_finish_time.day, (now() + timedelta(minutes=10)).day)
+        self.assertEqual(build.estimated_finish_time.hour, (now() + timedelta(minutes=10)).hour)
+        self.assertEqual(build.estimated_finish_time.minute, (now() + timedelta(minutes=10)).minute)
 
 
 class BuildResultTestCase(TestCase):
