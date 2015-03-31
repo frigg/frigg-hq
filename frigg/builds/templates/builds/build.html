@@ -86,9 +86,7 @@
                 <i class="fa {% if task.return_code == 0 or task.return_code == '' %}fa-check green{% else %}fa-times red{% endif %}"></i>
                 {{ task.task }} <span class="meta">Return code: {{ task.return_code }}</span>
               </h3>
-              <pre{% if task.return_code == 0 or task.return_code == '' %} style="display: none;"{% endif %}>
-                <code class="colorify">{{ task.log }}</code>
-              </pre>
+              <pre{% if task.return_code == 0 or task.return_code == '' %} style="display: none;"{% endif %}><code class="colorify">{{ task.log }}</code></pre>
             {% endif %}
           </div>
         {% endfor %}
