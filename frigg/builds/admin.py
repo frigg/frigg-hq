@@ -24,6 +24,18 @@ class ProjectAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'git_repository', 'average_time', 'last_build_number')
     inlines = [BuildInline]
     list_filter = ['owner']
+    actions = ['sync_members']
+
+    def sync_members(self, request, queryset):
+        for project in queryset:
+            project.update_members()
+
+        self.message_user(
+            request,
+            '{} project{} was synced'.format(len(queryset), pluralize(len(queryset)))
+        )
+
+    sync_members.short_description = 'Sync members of selected projects'
 
 
 @admin.register(Build)
