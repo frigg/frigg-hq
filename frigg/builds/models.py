@@ -73,7 +73,7 @@ class Project(TimeStampModel):
         except IndexError:
             return 0
 
-    @cached_property
+    @property
     def average_time(self):
         timings = []
         builds = self.builds.all()[:10]
@@ -226,7 +226,7 @@ class Build(TimeStampModel):
     def has_timed_out(self):
         used_time = now() - self.start_time
         if self.project.average_time:
-            return (used_time > timedelta(seconds=self.project.average_time * 2) or
+            return (used_time > timedelta(seconds=self.project.average_time.total_seconds() * 2) or
                     used_time > timedelta(minutes=10))
         else:
             return used_time > timedelta(minutes=10)

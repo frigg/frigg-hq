@@ -167,12 +167,12 @@ class BuildTestCase(TestCase):
         self.assertTrue(build.has_timed_out())
         build.start_time = now()
         self.assertFalse(build.has_timed_out())
-        project.average_time = 120
-        self.assertFalse(build.has_timed_out())
-        build.start_time = now() - timedelta(seconds=60)
-        self.assertFalse(build.has_timed_out())
-        build.start_time = now() - timedelta(seconds=260)
-        self.assertTrue(build.has_timed_out())
+        with mock.patch('frigg.builds.models.Project.average_time', timedelta(seconds=120)):
+            self.assertFalse(build.has_timed_out())
+            build.start_time = now() - timedelta(seconds=60)
+            self.assertFalse(build.has_timed_out())
+            build.start_time = now() - timedelta(seconds=400)
+            self.assertTrue(build.has_timed_out())
 
     def test_author_user(self):
         user = get_user_model().objects.get(pk=1)
