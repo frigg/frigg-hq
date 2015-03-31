@@ -7,6 +7,7 @@ $transparent: rgba(0, 0, 0, 0)
 
 $green: #468847
 $red: #d9534f
+$orange: #f0ad4e
 
 body
   background: $background-color
@@ -124,7 +125,7 @@ pre
     border-left-color: $green
   &.orange
     background-color: #fcf8f2
-    border-left-color: #f0ad4e
+    border-left-color: $orange
 
 .build-logs
   h3
@@ -140,6 +141,10 @@ pre
       &.red
         color: $red
         background: transparent
+      &.orange
+        color: $orange
+        background: transparent
+
 
   .meta
     font-size: 0.6em

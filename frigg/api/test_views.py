@@ -29,7 +29,6 @@ class APITestMixin(object):
         self.assertEqual(obj['id'], result.id)
         self.assertEqual(obj['coverage'], result.coverage)
         self.assertEqual(obj['succeeded'], result.succeeded)
-        self.assertEqual(obj['return_code'], result.return_code)
         self.assertEqual(obj['tasks'], result.tasks)
 
     def assertNotAllowed(self, method, url):
