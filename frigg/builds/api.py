@@ -3,7 +3,7 @@ import json
 
 from django.http import HttpResponse
 from django.http.response import JsonResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
 
@@ -37,3 +37,14 @@ def coverage_badge(request, owner, project, branch='master'):
     project = get_object_or_404(Project, owner=owner, name=project)
     badge = project.get_coverage_badge(branch)
     return HttpResponse(content=badge, content_type='image/svg+xml')
+
+
+def partial_build_page(request, owner, name, build_number):
+    return render(request, 'builds/partials/build_result.html', {
+        'build': get_object_or_404(
+            Build.objects.select_related('result'),
+            project__owner=owner,
+            project__name=name,
+            build_number=build_number
+        )
+    })

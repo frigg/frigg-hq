@@ -18,6 +18,11 @@ urlpatterns = [
         name='worker_api_report_build'
     ),
     url(
+        r'^api/partials/build/(?P<owner>[^/]+)/(?P<name>[^/]+)/(?P<build_number>\d+)/$',
+        'frigg.builds.api.partial_build_page',
+        name='api_partial_build_page'
+    ),
+    url(
         r'^badges/coverage/(?P<owner>[^/]+)/(?P<project>[^/]+)/$',
         'frigg.builds.api.coverage_badge',
         name='coverage_badge'
