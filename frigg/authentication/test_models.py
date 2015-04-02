@@ -1,13 +1,13 @@
 # -*- coding: utf8 -*-
 from unittest import mock
 
-from django.test import TestCase
+from django.test import TransactionTestCase
 from social.apps.django_app.default.models import UserSocialAuth
 
 from .models import User
 
 
-class UserTestCase(TestCase):
+class UserTestCase(TransactionTestCase):
 
     def tearDown(self):
         User.objects.all().delete()

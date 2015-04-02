@@ -11,7 +11,7 @@ from .views import (approve_projects, download_artifact, last_build, overview, v
 
 
 class SmokeTestCase(ViewTestCase):
-    fixtures = ['frigg/builds/fixtures/users.yaml', 'frigg/builds/fixtures/test_views.yaml']
+    fixtures = ['frigg/builds/fixtures/users.json', 'frigg/builds/fixtures/test_views.yaml']
 
     def tearDown(self):
         get_user_model().objects.all().delete()

@@ -37,7 +37,7 @@ class APITestMixin(object):
 
 
 class ProjectAPITestCase(APITestCase, APITestMixin):
-    fixtures = ['frigg/builds/fixtures/users.yaml', 'frigg/api/fixtures/test_views.yaml']
+    fixtures = ['frigg/builds/fixtures/users.json', 'frigg/api/fixtures/test_views.yaml']
 
     def setUp(self):
         super().setUp()
@@ -98,7 +98,7 @@ class ProjectAPITestCase(APITestCase, APITestMixin):
 
 
 class BuildAPITestCase(APITestCase, APITestMixin):
-    fixtures = ['frigg/builds/fixtures/users.yaml', 'frigg/api/fixtures/test_views.yaml']
+    fixtures = ['frigg/builds/fixtures/users.json', 'frigg/api/fixtures/test_views.yaml']
 
     def setUp(self):
         super().setUp()

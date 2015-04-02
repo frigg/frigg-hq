@@ -1,0 +1,16 @@
+[{
+  "fields": {
+    "email": "albus@hogwarts.com",
+    "first_name": "Albus Percival Wulfric Brian",
+    "groups": [],
+    "is_active": true,
+    "is_staff": true,
+    "is_superuser": true,
+    "last_name": "Dumbledore",
+    "user_permissions": [],
+    "username": "dumbledore",
+    "last_login": "2011-09-01T13:20:30+03:00"
+  },
+  "model": "authentication.user",
+  "pk": 1
+}]

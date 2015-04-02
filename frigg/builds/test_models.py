@@ -5,7 +5,7 @@ from unittest import mock
 
 import responses
 from django.contrib.auth import get_user_model
-from django.test import TestCase, override_settings
+from django.test import TransactionTestCase, override_settings
 from django.utils.timezone import get_current_timezone, now
 from mockredis import mock_redis_client
 from social.apps.django_app.default.models import UserSocialAuth
@@ -13,8 +13,8 @@ from social.apps.django_app.default.models import UserSocialAuth
 from .models import Build, BuildResult, Project
 
 
-class ProjectTestCase(TestCase):
-    fixtures = ['frigg/builds/fixtures/users.yaml']
+class ProjectTestCase(TransactionTestCase):
+    fixtures = ['frigg/builds/fixtures/users.json']
 
     def test___str__(self):
         project = Project.objects.create(owner='frigg', name='frigg-worker')
@@ -89,8 +89,8 @@ class ProjectTestCase(TestCase):
         self.assertEqual(project.average_time, timedelta(minutes=15))
 
 
-class BuildTestCase(TestCase):
-    fixtures = ['frigg/builds/fixtures/users.yaml']
+class BuildTestCase(TransactionTestCase):
+    fixtures = ['frigg/builds/fixtures/users.json']
 
     def setUp(self):
         self.project = Project.objects.create(owner='frigg', name='frigg-worker', approved=True)
@@ -275,7 +275,7 @@ class BuildTestCase(TestCase):
         self.assertEqual(build.estimated_finish_time.minute, (now() + timedelta(minutes=10)).minute)
 
 
-class BuildResultTestCase(TestCase):
+class BuildResultTestCase(TransactionTestCase):
     def setUp(self):
         self.project = Project.objects.create(owner='frigg', name='frigg-worker')
         self.build = Build.objects.create(project=self.project, branch='master', build_number=1)
