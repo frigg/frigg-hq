@@ -3,7 +3,7 @@ import json
 import os
 
 from django.conf import settings
-from django.test import TestCase
+from django.test import TransactionTestCase
 
 from frigg.builds.models import Build, BuildResult, Project
 
@@ -12,7 +12,7 @@ from .github import (_get_status_from_build, get_pull_request_url, parse_comment
                      parse_push_payload)
 
 
-class GithubHelpersTestCase(TestCase):
+class GithubHelpersTestCase(TransactionTestCase):
 
     def load_fixture(self, fixture):
         return json.load(open(os.path.join(self.fixtures_path, fixture), encoding='utf-8'))
@@ -132,7 +132,7 @@ class GithubHelpersTestCase(TestCase):
         self.assertEqual(status, 'failure')
 
     def test_get_pull_request_url(self):
-        project = Project(owner='frigg', name='frigg-worker')
+        project = Project.objects.create(owner='frigg', name='frigg-worker')
         build = Build(project=project, branch='master')
         self.assertEqual(get_pull_request_url(build), 'https://github.com/frigg/frigg-worker')
         build = Build(project=project, branch='master', pull_request_id=1)

@@ -2,18 +2,18 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.storage.fallback import FallbackStorage
-from django.test import RequestFactory, TestCase
+from django.test import RequestFactory, TransactionTestCase
 
 
-class ViewTestCase(TestCase):
-    fixtures = ['frigg/builds/fixtures/users.yaml']
+class ViewTestCase(TransactionTestCase):
+    fixtures = ['frigg/builds/fixtures/users.json']
 
     def setUp(self):
         self.user = get_user_model().objects.get(pk=1)
         self.factory = RequestFactory()
 
-    def tearDown(self):
-        get_user_model().objects.all().delete()
+    # def tearDown(self):
+    #     get_user_model().objects.all().delete()
 
     def assertStatusCode(self, response, code=200):
         self.assertEqual(response.status_code, code)

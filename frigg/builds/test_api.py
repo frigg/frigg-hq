@@ -5,14 +5,14 @@ from unittest import skip
 
 from django.contrib.staticfiles import finders
 from django.core.urlresolvers import reverse
-from django.test import Client, RequestFactory, TestCase, override_settings
+from django.test import Client, RequestFactory, TransactionTestCase, override_settings
 
 from .api import report_build
 from .models import Build, BuildResult
 
 
-class BuildBadgeTestCase(TestCase):
-    fixtures = ['frigg/builds/fixtures/users.yaml', 'frigg/builds/fixtures/test_views.yaml']
+class BuildBadgeTestCase(TransactionTestCase):
+    fixtures = ['frigg/builds/fixtures/users.json', 'frigg/builds/fixtures/test_views.yaml']
 
     def assertStatusCode(self, response, code=200):
         self.assertEqual(response.status_code, code)
@@ -50,8 +50,8 @@ class BuildBadgeTestCase(TestCase):
         self.assertStatusCode(response, code=404)
 
 
-class CoverageBadgeTestCase(TestCase):
-    fixtures = ['frigg/builds/fixtures/users.yaml', 'frigg/builds/fixtures/test_views.yaml']
+class CoverageBadgeTestCase(TransactionTestCase):
+    fixtures = ['frigg/builds/fixtures/users.json', 'frigg/builds/fixtures/test_views.yaml']
 
     def assertStatusCode(self, response, code=200):
         self.assertEqual(response.status_code, code)
@@ -81,8 +81,8 @@ class CoverageBadgeTestCase(TestCase):
         self.assertContains(response, 'unknown')
 
 
-class APITestCase(TestCase):
-    fixtures = ['frigg/builds/fixtures/users.yaml', 'frigg/builds/fixtures/test_views.yaml']
+class APITestCase(TransactionTestCase):
+    fixtures = ['frigg/builds/fixtures/users.json', 'frigg/builds/fixtures/test_views.yaml']
 
     def assertStatusCode(self, response, code=200):
         self.assertEqual(response.status_code, code)

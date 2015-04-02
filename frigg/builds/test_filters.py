@@ -2,14 +2,14 @@ from unittest.mock import Mock
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
-from django.test import TestCase
+from django.test import TransactionTestCase
 
 from .filters import BuildPermissionFilter, ProjectPermissionFilter
 from .models import Build, Project
 
 
-class FiltersTestCase(TestCase):
-    fixtures = ['frigg/builds/fixtures/users.yaml',
+class FiltersTestCase(TransactionTestCase):
+    fixtures = ['frigg/builds/fixtures/users.json',
                 'frigg/builds/fixtures/test_permitted_objects.yaml']
 
     def setUp(self):

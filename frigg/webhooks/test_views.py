@@ -11,7 +11,7 @@ from frigg.utils.tests import ViewTestCase
 
 @mock.patch('frigg.builds.models.Build.start', lambda x: x)
 class GithubWebhookTestCase(ViewTestCase):
-    fixtures = ['frigg/builds/fixtures/users.yaml']
+    fixtures = ['frigg/builds/fixtures/users.json']
 
     def post_webhook(self, event, data={}):
         return self.client.post(

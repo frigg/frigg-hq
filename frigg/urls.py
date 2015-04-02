@@ -40,7 +40,7 @@ urlpatterns = [
 
     url(
         r'^auth/login/?$',
-        RedirectView.as_view(url='/auth/login/github/'),
+        RedirectView.as_view(url='/auth/login/github/', permanent=False),
         name='login'
     ),
     url(
