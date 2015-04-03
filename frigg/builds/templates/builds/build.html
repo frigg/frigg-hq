@@ -10,11 +10,13 @@
     <script>
       $(document).ready(function() {
         var contentBlock = $('.content-grid');
+        var currentContent = contentBlock.html();
         var intervalId = setInterval(function () {
           $.ajax('{% url 'api_partial_build_page' build.project.owner build.project.name build.build_number %}')
               .done(function (data){
-                if (data !== contentBlock.html()) {
-                  contentBlock.html(data);
+                if (data !== currentContent) {
+                  currentContent = data;
+                  contentBlock.html(currentContent);
                   $('.build-logs h3').off('click').on('click', function() {
                     $(this).parent().find('pre').slideToggle();
                   });
