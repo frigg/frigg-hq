@@ -190,6 +190,8 @@ class Build(TimeStampModel):
             return 'orange'
         if self.result.succeeded:
             return 'green'
+        if len(self.result.tasks) and self.result.tasks[0]['task'] == '':
+            return 'gray'
         return 'red'
 
     @property

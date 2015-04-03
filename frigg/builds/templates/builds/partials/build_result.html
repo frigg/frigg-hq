@@ -24,6 +24,8 @@
     {% trans 'pending' %}
   {% elif build.result.succeeded %}
     {% trans 'success' %}
+  {% elif build.result.tasks.0.task == '' and not build.result.tasks.0.succeeded %}
+    {% trans 'error' %}
   {% else %}
     {% trans 'failure' %}
   {% endif %}
@@ -48,6 +50,10 @@
       </p>
     {% endif %}
     {% include "builds/partials/loading.html" %}
+  {% elif build.result.tasks.0.task == '' and not build.result.tasks.0.succeeded %}
+    <p class="lead text-center">
+      {% trans 'This project has no defined tasks and frigg could not find any appropiate tasks for the project.' %}
+    </p>
   {% else %}
     <div class="build-logs">
       {% for task in build.result.tasks %}
