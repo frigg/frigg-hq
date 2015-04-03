@@ -20,7 +20,7 @@
     {{ build.result.coverage_diff }}% <br/>
   {% endif %}
   <strong>{% trans 'State' %}:</strong>
-  {% if not build.result %}
+  {% if build.is_pending or build.result.still_running %}
     {% trans 'pending' %}
   {% elif build.result.succeeded %}
     {% trans 'success' %}

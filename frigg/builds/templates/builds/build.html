@@ -6,7 +6,7 @@
   <script src="{{ STATIC_URL }}js/ansi_up.js"></script>
   <script src="{{ STATIC_URL }}js/colorify.js"></script>
   <script src="{{ STATIC_URL }}js/builds.js"></script>
-  {% if not build.result %}
+  {% if not build.result or build.result.still_running %}
     <script>
       $(document).ready(function() {
         var intervalId = setInterval(function () {
