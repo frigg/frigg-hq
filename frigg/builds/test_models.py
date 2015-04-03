@@ -116,13 +116,15 @@ class BuildTestCase(TransactionTestCase):
     def test_color(self):
         build = Build.objects.create(project=self.project, branch='master', build_number=1)
         self.assertEqual(build.color, 'orange')
-        result = BuildResult.objects.create(build=build, succeeded=True)
+        result = BuildResult.objects.create(build=build, succeeded=True, result_log='[]')
         self.assertEqual(build.color, 'green')
         result.still_running = True
         self.assertEqual(build.color, 'orange')
         result.still_running = False
         result.succeeded = False
         self.assertEqual(build.color, 'red')
+        result.result_log = '[{"task": ""}]'
+        self.assertEqual(build.color, 'gray')
 
     @responses.activate
     def test_send_webhook(self):
