@@ -13,14 +13,14 @@ production: venv frigg/settings/local.py
 	${MANAGE} migrate
 	bower install
 	${MANAGE} collectstatic --noinput
-	sudo supervisorctl restart frigg-prod
+	sudo supervisorctl restart frigg-hq
 
 deploy:
 	${PIP} install -r requirements/prod.txt
 	${MANAGE} migrate
 	bower install
 	${MANAGE} collectstatic --noinput
-	sudo supervisorctl restart frigg-prod
+	sudo supervisorctl restart frigg-hq
 
 clean:
 	find . -name "*.pyc" -exec rm -rf {} \;
