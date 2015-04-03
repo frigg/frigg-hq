@@ -13,6 +13,9 @@
           $.ajax('{% url 'api_partial_build_page' build.project.owner build.project.name build.build_number %}')
               .done(function (data){
                 $('.content-grid').html(data);
+                $('.build-logs h3').off('click').on('click', function() {
+                  $(this).parent().find('pre').slideToggle();
+                });
                 if (!data.match(/<strong>State:<\/strong>[ \n]+pending/)) {
                   clearInterval(intervalId);
                 }
