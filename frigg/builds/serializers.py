@@ -3,7 +3,52 @@ from rest_framework import serializers
 from .models import Build, BuildResult, Project
 
 
+class BuildResultSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = BuildResult
+        fields = (
+            'id',
+            'coverage',
+            'succeeded',
+            'tasks',
+        )
+
+
+class BuildInlineSerializer(serializers.ModelSerializer):
+    result = BuildResultSerializer(read_only=True)
+
+    class Meta:
+        model = Build
+        fields = (
+            'id',
+            'build_number',
+            'branch',
+            'sha',
+            'pull_request_id',
+            'start_time',
+            'end_time',
+            'result'
+        )
+
+
 class ProjectSerializer(serializers.ModelSerializer):
+    builds = BuildInlineSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = Project
+        fields = (
+            'id',
+            'owner',
+            'name',
+            'private',
+            'approved',
+            'git_repository',
+            'builds'
+        )
+
+
+class ProjectInlineSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
@@ -17,20 +62,8 @@ class ProjectSerializer(serializers.ModelSerializer):
         )
 
 
-class BuildResultSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = BuildResult
-        fields = (
-            'id',
-            'coverage',
-            'succeeded',
-            'tasks',
-        )
-
-
 class BuildSerializer(serializers.ModelSerializer):
-    project = ProjectSerializer(read_only=True)
+    project = ProjectInlineSerializer(read_only=True)
     result = BuildResultSerializer(read_only=True)
 
     class Meta:
