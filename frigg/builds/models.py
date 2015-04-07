@@ -286,7 +286,7 @@ class BuildResult(TimeStampModel):
     def create_not_approved(cls, build):
         result = cls.objects.create(
             build=build,
-            result_log='{"error": "This project is not approved."}',
+            result_log='[{"task": "", "error": "This project is not approved."}]',
             succeeded=False
         )
         github.set_commit_status(build, error='This project is not approved')
