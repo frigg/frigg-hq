@@ -30,8 +30,7 @@ class Project(TimeStampModel):
     git_repository = models.CharField(unique=True, db_index=True, max_length=150)
     private = models.BooleanField(default=True, db_index=True)
     approved = models.BooleanField(default=False, db_index=True)
-    members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='projects', null=True,
-                                     blank=True)
+    members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='projects')
     queue_name = models.CharField(max_length=200, default=settings.FRIGG_WORKER_QUEUE)
     objects = ProjectManager()
 
@@ -127,7 +126,7 @@ class Project(TimeStampModel):
 class Build(TimeStampModel):
     project = models.ForeignKey(Project, related_name='builds', null=True)
     build_number = models.IntegerField(db_index=True)
-    pull_request_id = models.IntegerField(max_length=150, default=0)
+    pull_request_id = models.IntegerField(default=0)
     branch = models.CharField(max_length=100, default="master")
     sha = models.CharField(max_length=150)
     start_time = models.DateTimeField(null=True, blank=True)
