@@ -30,7 +30,7 @@ class Project(TimeStampModel):
     git_repository = models.CharField(unique=True, db_index=True, max_length=150)
     private = models.BooleanField(default=True, db_index=True)
     approved = models.BooleanField(default=False, db_index=True)
-    members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='projects')
+    members = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name='projects')
     queue_name = models.CharField(max_length=200, default=settings.FRIGG_WORKER_QUEUE)
     objects = ProjectManager()
 
