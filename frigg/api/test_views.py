@@ -8,9 +8,10 @@ from django.core.urlresolvers import reverse
 from django.test import RequestFactory, TestCase, override_settings
 from rest_framework.test import APIClient, APITestCase
 
-from frigg.api.views import report_build
+from frigg.api.views import report_build, report_deployment
 from frigg.authentication.models import User
 from frigg.builds.models import Build, BuildResult, Project
+from frigg.deployments.models import PRDeployment
 
 
 class APITestMixin(object):
@@ -224,7 +225,7 @@ class UserAPITests(TestCase):
         self.assertFalse(data['is_staff'], 'Dumbledore is staff')
 
 
-class ReportAPITests(APITestCase):
+class ReportBuildAPITests(APITestCase):
     fixtures = ['frigg/builds/fixtures/users.json', 'frigg/builds/fixtures/test_views.yaml']
 
     def assertStatusCode(self, response, code=200):
@@ -340,4 +341,70 @@ class ReportAPITests(APITestCase):
             HTTP_FRIGG_WORKER_TOKEN='supertoken'
         )
         response = report_build(request)
+        self.assertStatusCode(response, 404)
+
+
+class ReportDeploymentAPITests(APITestCase):
+    fixtures = ['frigg/builds/fixtures/users.json', 'frigg/builds/fixtures/test_views.yaml']
+
+    def assertStatusCode(self, response, code=200):
+        self.assertEqual(response.status_code, code)
+
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.deployment = PRDeployment.objects.create(build_id=2, port=4000)
+        self.url = reverse('api:worker_api_report_deployment')
+        self.view = report_deployment
+        self.payload = {
+            'id': self.deployment.pk,
+            'results': [{'task': 'make deploy', 'return_code': 0, 'succeeded': True, 'log': 'log'}]
+        }
+
+    @skip('temporary turned off')
+    def test_token_decorator(self):
+        request = self.factory.post(self.url)
+        response = self.view(request)
+        self.assertStatusCode(response, 403)
+
+    @override_settings(FRIGG_WORKER_TOKENS=['supertoken'])
+    def test_report(self):
+        request = self.factory.post(
+            self.url,
+            data=json.dumps(self.payload),
+            content_type='application/json',
+            HTTP_FRIGG_WORKER_TOKEN='supertoken'
+        )
+        response = self.view(request)
+        self.assertStatusCode(response)
+        self.assertContains(response, 'Thanks for deploying it')
+        deployment = PRDeployment.objects.get(pk=self.deployment.pk)
+        self.assertTrue(deployment.succeeded)
+        self.assertEqual(
+            deployment.tasks,
+            [{"task": "make deploy", "succeeded": True, "return_code": 0, "log": "log"}]
+        )
+
+    @override_settings(FRIGG_WORKER_TOKENS=['supertoken'])
+    def test_double_report(self):
+        request = self.factory.post(
+            self.url,
+            data=json.dumps(self.payload),
+            content_type='application/json',
+            HTTP_FRIGG_WORKER_TOKEN='supertoken'
+        )
+        response = self.view(request)
+        self.assertStatusCode(response)
+        response = self.view(request)
+        self.assertStatusCode(response)
+
+    @override_settings(FRIGG_WORKER_TOKENS=['supertoken'])
+    def test_404_report(self):
+        self.payload['id'] = 200
+        request = self.factory.post(
+            self.url,
+            data=json.dumps(self.payload),
+            content_type='application/json',
+            HTTP_FRIGG_WORKER_TOKEN='supertoken'
+        )
+        response = self.view(request)
         self.assertStatusCode(response, 404)
