@@ -91,7 +91,7 @@ def parse_push_payload(data):
         'repo_owner': data['repository']['owner']['name'],
         'private': data['repository']['private'],
         'pull_request_id': 0,
-        'branch': 'master',
+        'branch': data['ref'][11:],
         'sha': data['after'],
         'author': data['commits'][-1]['author']['username'],
         'message': data['commits'][-1]['message']

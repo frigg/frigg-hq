@@ -89,7 +89,7 @@ class GithubHelpersTestCase(TransactionTestCase):
         self.assertEquals(output['repo_url'], 'git@github.com:tind/frigg.git')
         self.assertEquals(output['repo_owner'], 'tind')
         self.assertEquals(output['repo_name'], 'frigg')
-        self.assertEquals(output['branch'], 'master')
+        self.assertEquals(output['branch'], 'branch')
         self.assertEquals(output['private'], False)
         self.assertEquals(output['sha'], 'fddd2887efd63196e48fd5d6bc0e62e1bafa0276')
         self.assertEquals(output['author'], 'frecar')
