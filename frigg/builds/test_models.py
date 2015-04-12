@@ -76,6 +76,45 @@ class ProjectTestCase(TransactionTestCase):
         social_auth.save()
         self.assertEqual(Project.token_for_url('git@github.com:frigg/frigg.git'), 'user-token')
 
+    def test_start(self):
+        project = Project.objects.get_or_create_from_url('git@github.com:frigg/frigg.git')
+        build = project.start_build({
+            'branch': 'b',
+            'sha': 's',
+            'author': 'dumbledore',
+            'pull_request_id': 0,
+        })
+        self.assertEqual(build.branch, 'b')
+        self.assertEqual(build.sha, 's')
+        self.assertEqual(build.author, 'dumbledore')
+        self.assertEqual(build.pull_request_id, 0)
+        self.assertEqual(build.build_number, 1)
+        self.assertEqual(project.last_build_number, 1)
+
+    @mock.patch('frigg.builds.models.Build.start')
+    def test_start_pull_request_with_earlier_build(self, mock_start):
+        data = {
+            'branch': 'b',
+            'sha': 's',
+            'author': 'dumbledore',
+            'pull_request_id': 0,
+        }
+        project = Project.objects.get_or_create_from_url('git@github.com:frigg/frigg.git')
+        project.start_build(data)
+        self.assertEqual(project.builds.count(), 1)
+        self.assertEqual(project.last_build_number, 1)
+        data['pull_request_id'] = 1
+        self.assertEqual(project.builds.count(), 1)
+        data['pull_request_id'] = 1
+        build = project.start_build(data)
+        self.assertEqual(build.branch, 'b')
+        self.assertEqual(build.sha, 's')
+        self.assertEqual(build.author, 'dumbledore')
+        self.assertEqual(build.pull_request_id, 1)
+        self.assertEqual(build.build_number, 1)
+        self.assertEqual(project.last_build_number, 1)
+        mock_start.assert_called_once_with()
+
     def test_average_time(self):
         project = Project.objects.create(owner='frigg', name='frigg-worker', private=False)
         build_options = dict(project=project, build_number=1,
