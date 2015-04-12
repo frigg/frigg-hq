@@ -77,26 +77,25 @@ def parse_pull_request_payload(data):
 
 
 def parse_push_payload(data):
-    if data['ref'] == "refs/heads/master":
-        if len(data['commits']) == 1 and '[ci skip]' in data['commits'][-1]['message']:
-            return None
+    if len(data['commits']) == 1 and '[ci skip]' in data['commits'][-1]['message']:
+        return None
 
-        repo_url = "git@github.com:%s/%s.git" % (
-            data['repository']['owner']['name'],
-            data['repository']['name']
-        )
+    repo_url = "git@github.com:%s/%s.git" % (
+        data['repository']['owner']['name'],
+        data['repository']['name']
+    )
 
-        return {
-            'repo_url': repo_url,
-            'repo_name': data['repository']['name'],
-            'repo_owner': data['repository']['owner']['name'],
-            'private': data['repository']['private'],
-            'pull_request_id': 0,
-            'branch': 'master',
-            'sha': data['after'],
-            'author': data['commits'][-1]['author']['username'],
-            'message': data['commits'][-1]['message']
-        }
+    return {
+        'repo_url': repo_url,
+        'repo_name': data['repository']['name'],
+        'repo_owner': data['repository']['owner']['name'],
+        'private': data['repository']['private'],
+        'pull_request_id': 0,
+        'branch': 'master',
+        'sha': data['after'],
+        'author': data['commits'][-1]['author']['username'],
+        'message': data['commits'][-1]['message']
+    }
 
 
 def parse_ping_payload(data):

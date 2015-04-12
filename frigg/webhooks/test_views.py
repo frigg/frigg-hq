@@ -63,12 +63,6 @@ class GithubWebhookTestCase(ViewTestCase):
         self.assertStatusCode(response)
         self.assertIsNotNone(Project.objects.get(owner='frigg', name='frigg-worker', private=False))
 
-    @mock.patch('frigg.helpers.github.parse_push_payload', lambda x: None)
-    def test_push_not_master_handling(self):
-        response = self.post_webhook('push', {'ref': 'refs/heads/other-branch'})
-        self.assertStatusCode(response)
-        self.assertContains(response, 'Could not handle event')
-
     @mock.patch('frigg.helpers.github.parse_pull_request_payload',
                 lambda x: GithubWebhookTestCase.pull_request_data)
     def test_pull_request_handling(self):
