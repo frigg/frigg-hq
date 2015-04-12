@@ -87,16 +87,23 @@ class Project(TimeStampModel):
             data['message'] = None
         if 'author' not in data:
             data['author'] = ''
-
-        return Build.objects.create(
+        build_number = self.last_build_number + 1
+        build, created = Build.objects.get_or_create(
             project=self,
-            build_number=self.last_build_number + 1,
-            pull_request_id=data['pull_request_id'],
             branch=data['branch'],
             sha=data['sha'],
-            author=data['author'],
-            message=data['message']
-        ).start()
+            author=data['author']
+        )
+        build.pull_request_id = data['pull_request_id']
+        build.message = data['message']
+        if created:
+            build.build_number = build_number
+        build.save()
+
+        if created:
+            build.start()
+
+        return build
 
     def get_badge(self, branch='master'):
         build = self.builds.filter(branch=branch, pull_request_id=0).exclude(result=None).first()
@@ -125,7 +132,7 @@ class Project(TimeStampModel):
 
 class Build(TimeStampModel):
     project = models.ForeignKey(Project, related_name='builds', null=True)
-    build_number = models.IntegerField(db_index=True)
+    build_number = models.IntegerField(default=0, null=True, db_index=True)
     pull_request_id = models.IntegerField(default=0)
     branch = models.CharField(max_length=100, default="master")
     sha = models.CharField(max_length=150)

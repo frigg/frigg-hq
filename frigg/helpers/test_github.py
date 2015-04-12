@@ -75,7 +75,6 @@ class GithubHelpersTestCase(TransactionTestCase):
     def test_parse_push_payload(self):
         data = self.load_fixture('push_master.json')
         output = parse_push_payload(data)
-
         self.assertEquals(output['repo_url'], 'git@github.com:tind/frigg.git')
         self.assertEquals(output['repo_owner'], 'tind')
         self.assertEquals(output['repo_name'], 'frigg')
@@ -86,7 +85,15 @@ class GithubHelpersTestCase(TransactionTestCase):
         self.assertEquals(output['message'], 'Rebased master, cleaned up imports')
 
         data = self.load_fixture('push_branch.json')
-        self.assertIsNone(parse_push_payload(data))
+        output = parse_push_payload(data)
+        self.assertEquals(output['repo_url'], 'git@github.com:tind/frigg.git')
+        self.assertEquals(output['repo_owner'], 'tind')
+        self.assertEquals(output['repo_name'], 'frigg')
+        self.assertEquals(output['branch'], 'master')
+        self.assertEquals(output['private'], False)
+        self.assertEquals(output['sha'], 'fddd2887efd63196e48fd5d6bc0e62e1bafa0276')
+        self.assertEquals(output['author'], 'frecar')
+        self.assertEquals(output['message'], 'Rebased master, cleaned up imports')
 
     def test_parse_push_skip_payload(self):
         data = self.load_fixture('push_master_skip.json')
