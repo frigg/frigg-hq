@@ -97,7 +97,7 @@ class BuildTestCase(TransactionTestCase):
 
     def test___str__(self):
         build = Build.objects.create(project=self.project, branch='master', build_number=1)
-        self.assertEqual(str(build), 'frigg / frigg-worker / master')
+        self.assertEqual(str(build), 'frigg / frigg-worker / master #1')
 
     def test_queue_object(self):
         build = Build.objects.create(project=self.project, branch='master', sha='s', build_number=1)
@@ -284,7 +284,7 @@ class BuildResultTestCase(TransactionTestCase):
 
     def test___str__(self):
         result = BuildResult.objects.create(build=self.build)
-        self.assertEqual(str(result), 'frigg / frigg-worker / master - 1')
+        self.assertEqual(str(result), 'frigg / frigg-worker / master #1')
 
     def test_evaluate_results(self):
         self.assertTrue(BuildResult.evaluate_results([{'succeeded': True}]))

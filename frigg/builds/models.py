@@ -141,7 +141,7 @@ class Build(TimeStampModel):
         ordering = ['-id']
 
     def __str__(self):
-        return '%s / %s' % (self.project, self.branch)
+        return '%s / %s #%s' % (self.project, self.branch, self.build_number)
 
     def get_absolute_url(self):
         return "https://%s%s" % (
@@ -265,7 +265,7 @@ class BuildResult(TimeStampModel):
     objects = BuildResultManager()
 
     def __str__(self):
-        return '%s - %s' % (self.build, self.build.build_number)
+        return str(self.build)
 
     @cached_property
     def coverage_diff(self):
