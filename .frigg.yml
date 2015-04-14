@@ -1,3 +1,7 @@
+services:
+  - redis-server
+  - postgresql
+
 tasks:
   - tox
   - flake8
