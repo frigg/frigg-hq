@@ -77,7 +77,11 @@ def parse_pull_request_payload(data):
 
 
 def parse_push_payload(data):
-    if len(data['commits']) == 1 and '[ci skip]' in data['commits'][-1]['message']:
+    if len(data['commits']):
+        commit = data['commits'][-1]
+    else:
+        commit = data['head_commit']
+    if 'message' in commit and '[ci skip]' in commit['message']:
         return None
 
     repo_url = "git@github.com:%s/%s.git" % (
@@ -93,8 +97,8 @@ def parse_push_payload(data):
         'pull_request_id': 0,
         'branch': data['ref'][11:],
         'sha': data['after'],
-        'author': data['commits'][-1]['author']['username'],
-        'message': data['commits'][-1]['message']
+        'author': commit['author']['username'],
+        'message': commit['message']
     }
 
 

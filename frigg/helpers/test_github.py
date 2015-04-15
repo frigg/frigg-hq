@@ -95,6 +95,18 @@ class GithubHelpersTestCase(TransactionTestCase):
         self.assertEquals(output['author'], 'frecar')
         self.assertEquals(output['message'], 'Rebased master, cleaned up imports')
 
+    def test_parse_push_payload_force(self):
+        data = self.load_fixture('push_force.json')
+        output = parse_push_payload(data)
+        self.assertEquals(output['repo_url'], 'git@github.com:frigg/frigg.git')
+        self.assertEquals(output['repo_owner'], 'frigg')
+        self.assertEquals(output['repo_name'], 'frigg')
+        self.assertEquals(output['branch'], 'frecar/frigg-services')
+        self.assertEquals(output['private'], False)
+        self.assertEquals(output['sha'], '8dcab86e80470f8e3d3ee2f8cbdb9f7d3591b319')
+        self.assertEquals(output['author'], 'frecar')
+        self.assertEquals(output['message'], 'Adds services in .frigg.yml')
+
     def test_parse_push_skip_payload(self):
         data = self.load_fixture('push_master_skip.json')
         self.assertIsNone(parse_push_payload(data))
