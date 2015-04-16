@@ -234,9 +234,9 @@ class Build(TimeStampModel):
     def has_timed_out(self):
         used_time = now() - self.start_time
         if self.project.average_time:
-            return (used_time > timedelta(seconds=self.project.average_time.total_seconds() * 2))
+            return used_time > timedelta(seconds=self.project.average_time.total_seconds() * 2)
         else:
-            return used_time > timedelta(minutes=10)
+            return used_time > timedelta(minutes=60)
 
     def handle_worker_report(self, payload):
         logger.info('Handle worker report: %s' % payload)
