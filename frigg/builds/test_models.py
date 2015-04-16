@@ -204,7 +204,7 @@ class BuildTestCase(TransactionTestCase):
         url = 'git@github.com:frigg/frigg.git'
         project = Project.objects.get_or_create_from_url(url)
         build = Build.objects.create(project=project, build_number=1,
-                                     start_time=now() - timedelta(minutes=15))
+                                     start_time=now() - timedelta(minutes=61))
         self.assertTrue(build.has_timed_out())
         build.start_time = now()
         self.assertFalse(build.has_timed_out())
