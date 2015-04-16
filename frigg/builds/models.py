@@ -227,7 +227,12 @@ class Build(TimeStampModel):
         self.save()
 
         r = redis.Redis(**settings.REDIS_SETTINGS)
-        r.lpush(self.project.queue_name, json.dumps(self.queue_object))
+        queue_length = r.lpush(self.project.queue_name, json.dumps(self.queue_object)) or 0
+
+        if queue_length >= 10:
+            logger.warning('Queue length exceeds 10 items')
+        elif queue_length >= 5:
+            logger.warning('Queue length exceeds 5 items')
 
         return self
 
