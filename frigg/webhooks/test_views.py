@@ -186,3 +186,40 @@ class GithubWebhookViewTests(WebhookViewTestCase):
             'branch': 'issue24-project-model',
             'message': 'Add model for projects\n',
         })
+
+
+@mock.patch('frigg.builds.models.Project.start_build')
+class GitlabWebhookViewTests(WebhookViewTestCase):
+
+    FIXTURE_PATH = 'webhooks/fixtures/gitlab'
+
+    def test_push_handling(self, mock_start_build):
+        response = self.post_webhook('push', fixture='push_master.json')
+        self.assertStatusCode(response)
+        self.assertEqual(
+            Project.objects.filter(owner='mike', name='diaspora', private=False).count(),
+            1
+        )
+        mock_start_build.assert_called_once_with({
+            'pull_request_id': 0,
+            'author': 'GitLab dev user',
+            'sha': 'da1560886d4f094c3e6c9ef40349f7d38b5d27d7',
+            'branch': 'master',
+            'message': 'fixed readme'
+        })
+
+    def test_merge_request_handling(self, mock_start_build):
+        response = self.post_webhook('merge_request', fixture='merge_request.json')
+        self.assertStatusCode(response)
+        self.assertEqual(
+            Project.objects.filter(owner='awesome_space', name='awesome_project', private=True)
+                           .count(),
+            1
+        )
+        mock_start_build.assert_called_once_with({
+            'pull_request_id': 99,
+            'author': 'root',
+            'sha': 'da1560886d4f094c3e6c9ef40349f7d38b5d27d7',
+            'branch': 'ms-viewport',
+            'message': 'MS-Viewport\n'
+        })

@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.base import View
 
 from frigg.webhooks.events.github import GithubEvent
+from frigg.webhooks.events.gitlab import GitlabEvent
 
 
 class WebhookView(View):
@@ -46,3 +47,14 @@ class GithubWebhookView(WebhookView):
     def get_event_object(self, request, event_type):
         data = json.loads(str(request.body, encoding='utf-8'))
         return GithubEvent(event_type, data)
+
+
+class GitlabWebhookView(WebhookView):
+
+    def get_event_type(self, request):
+        data = json.loads(str(request.body, encoding='utf-8'))
+        return data['object_kind']
+
+    def get_event_object(self, request, event_type):
+        data = json.loads(str(request.body, encoding='utf-8'))
+        return GitlabEvent(event_type, data)
