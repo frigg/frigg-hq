@@ -83,6 +83,7 @@ class ProjectTestCase(TransactionTestCase):
             'sha': 's',
             'author': 'dumbledore',
             'pull_request_id': 0,
+            'message': '',
         })
         self.assertEqual(build.branch, 'b')
         self.assertEqual(build.sha, 's')
@@ -98,6 +99,7 @@ class ProjectTestCase(TransactionTestCase):
             'sha': 's',
             'author': 'dumbledore',
             'pull_request_id': 0,
+            'message': '',
         }
         project = Project.objects.get_or_create_from_url('git@github.com:frigg/frigg.git')
         project.start_build(data)
