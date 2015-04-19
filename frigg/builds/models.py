@@ -83,16 +83,12 @@ class Project(TimeStampModel):
             return timedelta(seconds=int(sum(timings) / len(timings)))
 
     def start_build(self, data):
-        if 'message' not in data:
-            data['message'] = None
-        if 'author' not in data:
-            data['author'] = ''
         build_number = self.last_build_number + 1
         build, created = Build.objects.get_or_create(
             project=self,
             branch=data['branch'],
             sha=data['sha'],
-            author=data['author']
+            author=data['author'],
         )
         build.pull_request_id = data['pull_request_id']
         build.message = data['message']

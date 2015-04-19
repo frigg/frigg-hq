@@ -1,7 +1,7 @@
 from django.conf.urls import url
 
-from . import views
+from .views import GithubWebhookView
 
 urlpatterns = [
-    url(r'^github/$', views.github_webhook, name='github'),
+    url(r'^github/$', GithubWebhookView.as_view(), name='github'),
 ]
