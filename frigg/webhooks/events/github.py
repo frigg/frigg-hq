@@ -93,5 +93,6 @@ class GithubEvent(Event):
     @property
     def is_retest_comment_event(self):
         if self.event_type in self.ALLOWED_COMMENT_EVENTS:
-            return is_retest_comment(self.data['comment']['body'])
+            return 'pull_request' in self.data['issue'] and\
+                   is_retest_comment(self.data['comment']['body'])
         return False
