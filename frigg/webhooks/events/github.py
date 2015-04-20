@@ -66,9 +66,11 @@ class GithubEvent(Event):
     @property
     def author(self):
         if self.event_type == 'push':
-            return self.commit['author']['username']
+            if 'username' in self.commit['author']:
+                return self.commit['author']['username']
         elif self.event_type == 'pull_request':
             return self.data['pull_request']['user']['login']
+        return ''
 
     @property
     def message(self):
@@ -79,6 +81,7 @@ class GithubEvent(Event):
                 self.data['pull_request']['title'] or '',
                 self.data['pull_request']['body'] or ''
             )
+        return ''
 
     @property
     def is_unknown_event_type(self):
