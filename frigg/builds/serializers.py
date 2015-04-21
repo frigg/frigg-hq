@@ -43,7 +43,6 @@ class ProjectSerializer(serializers.ModelSerializer):
             'name',
             'private',
             'approved',
-            'git_repository',
             'builds'
         )
 
@@ -58,7 +57,6 @@ class ProjectInlineSerializer(serializers.ModelSerializer):
             'name',
             'private',
             'approved',
-            'git_repository'
         )
 
 

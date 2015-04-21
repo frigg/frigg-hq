@@ -12,7 +12,6 @@
             <th>#</th>
             <th>name</th>
             <th>owner</th>
-            <th>git_repository</th>
             <th>private</th>
             <th>members</th>
             <th>user</th>
@@ -26,7 +25,6 @@
             <td>{{project.id}}</td>
             <td>{{project.name}}</td>
             <td>{{project.owner}}</td>
-            <td>{{project.git_repository}}</td>
             <td>{{project.private}}</td>
             <td>
                 {% for member in project.members.all %}

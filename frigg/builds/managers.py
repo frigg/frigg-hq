@@ -1,6 +1,4 @@
 # -*- coding: utf8 -*-
-import re
-
 from django.core.cache import cache
 from django.db import models
 from django.db.models import Q
@@ -16,16 +14,6 @@ class PermittedManager(models.Manager):
 
 
 class ProjectManager(PermittedManager):
-
-    def get_or_create_from_url(self, url):
-        item, created = self.get_or_create(git_repository=url)
-        if created:
-            rex = "git@github.com:([\w\.-]*)/([\w\.-]*).git"
-            match = re.match(rex, item.git_repository)
-            item.owner = match.group(1)
-            item.name = match.group(2)
-            item.save()
-        return item
 
     def permitted_query(self, user):
         query = Q(private=False)

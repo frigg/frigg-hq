@@ -1,7 +1,6 @@
 - model: builds.project
   pk: 1
   fields:
-    git_repository: 'git@github.com:frigg/frigg.git'
     name: frigg
     owner: frigg
     members: [1]
@@ -50,7 +49,6 @@
 - model: builds.project
   pk: 2
   fields:
-    git_repository: 'git@github.com:frigg/chewie.git'
     name: frigg
     owner: chewie
     members: []

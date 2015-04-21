@@ -1,5 +1,4 @@
 - fields:
-    git_repository: git@github.com:frigg/frigg.git
     members: [1]
     name: frigg
     owner: frigg
@@ -7,7 +6,6 @@
   model: builds.project
   pk: 1
 - fields:
-    git_repository: git@github.com:frigg/frigg.github.io.git
     members: []
     name: frigg.github.io
     owner: frigg
@@ -15,7 +13,6 @@
   model: builds.project
   pk: 2
 - fields:
-    git_repository: git@github.com:frigg/frigg-dispatcher.git
     members: []
     name: frigg-dispatcher
     owner: frigg
@@ -23,7 +20,6 @@
   model: builds.project
   pk: 3
 - fields:
-    git_repository: git@github.com:frigg/frigg-worker.git
     members: [1]
     name: frigg-worker
     owner: frigg

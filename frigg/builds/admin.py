@@ -21,7 +21,7 @@ class BuildInline(admin.TabularInline):
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'git_repository', 'queue_name', 'average_time', 'last_build_number')
+    list_display = ('__str__', 'queue_name', 'average_time', 'last_build_number')
     list_filter = ['owner', 'queue_name']
     actions = ['sync_members']
 

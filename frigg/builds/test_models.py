@@ -5,10 +5,9 @@ from unittest import mock
 
 import responses
 from django.contrib.auth import get_user_model
-from django.test import TransactionTestCase, override_settings
+from django.test import TransactionTestCase
 from django.utils.timezone import get_current_timezone, now
 from mockredis import mock_redis_client
-from social.apps.django_app.default.models import UserSocialAuth
 
 from .models import Build, BuildResult, Project
 
@@ -20,16 +19,6 @@ class ProjectTestCase(TransactionTestCase):
         project = Project.objects.create(owner='frigg', name='frigg-worker')
         self.assertEqual(str(project), 'frigg / frigg-worker')
 
-    def test_create_project(self):
-        url = 'git@github.com:tind/balder.git'
-        project = Project.objects.get_or_create_from_url(url)
-        self.assertEqual(project.owner, 'tind')
-        self.assertEqual(project.name, 'balder')
-        self.assertEqual(project.git_repository, url)
-        self.assertIsNone(project.average_time)
-        self.assertFalse(project.approved)
-        self.assertEqual(Project.objects.all().count(), 1)
-
     @mock.patch('frigg.builds.models.Project.github_token', '')
     def test_clone_url(self):
         project = Project(owner='frigg', name='frigg-worker', private=False)
@@ -38,24 +27,14 @@ class ProjectTestCase(TransactionTestCase):
         self.assertEqual(project.clone_url, 'https://@github.com/frigg/chewie')
 
     def test_last_build_number(self):
-        project = Project.objects.create(owner='frigg', name='frigg-worker', private=False,
-                                         git_repository='git@github.com:frigg/frigg-worker.git')
+        project = Project.objects.create(owner='frigg', name='frigg-worker', private=False)
         self.assertEqual(project.last_build_number, 0)
         Build.objects.create(project=project, build_number=42)
         self.assertEqual(project.last_build_number, 42)
 
     def test_auto_approval(self):
-        url = 'git@github.com:frigg/frigg.git'
-        project = Project.objects.get_or_create_from_url(url)
-        self.assertEqual(project.git_repository, url)
+        project = Project.objects.create(owner='frigg', name='frigg')
         self.assertTrue(project.approved)
-
-    def test_get_project(self):
-        url = 'git@github.com:tind/balder.git'
-        Project.objects.get_or_create_from_url(url)
-        self.assertEqual(Project.objects.all().count(), 1)
-        Project.objects.get_or_create_from_url(url)
-        self.assertEqual(Project.objects.all().count(), 1)
 
     @mock.patch('frigg.helpers.github.list_collaborators', lambda x: ['dumbledore'])
     def test_update_members(self):
@@ -63,21 +42,8 @@ class ProjectTestCase(TransactionTestCase):
         project.update_members()
         self.assertEqual(project.members.all().count(), 1)
 
-    @override_settings(GITHUB_ACCESS_TOKEN='github-token')
-    def test_token_for_url(self):
-        self.assertEqual(Project.token_for_url('git@github.com:frigg/frigg.git'), 'github-token')
-
-        project = Project.objects.get_or_create_from_url('git@github.com:frigg/frigg.git')
-        user = get_user_model().objects.get(pk=1)
-        project.save()
-        project.members.add(user)
-        social_auth = UserSocialAuth.objects.create(user=user, provider='github', uid='uid')
-        social_auth.extra_data = {'access_token': 'user-token'}
-        social_auth.save()
-        self.assertEqual(Project.token_for_url('git@github.com:frigg/frigg.git'), 'user-token')
-
     def test_start(self):
-        project = Project.objects.get_or_create_from_url('git@github.com:frigg/frigg.git')
+        project = Project.objects.create(owner='frigg', name='frigg')
         build = project.start_build({
             'branch': 'b',
             'sha': 's',
@@ -101,7 +67,7 @@ class ProjectTestCase(TransactionTestCase):
             'pull_request_id': 0,
             'message': '',
         }
-        project = Project.objects.get_or_create_from_url('git@github.com:frigg/frigg.git')
+        project = Project.objects.create(owner='frigg', name='frigg')
         project.start_build(data)
         self.assertEqual(project.builds.count(), 1)
         self.assertEqual(project.last_build_number, 1)
@@ -179,7 +145,6 @@ class BuildTestCase(TransactionTestCase):
         BuildResult.objects.create(build=build, succeeded=True)
         response = build.send_webhook('http://w.frigg.io')
         request = json.loads(response.request.body)
-        self.assertEqual(request['repository'], build.project.git_repository)
         self.assertEqual(request['sha'], build.sha)
         self.assertEqual(request['build_url'], build.get_absolute_url())
         self.assertEqual(request['state'], build.result.succeeded)
@@ -196,15 +161,13 @@ class BuildTestCase(TransactionTestCase):
     @mock.patch('frigg.builds.models.BuildResult.create_not_approved')
     @mock.patch('redis.Redis', mock_redis_client)
     def test_start_not_approved(self, mock_create_not_approved):
-        project = Project.objects.create(owner='tind', name='frigg', approved=False,
-                                         git_repository='git@github.com:tind/frigg.git')
+        project = Project.objects.create(owner='tind', name='frigg', approved=False)
         build = Build.objects.create(project=project, branch='master', build_number=1)
         build.start()
         self.assertTrue(mock_create_not_approved.called)
 
     def test_has_timed_out(self):
-        url = 'git@github.com:frigg/frigg.git'
-        project = Project.objects.get_or_create_from_url(url)
+        project = Project.objects.create(owner='frigg', name='frigg')
         build = Build.objects.create(project=project, build_number=1,
                                      start_time=now() - timedelta(minutes=61))
         self.assertTrue(build.has_timed_out())

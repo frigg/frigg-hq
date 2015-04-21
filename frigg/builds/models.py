@@ -27,7 +27,6 @@ logger = logging.getLogger(__name__)
 class Project(TimeStampModel):
     name = models.CharField(max_length=100, db_index=True, blank=True)
     owner = models.CharField(max_length=100, db_index=True, blank=True)
-    git_repository = models.CharField(unique=True, db_index=True, max_length=150)
     private = models.BooleanField(default=True, db_index=True)
     approved = models.BooleanField(default=False, db_index=True)
     members = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name='projects')
@@ -115,15 +114,6 @@ class Project(TimeStampModel):
         collaborators = github.list_collaborators(self)
         users = get_user_model().objects.filter(username__in=collaborators)
         self.members = users
-
-    @classmethod
-    def token_for_url(cls, repo_url):
-        try:
-            project = Project.objects.get(git_repository=repo_url)
-            token = project.github_token
-        except cls.DoesNotExist:
-            token = getattr(settings, 'GITHUB_ACCESS_TOKEN', ':')
-        return token
 
 
 class Build(TimeStampModel):
@@ -253,7 +243,6 @@ class Build(TimeStampModel):
 
     def send_webhook(self, url):
         return requests.post(url, data=json.dumps({
-            'repository': self.project.git_repository,
             'sha': self.sha,
             'build_url': self.get_absolute_url(),
             'pull_request_id': self.pull_request_id,
