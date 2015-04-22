@@ -53,7 +53,8 @@ class GithubEvent(Event):
         if self.event_type == 'pull_request':
             return self.data['number']
         elif self.event_type == 'issue_comment':
-            return int(self.data['issue']['pull_request']['url'].split("/")[-1])
+            if 'pull_request' in self.data['issue']:
+                return int(self.data['issue']['pull_request']['url'].split("/")[-1])
         return 0
 
     @property
@@ -66,7 +67,7 @@ class GithubEvent(Event):
     @property
     def author(self):
         if self.event_type == 'push':
-            if 'username' in self.commit['author']:
+            if self.commit and 'username' in self.commit['author']:
                 return self.commit['author']['username']
         elif self.event_type == 'pull_request':
             return self.data['pull_request']['user']['login']
@@ -75,7 +76,8 @@ class GithubEvent(Event):
     @property
     def message(self):
         if self.event_type == 'push':
-            return self.commit['message']
+            if self.commit:
+                return self.commit['message']
         elif self.event_type == 'pull_request':
             return '{}\n{}'.format(
                 self.data['pull_request']['title'] or '',
