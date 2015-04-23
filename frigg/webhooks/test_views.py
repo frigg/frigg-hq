@@ -129,7 +129,7 @@ class GithubWebhookViewTests(WebhookViewTestCase):
             'branch': 'tag/0.5.1',
             'message': '0.5.1'
         })
- 
+
     def test_push_delete(self, mock_start_build):
         response = self.post_webhook('push', fixture='push_delete.json')
         self.assertStatusCode(response)

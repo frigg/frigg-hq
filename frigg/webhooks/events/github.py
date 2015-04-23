@@ -87,6 +87,8 @@ class GithubEvent(Event):
 
     @property
     def is_unknown_event_type(self):
+        if self.event_type == 'push':
+            return self.data['deleted']
         if self.event_type == 'pull_request':
             return self.data['action'] not in self.ALLOWED_PULL_REQUEST_ACTIONS
         else:
