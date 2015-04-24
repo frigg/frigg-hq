@@ -1,7 +1,6 @@
 # -*- coding: utf8 -*-
 import json
 import os
-import unittest
 from unittest import mock
 
 from django.conf import settings
@@ -63,11 +62,10 @@ class GithubWebhookViewTests(WebhookViewTestCase):
         )
         self.assertFalse(mock_start_build.called)
 
-    @unittest.skip('FIXME')
     def test_ping_handling_of_organization_ping(self, mock_start_build):
         response = self.post_webhook('ping', fixture='ping_organization.json')
         self.assertStatusCode(response)
-        self.assertContains(response, 'Organization ping event received')
+        self.assertContains(response, 'Handled "ping"')
         self.assertFalse(mock_start_build.called)
 
     def test_push_handling(self, mock_start_build):

@@ -40,7 +40,7 @@ class Event(object):
 
     @property
     def response(self):
-        if self.is_unknown_event_type:
+        if self.is_unknown_event_type and not self.event_type == 'ping':
             return 'Unknown event type "{event.event_type}"'.format(event=self)
         if self.build:
             return 'Handled "{event}" event.\nMore info at {url}'.format(
