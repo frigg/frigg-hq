@@ -91,6 +91,8 @@ class GithubEvent(Event):
             return self.data['deleted']
         if self.event_type == 'pull_request':
             return self.data['action'] not in self.ALLOWED_PULL_REQUEST_ACTIONS
+        if self.event_type == 'issue_comment':
+            return not self.is_retest_comment_event
         else:
             return super().is_unknown_event_type
 
