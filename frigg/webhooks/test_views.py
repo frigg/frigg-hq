@@ -191,3 +191,8 @@ class GithubWebhookViewTests(WebhookViewTestCase):
             'branch': 'issue24-project-model',
             'message': 'Add model for projects\n',
         })
+
+    def test_issue_comment_handling_regular_comment(self, mock_start_build):
+        response = self.post_webhook('issue_comment', fixture='issue_comment_not_retest.json')
+        self.assertStatusCode(response)
+        self.assertFalse(mock_start_build.called)
