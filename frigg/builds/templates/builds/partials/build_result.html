@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n emoji_tags %}
 <div class="pure-u-1">
   <h3>
     {{ build.project.owner }} / {{ build.project.name }} / {{ build.branch }}
@@ -34,7 +34,7 @@
 <div class="pure-u-1 pure-u-lg-1-2">
   {% if build.message %}
     <strong>Message:</strong><br/>
-    {{ build.rendered_message }}
+    {{ build.rendered_message|emoji_replace }}
   {% endif %}
 </div>
 
