@@ -34,6 +34,7 @@ INSTALLED_APPS = (
     'django_extensions',
     'rest_framework',
     'cachalot',
+    'emoji',
 
     'frigg.authentication',
     'frigg.builds',
