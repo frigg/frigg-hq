@@ -18,7 +18,9 @@ def overview(request, page=1):
     if projects_to_approve > 0:
         messages.info(request, 'One or more projects needs approval before any builds will run.')
 
-    build_list = Build.objects.permitted(request.user).select_related('project', 'result')
+    build_list = Build.objects.permitted(request.user).select_related('project',
+                                                                      'result__still_running',
+                                                                      'result__succeeded')
     paginator = Paginator(build_list, settings.OVERVIEW_PAGINATION_COUNT)
 
     try:
@@ -53,7 +55,7 @@ def approve_projects(request, project_id=None):
 def view_organization(request, owner):
     builds = Build.objects.permitted(request.user) \
         .filter(project__owner=owner) \
-        .select_related('project', 'result')
+        .select_related('project', 'result__still_running', 'result__succeeded')
 
     if len(builds) == 0:
         raise Http404
@@ -75,7 +77,8 @@ def view_project(request, owner, name):
         owner=owner,
         name=name
     )
-    builds = project.builds.all().select_related('project', 'result')
+    builds = project.builds.all()\
+                           .select_related('project', 'result__still_running', 'result__succeeded')
 
     success_rate = 0
     if len(builds):
