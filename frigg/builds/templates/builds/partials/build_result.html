@@ -57,7 +57,7 @@
   {% else %}
     <div class="build-logs">
       {% for task in build.result.tasks %}
-        <div>
+        <div id="task-{{ forloop.counter }}">
           {% if task.pending %}
             <h3><i class="fa fa-check fa-spinner fa-spin orange"></i> {{ task.task }}</h3>
           {% else %}
