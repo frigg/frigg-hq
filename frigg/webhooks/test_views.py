@@ -11,7 +11,6 @@ from frigg.utils.tests import ViewTestCase
 
 
 class WebhookViewTestCase(ViewTestCase):
-
     fixtures = ['frigg/builds/fixtures/users.json']
     FIXTURE_PATH = ''
 
@@ -36,7 +35,6 @@ class WebhookViewTestCase(ViewTestCase):
 
 @mock.patch('frigg.builds.models.Project.start_build')
 class GithubWebhookViewTests(WebhookViewTestCase):
-
     FIXTURE_PATH = 'webhooks/fixtures/github'
 
     def get_webhook_headers(self, event, data=None, fixture=None):
@@ -148,6 +146,21 @@ class GithubWebhookViewTests(WebhookViewTestCase):
             'message': 'Add model for projects\n### Todo:\r\n- [x] Fix templates\r\n- [x] '
                        'Add filtering of projects #30\r\n- [x] Add filtering of branches within '
                        'projects #30\r\n',
+        })
+
+    def test_pull_request_handling_open(self, mock_start_build):
+        response = self.post_webhook('pull_request', fixture='pull_request_open.json')
+        self.assertStatusCode(response)
+        self.assertEqual(
+            Project.objects.filter(owner='relekang', name='promised-ssh', private=False).count(),
+            1
+        )
+        mock_start_build.assert_called_once_with({
+            'pull_request_id': 3,
+            'author': 'mcculloughsean',
+            'sha': 'e3bb26f0fd87974f33e9809bd0eec51266b4fba1',
+            'branch': 'master',
+            'message': 'Add testing helpers\n',
         })
 
     def test_pull_request_handling_message(self, mock_start_build):

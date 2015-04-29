@@ -6,7 +6,7 @@ from .base import Event
 class GithubEvent(Event):
     REPOSITORY_URL = 'git@github.com:{event.repository_owner}/{event.repository_name}.git'
     ALLOWED_EVENT_TYPES = ['ping', 'push', 'pull_request', 'issue_comment']
-    ALLOWED_PULL_REQUEST_ACTIONS = ['open', 'synchronize']
+    ALLOWED_PULL_REQUEST_ACTIONS = ['opened', 'synchronize']
     ALLOWED_COMMENT_EVENTS = ['issue_comment']
 
     @property
