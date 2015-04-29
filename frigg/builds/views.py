@@ -58,19 +58,33 @@ def view_organization(request, owner):
     if len(builds) == 0:
         raise Http404
 
+    success_rate = 0
+    if len(builds):
+        success_rate = int((builds.filter(result__succeeded=True).count()/len(builds)) * 100)
+
     return render(request, "builds/organization.html", {
         'organization': owner,
-        'builds': builds
+        'builds': builds,
+        'success_rate': success_rate
     })
 
 
 def view_project(request, owner, name):
+    project = get_object_or_404(
+        Project.objects.permitted(request.user).prefetch_related('builds', 'builds__result'),
+        owner=owner,
+        name=name
+    )
+    builds = project.builds.all().select_related('project', 'result')
+
+    success_rate = 0
+    if len(builds):
+        success_rate = int((builds.filter(result__succeeded=True).count()/len(builds)) * 100)
+
     return render(request, "builds/project.html", {
-        'project': get_object_or_404(
-            Project.objects.permitted(request.user).prefetch_related('builds', 'builds__result'),
-            owner=owner,
-            name=name
-        )
+        'project': project,
+        'builds': builds,
+        'success_rate': success_rate
     })
 
 

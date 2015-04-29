@@ -3,11 +3,12 @@
 {% block content %}
   <div class="pure-u-1">
     <h2>{{ project.owner }} / {{ project.name }}</h2>
-    <strong>Average running time:</strong> {{ project.average_time }}
+    {% if project.average_time %}<strong>Average running time:</strong> {{ project.average_time }}<br/>{% endif %}
+    <strong>Success rate:</strong> {{ success_rate }} %
   </div>
 
   <div class="pure-u-1">
-    {% for build in project.builds.all %}
+    {% for build in builds %}
       {% include "builds/partials/build_list_element.html" %}
     {% endfor %}
   </div>
