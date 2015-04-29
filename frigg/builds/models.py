@@ -210,6 +210,7 @@ class Build(TimeStampModel):
 
         github.set_commit_status(self, pending=True)
         self.start_time = now()
+        self.end_time = None
         self.save()
 
         r = redis.Redis(**settings.REDIS_SETTINGS)

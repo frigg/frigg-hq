@@ -158,6 +158,16 @@ class BuildTestCase(TransactionTestCase):
         self.assertEqual(BuildResult.objects.all().count(), 0)
         self.assertTrue(mock_set_commit_status.called)
 
+    @mock.patch('frigg.helpers.github.set_commit_status')
+    @mock.patch('redis.Redis', mock_redis_client)
+    def test_start_restart_should_not_have_end_time(self, mock_set_commit_status):
+        build = Build.objects.create(project=self.project, branch='master', build_number=1,
+                                     end_time=now())
+        build.start()
+        build = Build.objects.get(project=self.project, build_number=1)
+        self.assertIsNone(build.end_time)
+        self.assertTrue(mock_set_commit_status.called)
+
     @mock.patch('frigg.builds.models.BuildResult.create_not_approved')
     @mock.patch('redis.Redis', mock_redis_client)
     def test_start_not_approved(self, mock_create_not_approved):
