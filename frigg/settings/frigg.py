@@ -9,6 +9,8 @@ GITHUB_ACCESS_TOKEN = ''
 IGNORED_PULL_REQUEST_ACTIONS = ['closed', 'assigned', 'unassigned', 'labeled', 'unlabeled']
 
 FRIGG_WORKER_QUEUE = 'frigg:queue'
+FRIGG_WEBHOOK_QUEUE = 'frigg:webhooks'
+FRIGG_WEBHOOK_FAILED_QUEUE = 'frigg:webhooks:failed'
 
 REDIS_SETTINGS = {
     'host': '127.0.0.1',
