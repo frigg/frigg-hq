@@ -1,22 +1,17 @@
 from django.conf.urls import url
 
-from . import api, views
+from . import views
 
 urlpatterns = [
-    url(r'^$', views.overview, name='overview'),
-    url(r'^(?P<page>\d+)$', views.overview, name='overview'),
-    url(r'^projects/approve/$', views.approve_projects, name='approve_projects_overview'),
-    url(r'^projects/approve/(?P<project_id>\d+)/$', views.approve_projects, name='approve_project'),
-
     url(
-        r'^(?P<owner>[^/]+)/$',
-        views.view_organization,
-        name='view_organization'
+        r'^$',
+        views.overview,
+        name='overview'
     ),
     url(
-        r'^(?P<owner>[^/]+)/(?P<name>[^/]+)/$',
-        views.view_project,
-        name='view_project'
+        r'^(?P<page>\d+)$',
+        views.overview,
+        name='overview'
     ),
     url(
         r'^(?P<owner>[^/]+)/(?P<name>[^/]+)/last/$',
@@ -27,16 +22,6 @@ urlpatterns = [
         r'^(?P<owner>[^/]+)/(?P<name>[^/]+)/(?P<build_number>\d+)/$',
         views.view_build,
         name='view_build'
-    ),
-    url(
-        r'^(?P<owner>[^/]+)/(?P<name>[^/]+).svg$',
-        api.build_badge,
-        name='build_badge'
-    ),
-    url(
-        r'^(?P<owner>[^/]+)/(?P<name>[^/]+)/coverage.svg$',
-        api.coverage_badge,
-        name='coverage_badge'
     ),
     url(
         r'^artifacts/(?P<owner>[^/]+)/(?P<name>[^/]+)/(?P<artifact>.*)$',

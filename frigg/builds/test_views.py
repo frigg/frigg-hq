@@ -1,20 +1,14 @@
 # -*- coding: utf8 -*-
-from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.http import Http404
 
 from frigg.utils.tests import ViewTestCase
 
-from .models import Project
-from .views import (approve_projects, download_artifact, last_build, overview, view_build,
-                    view_organization, view_project)
+from .views import download_artifact, last_build, overview, view_build
 
 
-class SmokeTestCase(ViewTestCase):
+class BuildsViewTests(ViewTestCase):
     fixtures = ['frigg/builds/fixtures/users.json', 'frigg/builds/fixtures/test_views.yaml']
-
-    def tearDown(self):
-        get_user_model().objects.all().delete()
 
     def test_overview_view(self):
         request = self.factory.get(reverse('overview'))
@@ -29,22 +23,6 @@ class SmokeTestCase(ViewTestCase):
     def test_overview_pagination(self):
         self.assertStatusCode(self.client.get(reverse('overview', args=[1])))
         self.assertStatusCode(self.client.get(reverse('overview', args=[10])), 404)
-
-    def test_organization_view(self):
-        request = self.factory.get(reverse('view_organization', args=['frigg']))
-        self.add_request_fields(request)
-        response = view_organization(request, 'frigg')
-        self.assertStatusCode(response)
-
-        request = self.factory.get(reverse('view_organization', args=['dumbledore']))
-        self.add_request_fields(request)
-        self.assertRaises(Http404, view_organization, request, 'dumbledore')
-
-    def test_project_view(self):
-        request = self.factory.get(reverse('view_project', args=['frigg', 'frigg']))
-        self.add_request_fields(request)
-        response = view_project(request, 'frigg', 'frigg')
-        self.assertStatusCode(response)
 
     def test_build_view(self):
         request = self.factory.get(reverse('view_build', args=['frigg', 'frigg', 1]))
@@ -66,31 +44,6 @@ class SmokeTestCase(ViewTestCase):
     def test_approve_project_404(self):
         response = self.client.get(reverse('approve_projects_overview'))
         self.assertStatusCode(response, 404)
-
-    def test_approve_projects_view(self):
-        request = self.factory.get(reverse('approve_projects_overview'))
-        self.add_request_fields(request, superuser=True)
-        response = approve_projects(request)
-        self.assertStatusCode(response, 200)
-
-    def test_approve_projects_post_view(self):
-        Project.objects.create(pk=42)
-        request = self.factory.post(reverse('approve_project', args=[42]), data={'approve': 'yes'})
-        self.add_request_fields(request, superuser=True)
-        response = approve_projects(request, project_id=42)
-        self.assertStatusCode(response, 302)
-        self.assertTrue(Project.objects.get(pk=42).approved)
-
-    def test_approve_projects_triggers_build_last(self):
-        project = Project.objects.get(pk=2)
-        last_build_start_time = project.builds.last().start_time
-        self.assertIsNone(last_build_start_time)
-
-        request = self.factory.post(reverse('approve_project', args=[1]), data={'approve': 'yes'})
-        self.add_request_fields(request, superuser=True)
-        approve_projects(request, project_id=2)
-
-        self.assertNotEqual(last_build_start_time, project.builds.last().start_time)
 
     def test_download_artifact(self):
         request = self.factory.get(
