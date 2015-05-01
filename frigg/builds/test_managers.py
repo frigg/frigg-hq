@@ -15,10 +15,6 @@ class PermittedObjectsTestCase(TransactionTestCase):
     def setUp(self):
         self.user = get_user_model().objects.get(pk=1)
 
-    def tearDown(self):
-        get_user_model().objects.all().delete()
-        Project.objects.all().delete()
-
     def test_project_permitted_objects(self):
         self.assertEqual(Project.objects.all().count(), 4)
         self.assertEqual(Project.objects.permitted(self.user).count(), 3)

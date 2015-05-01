@@ -1,6 +1,21 @@
 from rest_framework import serializers
 
-from .models import Build, BuildResult, Project
+from frigg.projects.models import Project
+
+from .models import Build, BuildResult
+
+
+class ProjectInlineSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Project
+        fields = (
+            'id',
+            'owner',
+            'name',
+            'private',
+            'approved',
+        )
 
 
 class BuildResultSerializer(serializers.ModelSerializer):
@@ -29,34 +44,6 @@ class BuildInlineSerializer(serializers.ModelSerializer):
             'start_time',
             'end_time',
             'result'
-        )
-
-
-class ProjectSerializer(serializers.ModelSerializer):
-    builds = BuildInlineSerializer(read_only=True, many=True)
-
-    class Meta:
-        model = Project
-        fields = (
-            'id',
-            'owner',
-            'name',
-            'private',
-            'approved',
-            'builds'
-        )
-
-
-class ProjectInlineSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Project
-        fields = (
-            'id',
-            'owner',
-            'name',
-            'private',
-            'approved',
         )
 
 

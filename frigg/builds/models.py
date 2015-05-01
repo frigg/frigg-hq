@@ -18,8 +18,9 @@ from markdown import markdown
 
 from frigg.helpers import github
 from frigg.helpers.badges import get_badge, get_coverage_badge
+from frigg.projects.managers import ProjectManager
 
-from .managers import BuildManager, BuildResultManager, ProjectManager
+from .managers import BuildManager, BuildResultManager
 
 logger = logging.getLogger(__name__)
 

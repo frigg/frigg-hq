@@ -24,22 +24,22 @@ urlpatterns = [
     ),
     url(
         r'^badges/coverage/(?P<owner>[^/]+)/(?P<name>[^/]+)/$',
-        'frigg.builds.api.coverage_badge',
+        'frigg.projects.views.coverage_badge',
         name='coverage_badge'
     ),
     url(
         r'^badges/coverage/(?P<owner>[^/]+)/(?P<name>[^/]+)/(?P<branch>[^/]+)/$',
-        'frigg.builds.api.coverage_badge',
+        'frigg.projects.views.coverage_badge',
         name='coverage_badge'
     ),
     url(
         r'^badges/(?P<owner>[^/]+)/(?P<name>[^/]+)/$',
-        'frigg.builds.api.build_badge',
+        'frigg.projects.views.build_badge',
         name='build_badge'
     ),
     url(
         r'^badges/(?P<owner>[^/]+)/(?P<name>[^/]+)/(?P<branch>[^/]+)/$',
-        'frigg.builds.api.build_badge',
+        'frigg.projects.views.build_badge',
         name='build_badge'
     ),
 
@@ -58,5 +58,6 @@ urlpatterns = [
     url(r'^auth/', include('django.contrib.auth.urls')),
     url(r'^stats/', include('frigg.stats.urls', namespace='stats')),
     url(r'^api/', include(api_router.urls)),
+    url(r'^', include('frigg.projects.urls')),
     url(r'^', include('frigg.builds.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

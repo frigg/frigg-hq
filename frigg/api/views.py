@@ -1,9 +1,11 @@
 from rest_framework import permissions, viewsets
 
 from frigg.api.permissions import ReadOnly
-from frigg.builds.filters import BuildPermissionFilter, ProjectPermissionFilter
+from frigg.builds.filters import BuildPermissionFilter
 from frigg.builds.models import Build, Project
-from frigg.builds.serializers import BuildSerializer, ProjectSerializer
+from frigg.builds.serializers import BuildSerializer
+from frigg.projects.filters import ProjectPermissionFilter
+from frigg.projects.serializers import ProjectSerializer
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
