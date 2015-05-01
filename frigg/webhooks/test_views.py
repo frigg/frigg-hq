@@ -122,7 +122,7 @@ class GithubWebhookViewTests(WebhookViewTestCase):
             'pull_request_id': 0,
             'author': 'relekang',
             'sha': '7e037cbb6d7f923592671d07542b21c18373f886',
-            'branch': 'tag/0.5.1',
+            'branch': '0.5.1',
             'message': '0.5.1'
         })
 

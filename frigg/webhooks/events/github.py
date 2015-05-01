@@ -36,7 +36,7 @@ class GithubEvent(Event):
     def branch(self):
         if self.event_type == 'push':
             if self.data['ref'].startswith('refs/tags/'):
-                return 'tag/{0}'.format(self.data['ref'].replace('refs/tags/', ''))
+                return self.data['ref'].replace('refs/tags/', '')
             return self.data['ref'][11:]
         elif self.event_type == 'pull_request':
             return self.data['pull_request']['head']['ref']
