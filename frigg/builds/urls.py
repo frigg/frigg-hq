@@ -1,6 +1,6 @@
 from django.conf.urls import url
 
-from . import views
+from . import api, views
 
 urlpatterns = [
     url(r'^$', views.overview, name='overview'),
@@ -27,6 +27,16 @@ urlpatterns = [
         r'^(?P<owner>[^/]+)/(?P<name>[^/]+)/(?P<build_number>\d+)/$',
         views.view_build,
         name='view_build'
+    ),
+    url(
+        r'^(?P<owner>[^/]+)/(?P<name>[^/]+).svg$',
+        api.build_badge,
+        name='build_badge'
+    ),
+    url(
+        r'^(?P<owner>[^/]+)/(?P<name>[^/]+)/coverage.svg$',
+        api.coverage_badge,
+        name='coverage_badge'
     ),
     url(
         r'^artifacts/(?P<owner>[^/]+)/(?P<name>[^/]+)/(?P<artifact>.*)$',

@@ -23,22 +23,22 @@ urlpatterns = [
         name='api_partial_build_page'
     ),
     url(
-        r'^badges/coverage/(?P<owner>[^/]+)/(?P<project>[^/]+)/$',
+        r'^badges/coverage/(?P<owner>[^/]+)/(?P<name>[^/]+)/$',
         'frigg.builds.api.coverage_badge',
         name='coverage_badge'
     ),
     url(
-        r'^badges/coverage/(?P<owner>[^/]+)/(?P<project>[^/]+)/(?P<branch>[^/]+)/$',
+        r'^badges/coverage/(?P<owner>[^/]+)/(?P<name>[^/]+)/(?P<branch>[^/]+)/$',
         'frigg.builds.api.coverage_badge',
         name='coverage_badge'
     ),
     url(
-        r'^badges/(?P<owner>[^/]+)/(?P<project>[^/]+)/$',
+        r'^badges/(?P<owner>[^/]+)/(?P<name>[^/]+)/$',
         'frigg.builds.api.build_badge',
         name='build_badge'
     ),
     url(
-        r'^badges/(?P<owner>[^/]+)/(?P<project>[^/]+)/(?P<branch>[^/]+)/$',
+        r'^badges/(?P<owner>[^/]+)/(?P<name>[^/]+)/(?P<branch>[^/]+)/$',
         'frigg.builds.api.build_badge',
         name='build_badge'
     ),
