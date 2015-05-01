@@ -4,24 +4,10 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.generic import RedirectView
 
-from frigg.api.urls import router as api_router
-
-admin.autodiscover()
-
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^webhooks/', include('frigg.webhooks.urls', namespace='webhooks', app_name='webhooks')),
 
-    url(
-        r'^api/workers/report/$',
-        'frigg.builds.api.report_build',
-        name='worker_api_report_build'
-    ),
-    url(
-        r'^api/partials/build/(?P<owner>[^/]+)/(?P<name>[^/]+)/(?P<build_number>\d+)/$',
-        'frigg.builds.api.partial_build_page',
-        name='api_partial_build_page'
-    ),
     url(
         r'^badges/coverage/(?P<owner>[^/]+)/(?P<name>[^/]+)/$',
         'frigg.projects.views.coverage_badge',
@@ -57,7 +43,7 @@ urlpatterns = [
     url(r'^auth/', include('social.apps.django_app.urls', namespace='social')),
     url(r'^auth/', include('django.contrib.auth.urls')),
     url(r'^stats/', include('frigg.stats.urls', namespace='stats')),
-    url(r'^api/', include(api_router.urls)),
+    url(r'^api/', include('frigg.api.urls')),
     url(r'^', include('frigg.projects.urls')),
     url(r'^', include('frigg.builds.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
