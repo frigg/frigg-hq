@@ -174,6 +174,9 @@ class ReportAPITests(TransactionTestCase):
             "branch": "master",
             "owner": "frigg",
             "id": 2,
+            "setup_results": [
+                {"task": "make install", "return_code": 0, "succeeded": True, "log": "setup done"},
+            ],
             "results": [
                 {"task": "make test", "return_code": 0, "succeeded": True, "log": "log"},
                 {"task": "make test"}
@@ -205,6 +208,10 @@ class ReportAPITests(TransactionTestCase):
         self.assertEquals(
             json.loads(build.result.result_log),
             self.payload['results']
+        )
+        self.assertEquals(
+            json.loads(build.result.setup_log),
+            self.payload['setup_results']
         )
 
     @override_settings(FRIGG_WORKER_TOKENS=['supertoken'])

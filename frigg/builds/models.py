@@ -255,6 +255,7 @@ class Build(TimeStampModel):
 class BuildResult(TimeStampModel):
     build = models.OneToOneField(Build, related_name='result')
     result_log = models.TextField()
+    setup_log = models.TextField(blank=True)
     succeeded = models.BooleanField(default=False)
     still_running = models.BooleanField(default=False)
     coverage = models.DecimalField(max_digits=5, decimal_places=2, editable=False, null=True,
@@ -293,6 +294,8 @@ class BuildResult(TimeStampModel):
     def create_from_worker_payload(cls, build, payload):
         result = cls.objects.get_or_create(build_id=build.pk)[0]
         result.result_log = json.dumps(payload['results'])
+        if 'setup_results' in payload:
+            result.setup_log = json.dumps(payload['setup_results'])
         result.succeeded = BuildResult.evaluate_results(payload['results'])
 
         if 'finished' in payload:
