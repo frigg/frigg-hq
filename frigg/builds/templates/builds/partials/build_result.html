@@ -55,6 +55,25 @@
       {% trans 'This project has no defined tasks and frigg could not find any appropiate tasks for the project.' %}
     </p>
   {% else %}
+    {% if build.result.setup_log and build.result.setup_tasks  %}
+      <a href="#" class="show-setup-logs-btn pure-button">View setup logs</a>
+      <div class="build-logs setup-logs" style="display: none;">
+        {% for task in build.result.setup_tasks %}
+          <div id="setup-task-{{ forloop.counter }}">
+            {% if task.pending %}
+              <h3><i class="fa fa-check fa-spinner fa-spin orange"></i> {{ task.task }}</h3>
+            {% else %}
+              <h3>
+                <i class="fa {% if task.return_code == 0 or task.return_code == '' %}fa-check green{% else %}fa-times red{% endif %}"></i>
+                {{ task.task }} <span class="meta">Return code: {{ task.return_code }}</span>
+              </h3>
+              <pre><code class="colorify">{{ task.log }}</code></pre>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
     <div class="build-logs">
       {% for task in build.result.tasks %}
         <div id="task-{{ forloop.counter }}">

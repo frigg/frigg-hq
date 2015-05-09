@@ -280,6 +280,13 @@ class BuildResult(TimeStampModel):
     def tasks(self):
         return json.loads(self.result_log)
 
+    @property
+    def setup_tasks(self):
+        try:
+            return json.loads(self.setup_log)
+        except ValueError:
+            return None
+
     @classmethod
     def create_not_approved(cls, build):
         result = cls.objects.create(
