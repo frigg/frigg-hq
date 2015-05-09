@@ -17,23 +17,28 @@
                 if (data !== currentContent) {
                   currentContent = data;
                   contentBlock.html(currentContent);
-                  $('.build-logs h3').off('click').on('click', function() {
-                    $(this).parent().find('pre').slideToggle();
-                  });
+                  createListeners();
                 }
                 if (!data.match(/<strong>State:<\/strong>[ \n]+pending/)) {
                   clearInterval(intervalId);
                 }
               });
         }, 2500);
+
       });
     </script>
   {% endif %}
-
   <script>
-    $('.build-logs h3').on('click', function() {
-      $(this).parent().find('pre').slideToggle();
-    });
+    function createListeners() {
+      $('.build-logs h3').off('click').on('click', function() {
+        $(this).parent().find('pre').slideToggle();
+      });
+      $('.show-setup-logs-btn').off('click').on('click', function(e) {
+        e.preventDefault();
+        $('.setup-logs').slideToggle();
+      });
+    }
+    createListeners();
   </script>
 {% endblock js %}
 
