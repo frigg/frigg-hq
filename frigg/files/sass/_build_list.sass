@@ -1,0 +1,40 @@
+@import "variables"
+
+.build-list-item
+  padding: 0.6em
+  border-bottom: 1px dashed $border-color
+  border-left: 0.3em solid #eee
+
+  h4
+    margin: 0.2em 0
+    font-size: 1.2em
+
+  .meta
+    font-size: 0.8em
+    color: $meta-font-color
+    a
+      color: $meta-font-color
+
+    span:not(:first-child)
+      margin-left: 1em
+
+    .message
+      margin-left: 1em
+      display: block
+
+  &.red
+    background-color: #fdf7f7
+    border-left-color: $red
+
+  &.green
+    background-color: #dff0d8
+    border-left-color: $green
+
+  &.orange
+    background-color: #fcf8f2
+    border-left-color: $orange
+
+  &.gray
+    background-color: #eeeeee
+    border-left-color: #bbbbbb
+

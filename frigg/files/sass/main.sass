@@ -1,13 +1,8 @@
-$background-color: #fafafa
-$link-color: #333
-$border-color: #aaa
-$meta-font-color: #999
-$code-background-color: #ededed
-$transparent: rgba(0, 0, 0, 0)
-
-$green: #468847
-$red: #d9534f
-$orange: #f0ad4e
+@import "variables"
+@import "helpers"
+@import "build_list"
+@import "build_details"
+@import "stats"
 
 body
   background: $background-color
@@ -65,10 +60,12 @@ pre
 
 .navigation
   text-align: center
+
   ul
     margin: 0
     padding: 0
     list-style-type: none
+
     li
       display: inline-block
 
@@ -100,100 +97,8 @@ pre
       color: #333333
       background-image: linear-gradient($transparent 50%, #333333 50%)
 
-.build-list-item
-  padding: 0.6em
-  border-bottom: 1px dashed $border-color
-  border-left: 0.3em solid #eee
-
-  h4
-    margin: 0.2em 0
-    font-size: 1.2em
-
-  .meta
-    font-size: 0.8em
-    color: $meta-font-color
-    a
-      color: $meta-font-color
-    span:not(:first-child)
-      margin-left: 1em
-
-    .message
-      margin-left: 1em
-      display: block
-
-  &.red
-    background-color: #fdf7f7
-    border-left-color: $red
-  &.green
-    background-color: #dff0d8
-    border-left-color: $green
-  &.orange
-    background-color: #fcf8f2
-    border-left-color: $orange
-  &.gray
-    background-color: #eeeeee
-    border-left-color: #bbbbbb
-
-.build-logs
-  h3
-    cursor: pointer
-
-    .fa
-      font-size: 0.8em
-
-      &.green
-        color: $green
-        background: transparent
-
-      &.red
-        color: $red
-        background: transparent
-      &.orange
-        color: $orange
-        background: transparent
-
-  .meta
-    font-size: 0.6em
-    color: $meta-font-color
-
-.stats-big-number
-  font-size: 3em
-  line-height: 1em
-
-.stats-pending-builds
-  margin-top: 2em
-  margin-bottom: 2em
-
-  .build-list-item.orange
-    background: transparent
-    border-left: none
-
-.red
-  background-color: #fdf7f7
-.green
-  background-color: #dff0d8
-.orange
-  background-color: #fcf8f2
-
-.text-left
-  text-align: left
-
-.text-center
-  text-align: center
-
-.text-right
-  text-align: right
- 
-.lead
-  padding-top: 1em
-  font-size: 1.6em
-  font-width: 100
 
 i.fa-slack
   -ms-transform: rotate(19deg)
   -webkit-transform: rotate(19deg)
   transform: rotate(19deg)
-
-@media screen and (min-width: 35.5em)
-  .mobile-only
-    display: block
