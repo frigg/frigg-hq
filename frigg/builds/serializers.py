@@ -27,6 +27,7 @@ class BuildResultSerializer(serializers.ModelSerializer):
             'coverage',
             'succeeded',
             'tasks',
+            'setup_tasks',
         )
 
 
@@ -43,7 +44,12 @@ class BuildInlineSerializer(serializers.ModelSerializer):
             'pull_request_id',
             'start_time',
             'end_time',
-            'result'
+            'result',
+            'short_message',
+            'message',
+            'color',
+            'pull_request_url',
+            'commit_url',
         )
 
 
@@ -63,4 +69,9 @@ class BuildSerializer(serializers.ModelSerializer):
             'sha',
             'start_time',
             'end_time',
+            'short_message',
+            'message',
+            'color',
+            'pull_request_url',
+            'commit_url',
         )
