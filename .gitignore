@@ -62,3 +62,4 @@ fab_local.py
 frigg/files/vendor/
 frigg/files/sass/*css*
 .sass-cache
+frigg/files/react-version.*
