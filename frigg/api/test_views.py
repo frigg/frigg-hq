@@ -158,6 +158,15 @@ class BuildAPITestCase(APITestCase, APITestMixin):
         self.client.force_authenticate(user=self.user)
         self.assertNotAllowed('post', '/api/builds/1/')
 
+    def test_build_id_same_as_build_by_owner_name_build_number(self):
+        response_by_id = self.client.get('/api/builds/5/')
+        self.assertEqual(response_by_id.status_code, 200)
+
+        response_by_owner_name_build_number = self.client.get('/api/builds/frigg/frigg-worker/1/')
+        self.assertEqual(response_by_owner_name_build_number.status_code, 200)
+
+        self.assertEqual(response_by_id.content, response_by_owner_name_build_number.content)
+
 
 class ReportAPITests(TransactionTestCase):
     fixtures = ['frigg/builds/fixtures/users.json', 'frigg/builds/fixtures/test_views.yaml']

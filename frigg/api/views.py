@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import permissions, viewsets
+from rest_framework.response import Response
 
 from frigg.api.permissions import ReadOnly
 from frigg.builds.filters import BuildPermissionFilter
@@ -26,6 +27,11 @@ class BuildViewSet(viewsets.ModelViewSet):
     paginate_by = 50
     filter_backends = [BuildPermissionFilter]
     permission_classes = ReadOnly, permissions.DjangoModelPermissionsOrAnonReadOnly
+
+    def get_by_owner_name_build_number(self, request, owner, name, build_number):
+        return Response(BuildSerializer(Build.objects.get(project__owner=owner,
+                                                          project__name=name,
+                                                          build_number=build_number)).data)
 
 
 @csrf_exempt
