@@ -152,6 +152,10 @@ class BuildAPITestCase(APITestCase, APITestMixin):
         response = self.client.get('/api/builds/300/')
         self.assertEqual(response.status_code, 404)
 
+    def test_get_build_by_owner_name_build_number_404(self):
+        response = self.client.get('/api/builds/frigg/frigg/1/')
+        self.assertEqual(response.status_code, 404)
+
     def test_post_not_allowed(self):
         self.assertNotAllowed('post', '/api/builds/1/')
 
