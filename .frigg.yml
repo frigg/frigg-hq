@@ -3,9 +3,9 @@ services:
   - postgresql
 
 tasks:
-  - tox
   - flake8
   - isort -c -rc frigg
+  - tox
   - coverage report --fail-under=90
   - coverage xml
 
