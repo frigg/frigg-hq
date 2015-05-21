@@ -28,6 +28,7 @@ class BuildResultSerializer(serializers.ModelSerializer):
             'succeeded',
             'tasks',
             'setup_tasks',
+            'still_running',
         )
 
 
