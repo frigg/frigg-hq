@@ -10,6 +10,9 @@ from .models import Build, Project
 
 
 def overview(request, page=1):
+    if request.user.is_staff:
+        return redirect('/beta/')
+
     projects_to_approve = cache.get('projects:unapproved:count')
     if projects_to_approve is None:
         projects_to_approve = Project.objects.permitted(request.user).filter(approved=False).count()
