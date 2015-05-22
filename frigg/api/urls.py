@@ -9,6 +9,11 @@ router.register(r'builds', BuildViewSet)
 
 urlpatterns = [
     url(
+        r'^builds/(?P<owner>[^/]+)/(?P<name>[^/]+)/(?P<build_number>\d+)/$',
+        BuildViewSet.as_view({'get': 'get_by_owner_name_build_number'}),
+        name='build_by_owner_name_build_number'
+    ),
+    url(
         r'^workers/report/$',
         'frigg.api.views.report_build',
         name='worker_api_report_build'
