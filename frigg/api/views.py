@@ -29,9 +29,13 @@ class BuildViewSet(viewsets.ModelViewSet):
     permission_classes = ReadOnly, permissions.DjangoModelPermissionsOrAnonReadOnly
 
     def get_by_owner_name_build_number(self, request, owner, name, build_number):
-        return Response(BuildSerializer(Build.objects.permitted.get(project__owner=owner,
-                                                                    project__name=name,
-                                                                    build_number=build_number)).data)
+        build = get_object_or_404(
+            Build.objects.permitted(request.user).select_related('project', 'result'),
+            project__owner=owner,
+            project__name=name,
+            build_number=build_number
+        )
+        return Response(BuildSerializer(build).data)
 
 
 @csrf_exempt
