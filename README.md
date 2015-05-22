@@ -1,4 +1,4 @@
-# frigg-hq [![Build status](https://ci.frigg.io/badges/frigg/frigg/)](https://ci.frigg.io/frigg/frigg/last/) [![Coverage status](https://ci.frigg.io/badges/coverage/frigg/frigg/)](https://ci.frigg.io/frigg/frigg/last/) [![Requirements Status](https://requires.io/github/frigg/frigg/requirements.svg?branch=master)](https://requires.io/github/frigg/frigg/requirements/?branch=master)
+# frigg-hq [![Build status](https://ci.frigg.io/frigg/frigg-hq.svg)](https://ci.frigg.io/frigg/frigg-hq/last/) [![Coverage status](https://ci.frigg.io/frigg/frigg-hq/coverage.svg)](https://ci.frigg.io/frigg/frigg-hq/last/) [![Requirements Status](https://requires.io/github/frigg/frigg-hq/requirements.svg?branch=master)](https://requires.io/github/frigg/frigg-hq/requirements/?branch=master)
 
 ## Setup
 ```
