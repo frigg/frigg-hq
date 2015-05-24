@@ -1,12 +1,12 @@
 # -*- coding: utf8 -*-
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
-from django.test import TransactionTestCase
+from django.test import TestCase
 
 from .models import Project
 
 
-class ProjectManagerTests(TransactionTestCase):
+class ProjectManagerTests(TestCase):
     fixtures = ['frigg/builds/fixtures/users.json',
                 'frigg/builds/fixtures/test_permitted_objects.yaml']
 

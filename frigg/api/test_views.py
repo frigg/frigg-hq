@@ -5,7 +5,7 @@ from unittest import skip
 
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
-from django.test import RequestFactory, TestCase, TransactionTestCase, override_settings
+from django.test import RequestFactory, TestCase, override_settings
 from rest_framework.test import APIClient, APITestCase
 
 from frigg.api.views import report_build
@@ -206,7 +206,7 @@ class UserAPITests(TestCase):
         self.assertFalse(data['is_staff'], 'Dumbledore is staff')
 
 
-class ReportAPITests(TransactionTestCase):
+class ReportAPITests(APITestCase):
     fixtures = ['frigg/builds/fixtures/users.json', 'frigg/builds/fixtures/test_views.yaml']
 
     def assertStatusCode(self, response, code=200):

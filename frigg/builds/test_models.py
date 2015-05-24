@@ -5,14 +5,14 @@ from unittest import mock
 
 import responses
 from django.contrib.auth import get_user_model
-from django.test import TransactionTestCase
+from django.test import TestCase
 from django.utils.timezone import get_current_timezone, now
 from mockredis import mock_redis_client
 
 from .models import Build, BuildResult, Project
 
 
-class ProjectTestCase(TransactionTestCase):
+class ProjectTestCase(TestCase):
     fixtures = ['frigg/builds/fixtures/users.json']
 
     def test___str__(self):
@@ -96,7 +96,7 @@ class ProjectTestCase(TransactionTestCase):
         self.assertEqual(project.average_time, timedelta(minutes=15))
 
 
-class BuildTestCase(TransactionTestCase):
+class BuildTestCase(TestCase):
     fixtures = ['frigg/builds/fixtures/users.json']
 
     def setUp(self):
@@ -291,7 +291,7 @@ class BuildTestCase(TransactionTestCase):
         self.assertEqual(build.estimated_finish_time.minute, (now() + timedelta(minutes=10)).minute)
 
 
-class BuildResultTestCase(TransactionTestCase):
+class BuildResultTestCase(TestCase):
     def setUp(self):
         self.project = Project.objects.create(owner='frigg', name='frigg-worker')
         self.build = Build.objects.create(project=self.project, branch='master', build_number=1)

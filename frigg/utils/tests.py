@@ -4,10 +4,10 @@ from unittest.mock import Mock
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.storage.fallback import FallbackStorage
-from django.test import RequestFactory, TransactionTestCase
+from django.test import RequestFactory, TestCase
 
 
-class ViewTestCase(TransactionTestCase):
+class ViewTestCase(TestCase):
     fixtures = ['frigg/builds/fixtures/users.json']
 
     def setUp(self):
@@ -33,7 +33,7 @@ class ViewTestCase(TransactionTestCase):
         setattr(request, '_messages', messages)
 
 
-class FiltersTestCase(TransactionTestCase):
+class FiltersTestCase(TestCase):
     fixtures = ['frigg/builds/fixtures/users.json']
 
     def setUp(self):

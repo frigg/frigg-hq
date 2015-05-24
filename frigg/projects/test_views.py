@@ -2,7 +2,7 @@
 from django.contrib.staticfiles import finders
 from django.core.urlresolvers import reverse
 from django.http import Http404
-from django.test import TransactionTestCase
+from django.test import TestCase
 
 from frigg.builds.models import BuildResult
 from frigg.utils.tests import ViewTestCase
@@ -64,7 +64,7 @@ class ProjectViewTests(ViewTestCase):
         self.assertNotEqual(last_build_start_time, project.builds.last().start_time)
 
 
-class BuildBadgeViewTests(TransactionTestCase):
+class BuildBadgeViewTests(TestCase):
     fixtures = ['frigg/builds/fixtures/users.json', 'frigg/builds/fixtures/test_views.yaml']
 
     def assertStatusCode(self, response, code=200):
@@ -102,7 +102,7 @@ class BuildBadgeViewTests(TransactionTestCase):
         self.assertStatusCode(response, code=404)
 
 
-class CoverageBadgeViewTests(TransactionTestCase):
+class CoverageBadgeViewTests(TestCase):
     fixtures = ['frigg/builds/fixtures/users.json', 'frigg/builds/fixtures/test_views.yaml']
 
     def assertStatusCode(self, response, code=200):

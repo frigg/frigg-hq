@@ -1,4 +1,3 @@
-# -*- coding: utf8 -*-
 from django.test import TestCase
 
 from frigg.helpers.common import is_retest_comment

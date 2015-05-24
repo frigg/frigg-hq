@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
-import unittest
+from django.test import TestCase
 
 from frigg.helpers.badges import _coverage_color
 
 
-class BadgeHelperTestCase(unittest.TestCase):
+class BadgeHelperTestCase(TestCase):
 
     def test_coverage_color(self):
         self.assertEqual(_coverage_color(100), 'brightgreen')

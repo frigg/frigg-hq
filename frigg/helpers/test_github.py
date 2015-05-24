@@ -1,12 +1,11 @@
-# -*- coding: utf8 -*-
-from django.test import TransactionTestCase
+from django.test import TestCase
 
 from frigg.builds.models import Build, BuildResult, Project
 
 from .github import _get_status_from_build, get_pull_request_url
 
 
-class GithubHelpersTestCase(TransactionTestCase):
+class GithubHelpersTestCase(TestCase):
 
     def test__get_status_from_build(self):
         error = RuntimeError()
