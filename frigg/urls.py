@@ -45,6 +45,8 @@ urlpatterns = [
     url(r'^stats/', include('frigg.stats.urls', namespace='stats')),
     url(r'^api/', include('frigg.api.urls')),
     url(r'^beta/', 'frigg.views.react_view'),
+    url(r'^beta/offline.html', 'frigg.views.react_view'),
+    url(r'^app.manifest', 'frigg.views.offline_manifest'),
     url(r'^', include('frigg.projects.urls')),
     url(r'^', include('frigg.builds.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

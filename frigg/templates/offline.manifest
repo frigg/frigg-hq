@@ -1,0 +1,21 @@
+CACHE MANIFEST
+
+# version {{ version }}
+
+CACHE:
+/beta/offline.html
+/static/react-version.js
+/static/react-version.css
+//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css
+//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/fonts/fontawesome-webfont.ttf?v=4.3.0
+//fonts.googleapis.com/css?family=Lato:700,400,300,100
+//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/fonts/fontawesome-webfont.woff2?v=4.3.0
+
+FALLBACK:
+/beta /beta/offline.html
+/beta/ /beta/offline.html
+
+
+NETWORK:
+*
+
