@@ -1,4 +1,5 @@
 import subprocess
+
 from django.core.cache import cache
 from django.core.management import BaseCommand
 
@@ -13,7 +14,7 @@ def set_git_short_ref():
 
 class Command(BaseCommand):
 
-    help = 'Cleans up cache etc.'
+    help = 'Reset cache etc.'
 
     def handle(self, *args, **options):
         set_git_short_ref()
