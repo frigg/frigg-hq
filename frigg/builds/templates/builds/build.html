@@ -12,7 +12,7 @@
         var contentBlock = $('.content-grid');
         var currentContent = contentBlock.html();
         var intervalId = setInterval(function () {
-          $.ajax('{% url 'api_partial_build_page' build.project.owner build.project.name build.build_number %}')
+          $.ajax('{% url 'api:partial_build_page' build.project.owner build.project.name build.build_number %}')
               .done(function (data){
                 if (data !== currentContent) {
                   currentContent = data;

@@ -23,7 +23,7 @@ urlpatterns = [
     url(
         r'^partials/build/(?P<owner>[^/]+)/(?P<name>[^/]+)/(?P<build_number>\d+)/$',
         'frigg.api.views.partial_build_page',
-        name='api_partial_build_page'
+        name='partial_build_page'
     ),
     url(
         r'^users/me/',
