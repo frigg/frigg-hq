@@ -26,7 +26,7 @@ urlpatterns = [
         name='api_partial_build_page'
     ),
     url(
-        r'^/users/me/',
+        r'^users/me/',
         UserDetailView.as_view(),
         name='user_me'
     ),
