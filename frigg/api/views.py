@@ -5,8 +5,10 @@ from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import permissions, viewsets
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from frigg.api.permissions import ReadOnly
+from frigg.authentication.serializers import UserSerializer
 from frigg.builds.filters import BuildPermissionFilter
 from frigg.builds.models import Build, Project
 from frigg.builds.serializers import BuildSerializer
@@ -36,6 +38,14 @@ class BuildViewSet(viewsets.ModelViewSet):
             build_number=build_number
         )
         return Response(BuildSerializer(build).data)
+
+
+class UserDetailView(APIView):
+
+    def get(self, request, format=None):
+        user = request.user
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
 
 
 @csrf_exempt

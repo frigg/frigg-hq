@@ -5,10 +5,11 @@ from unittest import skip
 
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
-from django.test import RequestFactory, TransactionTestCase, override_settings
-from rest_framework.test import APITestCase
+from django.test import RequestFactory, TestCase, TransactionTestCase, override_settings
+from rest_framework.test import APIClient, APITestCase
 
 from frigg.api.views import report_build
+from frigg.authentication.models import User
 from frigg.builds.models import Build, BuildResult, Project
 
 
@@ -172,6 +173,39 @@ class BuildAPITestCase(APITestCase, APITestMixin):
         self.assertEqual(response_by_id.content, response_by_owner_name_build_number.content)
 
 
+class UserAPITests(TestCase):
+    fixtures = ['frigg/builds/fixtures/users.json']
+
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.first()
+
+    def test_me_api_view_anonymous(self):
+        response = self.client.get(reverse('api:user_me'))
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.content.decode())
+        self.assertTrue(data['is_anonymous'], 'User is not anonymous')
+        self.assertFalse(data['is_staff'], 'Anonymous user is staff')
+
+    def test_me_api_view(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(reverse('api:user_me'))
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.content.decode())
+        self.assertFalse(data['is_anonymous'], 'User is anonymous')
+        self.assertEqual(data['username'], 'dumbledore')
+        self.assertEqual(data['email'], 'albus@hogwarts.com')
+        self.assertTrue(data['is_staff'], 'Dumbledore is not staff')
+
+    def test_me_api_view_not_staff(self):
+        self.user.is_staff = False
+        self.user.save()
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(reverse('api:user_me'))
+        data = json.loads(response.content.decode())
+        self.assertFalse(data['is_staff'], 'Dumbledore is staff')
+
+
 class ReportAPITests(TransactionTestCase):
     fixtures = ['frigg/builds/fixtures/users.json', 'frigg/builds/fixtures/test_views.yaml']
 
@@ -180,6 +214,7 @@ class ReportAPITests(TransactionTestCase):
 
     def setUp(self):
         self.factory = RequestFactory()
+        self.url = reverse('api:worker_api_report_build')
         self.payload = {
             "sha": "superbhash",
             "clone_url": "https://github.com/frigg/frigg-worker.git",
@@ -198,14 +233,14 @@ class ReportAPITests(TransactionTestCase):
 
     @skip('temporary turned off')
     def test_token_decorator(self):
-        request = self.factory.post(reverse('worker_api_report_build'))
+        request = self.factory.post(self.url)
         response = report_build(request)
         self.assertStatusCode(response, 403)
 
     @override_settings(FRIGG_WORKER_TOKENS=['supertoken'])
     def test_report(self):
         request = self.factory.post(
-            reverse('worker_api_report_build'),
+            self.url,
             data=json.dumps(self.payload),
             content_type='application/json',
             HTTP_FRIGG_WORKER_TOKEN='supertoken'
@@ -232,7 +267,7 @@ class ReportAPITests(TransactionTestCase):
         self.payload['finished'] = False
         self.payload['results'].append({'task': 'flake8', 'pending': True})
         request = self.factory.post(
-            reverse('worker_api_report_build'),
+            self.url,
             data=json.dumps(self.payload),
             content_type='application/json',
             HTTP_FRIGG_WORKER_TOKEN='supertoken'
@@ -253,7 +288,7 @@ class ReportAPITests(TransactionTestCase):
     @override_settings(FRIGG_WORKER_TOKENS=['supertoken'])
     def test_double_report(self):
         request = self.factory.post(
-            reverse('worker_api_report_build'),
+            self.url,
             data=json.dumps(self.payload),
             content_type='application/json',
             HTTP_FRIGG_WORKER_TOKEN='supertoken'
@@ -267,7 +302,7 @@ class ReportAPITests(TransactionTestCase):
     def test_coverage(self):
         self.payload['coverage'] = 99.9
         request = self.factory.post(
-            reverse('worker_api_report_build'),
+            self.url,
             data=json.dumps(self.payload),
             content_type='application/json',
             HTTP_FRIGG_WORKER_TOKEN='supertoken'
@@ -281,7 +316,7 @@ class ReportAPITests(TransactionTestCase):
     def test_404_report(self):
         self.payload['id'] = 200
         request = self.factory.post(
-            reverse('worker_api_report_build'),
+            self.url,
             data=json.dumps(self.payload),
             content_type='application/json',
             HTTP_FRIGG_WORKER_TOKEN='supertoken'

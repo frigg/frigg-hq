@@ -43,7 +43,7 @@ urlpatterns = [
     url(r'^auth/', include('social.apps.django_app.urls', namespace='social')),
     url(r'^auth/', include('django.contrib.auth.urls')),
     url(r'^stats/', include('frigg.stats.urls', namespace='stats')),
-    url(r'^api/', include('frigg.api.urls')),
+    url(r'^api/', include('frigg.api.urls', namespace='api')),
     url(r'^beta/', 'frigg.views.react_view'),
     url(r'^beta/offline.html', 'frigg.views.react_view'),
     url(r'^app.manifest', 'frigg.views.offline_manifest'),
