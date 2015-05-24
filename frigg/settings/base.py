@@ -38,6 +38,7 @@ INSTALLED_APPS = (
 
     'frigg.authentication',
     'frigg.builds',
+    'frigg.helpers',
     'frigg.stats',
     'frigg.webhooks',
 )

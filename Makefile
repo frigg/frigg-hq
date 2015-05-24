@@ -16,6 +16,7 @@ production: venv frigg/settings/local.py
 	cp ../frigg-frontend/public/main.css frigg/files/react-version.css
 	${MANAGE} collectstatic --noinput
 	sudo supervisorctl restart frigg-hq
+	${MANAGE} post_deploy
 
 deploy:
 	${PIP} install -r requirements/prod.txt
@@ -23,6 +24,7 @@ deploy:
 	bower install
 	${MANAGE} collectstatic --noinput
 	sudo supervisorctl restart frigg-hq
+	${MANAGE} post_deploy
 
 clean:
 	find . -name "*.pyc" -exec rm -rf {} \;
