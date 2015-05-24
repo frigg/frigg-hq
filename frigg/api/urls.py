@@ -1,6 +1,8 @@
 from django.conf.urls import include, url
 from rest_framework import routers
 
+from frigg.api.views import UserDetailView
+
 from .views import BuildViewSet, ProjectViewSet
 
 router = routers.DefaultRouter()
@@ -22,6 +24,11 @@ urlpatterns = [
         r'^partials/build/(?P<owner>[^/]+)/(?P<name>[^/]+)/(?P<build_number>\d+)/$',
         'frigg.api.views.partial_build_page',
         name='api_partial_build_page'
+    ),
+    url(
+        r'^/users/me/',
+        UserDetailView.as_view(),
+        name='user_me'
     ),
     url(
         r'^',
