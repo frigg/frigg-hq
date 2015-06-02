@@ -153,15 +153,15 @@ class BuildAPITestCase(APITestCase, APITestMixin):
         response = self.client.get('/api/builds/300/')
         self.assertEqual(response.status_code, 404)
 
-    def test_get_build_by_owner_name_build_number_404(self):
-        response = self.client.get('/api/builds/frigg/frigg/1/')
-        self.assertEqual(response.status_code, 404)
-
     def test_post_not_allowed(self):
         self.assertNotAllowed('post', '/api/builds/1/')
 
         self.client.force_authenticate(user=self.user)
         self.assertNotAllowed('post', '/api/builds/1/')
+
+    def test_get_build_by_owner_name_build_number_404(self):
+        response = self.client.get('/api/builds/frigg/frigg/1/')
+        self.assertEqual(response.status_code, 404)
 
     def test_build_id_same_as_build_by_owner_name_build_number(self):
         response_by_id = self.client.get('/api/builds/5/')
@@ -171,6 +171,24 @@ class BuildAPITestCase(APITestCase, APITestMixin):
         self.assertEqual(response_by_owner_name_build_number.status_code, 200)
 
         self.assertEqual(response_by_id.content, response_by_owner_name_build_number.content)
+
+    def test_get_builds_by_owner_name_404(self):
+        response = self.client.get('/api/builds/frigg/frigg-hq/')
+        self.assertEqual(response.status_code, 404)
+
+    def test_get_builds_by_owner_name(self):
+        response = self.client.get('/api/builds/frigg/frigg-worker/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(json.loads(response.content.decode())), 1)
+
+    def test_get_builds_by_owner_404(self):
+        response = self.client.get('/api/builds/beaver/')
+        self.assertEqual(response.status_code, 404)
+
+    def test_get_builds_by_owner(self):
+        response = self.client.get('/api/builds/frigg/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(json.loads(response.content.decode())), 2)
 
 
 class UserAPITests(TestCase):

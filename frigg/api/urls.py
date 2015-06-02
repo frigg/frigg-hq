@@ -11,9 +11,24 @@ router.register(r'builds', BuildViewSet)
 
 urlpatterns = [
     url(
+        r'^builds/(?P<pk>\d+)/$',
+        BuildViewSet.as_view({'get': 'retrieve'}),
+        name='builds_by_owner'
+    ),
+    url(
         r'^builds/(?P<owner>[^/]+)/(?P<name>[^/]+)/(?P<build_number>\d+)/$',
         BuildViewSet.as_view({'get': 'get_by_owner_name_build_number'}),
         name='build_by_owner_name_build_number'
+    ),
+    url(
+        r'^builds/(?P<owner>[^/]+)/(?P<name>[^/]+)/$',
+        BuildViewSet.as_view({'get': 'get_by_owner_name'}),
+        name='builds_by_owner_name'
+    ),
+    url(
+        r'^builds/(?P<owner>[^/]+)/$',
+        BuildViewSet.as_view({'get': 'get_by_owner'}),
+        name='builds_by_owner'
     ),
     url(
         r'^workers/report/$',
@@ -34,5 +49,4 @@ urlpatterns = [
         r'^',
         include(router.urls)
     ),
-
 ]

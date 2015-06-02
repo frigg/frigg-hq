@@ -1,6 +1,6 @@
 import json
 
-from django.http import JsonResponse
+from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import permissions, viewsets
@@ -30,6 +30,27 @@ class BuildViewSet(viewsets.ModelViewSet):
     filter_backends = [BuildPermissionFilter]
     permission_classes = ReadOnly, permissions.DjangoModelPermissionsOrAnonReadOnly
 
+    def get_by_owner(self, request, owner):
+        builds = Build.objects.permitted(request.user).select_related('project', 'result').filter(
+            project__owner=owner
+        )
+
+        if len(builds) == 0:
+            raise Http404
+
+        return Response(BuildSerializer(builds, many=True).data)
+
+    def get_by_owner_name(self, request, owner, name):
+        builds = Build.objects.permitted(request.user).select_related('project', 'result').filter(
+            project__owner=owner,
+            project__name=name
+        )
+
+        if len(builds) == 0:
+            raise Http404
+
+        return Response(BuildSerializer(builds, many=True).data)
+
     def get_by_owner_name_build_number(self, request, owner, name, build_number):
         build = get_object_or_404(
             Build.objects.permitted(request.user).select_related('project', 'result'),
@@ -41,7 +62,6 @@ class BuildViewSet(viewsets.ModelViewSet):
 
 
 class UserDetailView(APIView):
-
     def get(self, request, format=None):
         user = request.user
         serializer = UserSerializer(user)
