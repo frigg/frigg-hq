@@ -43,6 +43,9 @@ def last_build(request, owner, name):
 
 
 def view_build(request, owner, name, build_number):
+    if request.user.is_staff:
+        return redirect('/beta/{0}/{1}/{2}'.format(owner, name, build_number))
+
     return render(request, "builds/build.html", {
         'build': get_object_or_404(
             Build.objects.permitted(request.user).select_related('project'),

@@ -9,6 +9,9 @@ from .models import Project
 
 
 def view_organization(request, owner):
+    if request.user.is_staff:
+        return redirect('/beta/{0}'.format(owner))
+
     builds = Build.objects.permitted(request.user) \
         .filter(project__owner=owner) \
         .select_related('project', 'result__still_running', 'result__succeeded')
@@ -28,6 +31,9 @@ def view_organization(request, owner):
 
 
 def view_project(request, owner, name):
+    if request.user.is_staff:
+        return redirect('/beta/{0}/{1}'.format(owner, name))
+
     project = get_object_or_404(
         Project.objects.permitted(request.user).prefetch_related('builds', 'builds__result'),
         owner=owner,
