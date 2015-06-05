@@ -39,6 +39,7 @@ class PRDeployment(models.Model):
     def queue_object(self):
         obj = self.build.queue_object
         obj.update({
+            'id': self.pk,
             'port': self.port,
             'image': self.image,
             'ttl': self.ttl
