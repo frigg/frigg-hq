@@ -11,6 +11,7 @@ tasks:
  
 deploy_tasks:
   - pip install -r requirements/base.txt
+  - make frigg/settings/local.py
   - python manage.py migrate
   - python manage.py collectstatic --noinput
   - python manage.py runserver
