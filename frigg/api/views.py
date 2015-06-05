@@ -12,6 +12,7 @@ from frigg.authentication.serializers import UserSerializer
 from frigg.builds.filters import BuildPermissionFilter
 from frigg.builds.models import Build, Project
 from frigg.builds.serializers import BuildSerializer
+from frigg.deployments.models import PRDeployment
 from frigg.projects.filters import ProjectPermissionFilter
 from frigg.projects.serializers import ProjectSerializer
 
@@ -78,6 +79,18 @@ def report_build(request):
     except Build.DoesNotExist:
         response = JsonResponse({'error': 'Build not found'})
         response.status_code = 404
+    return response
+
+
+@csrf_exempt
+def report_deployment(request):
+    try:
+        payload = json.loads(str(request.body, encoding='utf-8'))
+        deployment = PRDeployment.objects.get(pk=payload['id'])
+        deployment.handle_report(payload)
+        response = JsonResponse({'message': 'Thanks for deploying it'})
+    except PRDeployment.DoesNotExist:
+        response = JsonResponse({'error': 'Build not found'}, status=404)
     return response
 
 

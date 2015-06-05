@@ -36,6 +36,11 @@ urlpatterns = [
         name='worker_api_report_build'
     ),
     url(
+        r'^deployments/report/$',
+        'frigg.api.views.report_deployment',
+        name='worker_api_report_deployment'
+    ),
+    url(
         r'^partials/build/(?P<owner>[^/]+)/(?P<name>[^/]+)/(?P<build_number>\d+)/$',
         'frigg.api.views.partial_build_page',
         name='partial_build_page'

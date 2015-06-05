@@ -16,6 +16,7 @@ from django.utils.safestring import mark_safe
 from django.utils.timezone import now
 from markdown import markdown
 
+from frigg.deployments.models import PRDeployment
 from frigg.helpers import github
 from frigg.helpers.badges import get_badge, get_coverage_badge
 from frigg.projects.managers import ProjectManager
@@ -32,6 +33,8 @@ class Project(TimeStampModel):
     approved = models.BooleanField(default=False, db_index=True)
     members = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name='projects')
     queue_name = models.CharField(max_length=200, default=settings.FRIGG_WORKER_QUEUE)
+    can_deploy = models.BooleanField(default=False, db_index=True)
+
     objects = ProjectManager()
 
     class Meta:
@@ -239,6 +242,10 @@ class Build(TimeStampModel):
             self.end_time = now()
             self.save()
 
+            if self.project.can_deploy and self.pull_request_id:
+                if 'deployment' in payload['settings']:
+                    self.initiate_deployment(payload['settings']['deployment'])
+
             if 'webhooks' in payload:
                 for url in payload['webhooks']:
                     self.send_webhook(url)
@@ -250,6 +257,13 @@ class Build(TimeStampModel):
             'pull_request_id': self.pull_request_id,
             'state': self.result.succeeded,
         }), headers={'content-type': 'application/json'})
+
+    def initiate_deployment(self, options):
+        PRDeployment.objects.create(
+            image=options['image'],
+            ttl=1800,
+            port=(self.pk % 64510) + 1024
+        ).start()
 
 
 class BuildResult(TimeStampModel):

@@ -29,6 +29,16 @@
   {% else %}
     {% trans 'failure' %}
   {% endif %}
+  {% if build.deployment %}
+    </br><strong>{% trans 'Pull-request deployment' %}:</strong>
+    {% if build.deployment.succeeded|yesno:'yes' %}c
+      <a href="{{ build.deployment.get_deployment_url }}">{{ build.deployment.get_deployment_url }}</a>
+    {% elif build.deployment|yesno:'yes' %}
+      Deployment failed, <a href="{% url 'deployments:detail' build.deployment.pk %}">view logs</a>
+    {% else %}
+      {% trans 'pending' %}
+    {% endif %}
+  {% endif %}
 </div>
 
 <div class="pure-u-1 pure-u-lg-1-2 build">
