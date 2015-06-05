@@ -1,5 +1,4 @@
 -r base.txt
 
-psycopg2
 raven
 python3-memcached

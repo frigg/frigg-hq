@@ -11,3 +11,4 @@ djangorestframework==3.1.2
 django-cachalot==1.0.2
 django-flat-theme==0.9.3
 django-emoji==2.0.0
+psycopg2
