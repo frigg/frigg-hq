@@ -8,6 +8,12 @@ tasks:
   - tox
   - coverage report --fail-under=90
   - coverage xml
+ 
+deploy_tasks:
+  - pip install -r requirements/base.txt
+  - python manage.py migrate
+  - python manage.py collectstatic --noinput
+  - python manage.py runserver
 
 verbose_tasks:
   - coverage report --fail-under=90
@@ -15,3 +21,6 @@ verbose_tasks:
 coverage:
   path: coverage.xml
   parser: python
+
+deployment:
+  image: frigg/frigg-test-base
