@@ -260,12 +260,12 @@ class Build(TimeStampModel):
         }), headers={'content-type': 'application/json'})
 
     def initiate_deployment(self, options):
-        PRDeployment.objects.create(
+        PRDeployment.objects.get_or_create(
             build=self,
             image=options['image'],
             ttl=1800,
             port=(self.pk % 64510) + 1024
-        ).start()
+        )[0].start()
 
 
 class BuildResult(TimeStampModel):
