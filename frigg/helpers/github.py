@@ -116,7 +116,9 @@ def _get_status_from_deployment(build, pending, error):
         description = 'Frigg started to deploy the preview.'
     else:
         if error is None:
-            description = 'Preview is deployed to {0}.'.format(build.deployment.get_deployment_url())
+            description = 'Preview is deployed to {0}.'.format(
+                build.deployment.get_deployment_url()
+            )
             if build.deployment.succeeded:
                 status = 'success'
             else:
