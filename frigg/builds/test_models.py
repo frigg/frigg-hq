@@ -81,7 +81,6 @@ class ProjectTestCase(TestCase):
         self.assertEqual(build.pull_request_id, 1)
         self.assertEqual(build.build_number, 1)
         self.assertEqual(project.last_build_number, 1)
-        mock_start.assert_called_once_with()
 
     def test_average_time(self):
         project = Project.objects.create(owner='frigg', name='frigg-worker', private=False)

@@ -98,10 +98,7 @@ class Project(TimeStampModel):
         if created:
             build.build_number = build_number
         build.save()
-
-        if created:
-            build.start()
-
+        build.start()
         return build
 
     def get_badge(self, branch='master'):
