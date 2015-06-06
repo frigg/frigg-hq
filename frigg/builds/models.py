@@ -243,6 +243,7 @@ class Build(TimeStampModel):
             self.save()
 
             if self.project.can_deploy and self.pull_request_id:
+                logger.warning('can deploy', extra=payload['settings'])
                 if 'deployment' in payload['settings']:
                     self.initiate_deployment(payload['settings']['deployment'])
 
