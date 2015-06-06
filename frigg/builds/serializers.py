@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from frigg.deployments.serializers import PRDeploymentSerializer
 from frigg.projects.models import Project
 
 from .models import Build, BuildResult
@@ -34,6 +35,7 @@ class BuildResultSerializer(serializers.ModelSerializer):
 
 class BuildInlineSerializer(serializers.ModelSerializer):
     result = BuildResultSerializer(read_only=True)
+    deployment = PRDeploymentSerializer(read_only=True)
 
     class Meta:
         model = Build
@@ -52,12 +54,14 @@ class BuildInlineSerializer(serializers.ModelSerializer):
             'color',
             'pull_request_url',
             'commit_url',
+            'deployment',
         )
 
 
 class BuildSerializer(serializers.ModelSerializer):
     project = ProjectInlineSerializer(read_only=True)
     result = BuildResultSerializer(read_only=True)
+    deployment = PRDeploymentSerializer(read_only=True)
 
     class Meta:
         model = Build
@@ -77,4 +81,5 @@ class BuildSerializer(serializers.ModelSerializer):
             'color',
             'pull_request_url',
             'commit_url',
+            'deployment',
         )

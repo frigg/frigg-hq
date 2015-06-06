@@ -1,18 +1,15 @@
 from rest_framework import serializers
 
-from frigg.builds.serializers import BuildSerializer
-from frigg.projects.models import Project
+from .models import PRDeployment
 
 
 class PRDeploymentSerializer(serializers.ModelSerializer):
-    build = BuildSerializer
 
     class Meta:
-        model = Project
+        model = PRDeployment
         fields = (
             'id',
-            'build',
-            'name',
+            'image',
             'log',
             'port',
             'succeeded',
