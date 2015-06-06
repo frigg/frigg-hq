@@ -12,6 +12,7 @@ tasks:
 deploy_tasks:
   - pip install -r requirements/base.txt
   - make frigg/settings/local.py
+  - createdb frigg
   - python manage.py migrate
   - python manage.py collectstatic --noinput
   - python manage.py runserver 0.0.0.0:8000
