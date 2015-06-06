@@ -243,7 +243,6 @@ class Build(TimeStampModel):
             self.save()
 
             if self.project.can_deploy and self.pull_request_id:
-                logger.warning('can deploy', extra=payload['settings'])
                 if 'deployment' in payload['settings']:
                     self.initiate_deployment(payload['settings']['deployment'])
 
@@ -260,11 +259,12 @@ class Build(TimeStampModel):
         }), headers={'content-type': 'application/json'})
 
     def initiate_deployment(self, options):
-        PRDeployment.objects.get_or_create(
-            build=self,
-            image=options['image'],
-            port=(self.pk % 64510) + 1024
-        )[0].start()
+        if options['image'].startswith('frigg/'):
+            PRDeployment.objects.get_or_create(
+                build=self,
+                image=options['image'],
+                port=(self.pk % 64510) + 1024
+            )[0].start()
 
 
 class BuildResult(TimeStampModel):
