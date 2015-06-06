@@ -27,17 +27,24 @@ def list_collaborators(project):
     return [collaborator['login'] for collaborator in data]
 
 
-def set_commit_status(build, pending=False, error=None):
+def set_commit_status(build, pending=False, error=None, context='frigg'):
     if settings.DEBUG or getattr(settings, 'STAGING', False):
         return
     url = "repos/%s/%s/statuses/%s" % (build.project.owner, build.project.name, build.sha)
-    status, description = _get_status_from_build(build, pending, error)
+    if context == 'frigg':
+        status, description = _get_status_from_build(build, pending, error)
+        target_url = build.get_absolute_url()
+    elif context == 'frigg-preview':
+        status, description = _get_status_from_deployment(build, pending, error)
+        target_url = build.deployment.get_deployment_url()
+    else:
+        raise RuntimeError('Unknown context')
 
     return api_request(url, build.project.github_token, {
         'state': status,
-        'target_url': build.get_absolute_url(),
+        'target_url': target_url,
         'description': description,
-        'context': 'continuous-integration/frigg'
+        'context': 'continuous-integration/{0}'.format(context)
     })
 
 
@@ -99,6 +106,24 @@ def _get_status_from_build(build, pending, error):
         else:
             status = 'error'
             description = "The build errored: %s" % error
+
+    return status, description
+
+
+def _get_status_from_deployment(build, pending, error):
+    if pending:
+        status = 'pending'
+        description = 'Frigg started to deploy the preview.'
+    else:
+        if error is None:
+            description = 'Preview is deployed to {0}.'.format(build.deployment.get_deployment_url)
+            if build.deployment.succeeded:
+                status = 'success'
+            else:
+                status = 'failure'
+        else:
+            status = 'error'
+            description = "The preview deployment errored: %s" % error
 
     return status, description
 

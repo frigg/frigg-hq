@@ -4,6 +4,8 @@ import redis
 from django.conf import settings
 from django.db import models
 
+from frigg.helpers import github
+
 from .managers import PRDeploymentManager
 
 
@@ -53,6 +55,7 @@ class PRDeployment(models.Model):
     def start(self):
         r = redis.Redis(**settings.REDIS_SETTINGS)
         r.lpush('frigg:queue:pr-deployments', json.dumps(self.queue_object))
+        github.set_commit_status(self.build, pending=True)
 
     def handle_report(self, payload):
         self.log = json.dumps(payload['results'])
@@ -68,3 +71,6 @@ class PRDeployment(models.Model):
                 break
 
         self.save()
+
+        if self.succeeded is True or self.succeeded is False:
+            github.set_commit_status(self.build, context='frigg-preview')

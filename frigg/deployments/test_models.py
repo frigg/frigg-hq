@@ -1,4 +1,5 @@
 import json
+from unittest import mock
 
 from django.test import TestCase
 
@@ -48,7 +49,8 @@ class PRDeploymentTestCase(TestCase):
         self.assertEqual(len(self.deployment.tasks), 1)
         self.assertEqual(self.deployment.tasks[0]['task'], 'apt-get install nginx')
 
-    def test_handle_report_should_save_log(self):
+    @mock.patch('frigg.helpers.github.set_commit_status')
+    def test_handle_report_should_save_log(self, mock_set_commit_status):
         report = [
             {'task': 'apt-get install nginx', 'output': 'Installed', 'succeeded': True},
             {'task': 'pip install gunicorn', 'output': 'Installed', 'succeeded': True}
@@ -57,7 +59,8 @@ class PRDeploymentTestCase(TestCase):
         deployment = PRDeployment.objects.get(pk=self.deployment.pk)
         self.assertEqual(deployment.log, json.dumps(report))
 
-    def test_handle_report_which_succeeded(self):
+    @mock.patch('frigg.helpers.github.set_commit_status')
+    def test_handle_report_which_succeeded(self, mock_set_commit_status):
         report = [
             {'task': 'apt-get install nginx', 'output': 'Installed', 'succeeded': True},
             {'task': 'pip install gunicorn', 'output': 'Installed', 'succeeded': True}
@@ -65,8 +68,10 @@ class PRDeploymentTestCase(TestCase):
         self.deployment.handle_report({'results': report})
         deployment = PRDeployment.objects.get(pk=self.deployment.pk)
         self.assertTrue(deployment.succeeded)
+        mock_set_commit_status.assert_called_once_with(deployment.build, context='frigg-preview')
 
-    def test_handle_report_which_fails(self):
+    @mock.patch('frigg.helpers.github.set_commit_status')
+    def test_handle_report_which_fails(self, mock_set_commit_status):
         report = [
             {'task': 'apt-get install nginx', 'output': 'Installed', 'succeeded': True},
             {'task': 'pip install gunicorn', 'output': 'Unknown package', 'succeeded': False}
@@ -74,8 +79,10 @@ class PRDeploymentTestCase(TestCase):
         self.deployment.handle_report({'results': report})
         deployment = PRDeployment.objects.get(pk=self.deployment.pk)
         self.assertFalse(deployment.succeeded)
+        mock_set_commit_status.assert_called_once_with(deployment.build, context='frigg-preview')
 
-    def test_handle_report_with_pending_result(self):
+    @mock.patch('frigg.helpers.github.set_commit_status')
+    def test_handle_report_with_pending_result(self, mock_set_commit_status):
         report = [
             {'task': 'apt-get install nginx', 'output': 'Installed', 'succeeded': True},
             {'task': 'pip install gunicorn', 'pending': True}
@@ -83,3 +90,4 @@ class PRDeploymentTestCase(TestCase):
         self.deployment.handle_report({'results': report})
         deployment = PRDeployment.objects.get(pk=self.deployment.pk)
         self.assertIsNone(deployment.succeeded)
+        self.assertFalse(mock_set_commit_status.called)
