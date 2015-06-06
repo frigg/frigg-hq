@@ -59,6 +59,10 @@ class PRDeployment(models.Model):
         self.succeeded = True
 
         for result in payload['results']:
+            if 'pending' in result and result['pending']:
+                self.succeeded = None
+                break
+
             if result['succeeded'] is False:
                 self.succeeded = False
                 break

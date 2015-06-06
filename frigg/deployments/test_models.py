@@ -74,3 +74,12 @@ class PRDeploymentTestCase(TestCase):
         self.deployment.handle_report({'results': report})
         deployment = PRDeployment.objects.get(pk=self.deployment.pk)
         self.assertFalse(deployment.succeeded)
+
+    def test_handle_report_with_pending_result(self):
+        report = [
+            {'task': 'apt-get install nginx', 'output': 'Installed', 'succeeded': True},
+            {'task': 'pip install gunicorn', 'pending': True}
+        ]
+        self.deployment.handle_report({'results': report})
+        deployment = PRDeployment.objects.get(pk=self.deployment.pk)
+        self.assertIsNone(deployment.succeeded)
