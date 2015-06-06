@@ -263,7 +263,6 @@ class Build(TimeStampModel):
         PRDeployment.objects.get_or_create(
             build=self,
             image=options['image'],
-            ttl=1800,
             port=(self.pk % 64510) + 1024
         )[0].start()
 
