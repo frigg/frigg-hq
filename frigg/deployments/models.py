@@ -55,7 +55,7 @@ class PRDeployment(models.Model):
     def start(self):
         r = redis.Redis(**settings.REDIS_SETTINGS)
         r.lpush('frigg:queue:pr-deployments', json.dumps(self.queue_object))
-        github.set_commit_status(self.build, pending=True)
+        github.set_commit_status(self.build, pending=True, context='frigg-preview')
 
     def handle_report(self, payload):
         self.log = json.dumps(payload['results'])
