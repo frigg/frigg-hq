@@ -34,7 +34,7 @@
     {% if build.deployment.succeeded|yesno:'yes' %}c
       <a href="{{ build.deployment.get_deployment_url }}">{{ build.deployment.get_deployment_url }}</a>
     {% elif build.deployment|yesno:'yes' %}
-      Deployment failed, <a href="{% url 'deployments:detail' build.deployment.pk %}">view logs</a>
+      Deployment failed
     {% else %}
       {% trans 'pending' %}
     {% endif %}
