@@ -11,6 +11,7 @@ tasks:
  
 deploy_tasks:
   - pip3 install gunicorn -r requirements/base.txt
+  - npm -g install yuglify
   - make frigg/settings/local.py
   - createdb frigg
   - python3 manage.py migrate
