@@ -10,14 +10,14 @@ tasks:
   - coverage xml
  
 deploy_tasks:
-  - pip install -r requirements/base.txt
+  - pip install gunicorn -r requirements/base.txt
   - make frigg/settings/local.py
   - createdb frigg
   - python manage.py migrate
   - python manage.py loaddata frigg/builds/fixtures/users.json
   - python manage.py loaddata frigg/builds/fixtures/test_views.yaml
   - python manage.py collectstatic --noinput
-  - python manage.py runserver 0.0.0.0:8000 &
+  - gunicorn -D -b 0.0.0.0:8000 frigg.wsgi
 
 verbose_tasks:
   - coverage report --fail-under=90
