@@ -261,6 +261,7 @@ class Build(TimeStampModel):
 
     def initiate_deployment(self, options):
         PRDeployment.objects.create(
+            build=self,
             image=options['image'],
             ttl=1800,
             port=(self.pk % 64510) + 1024
