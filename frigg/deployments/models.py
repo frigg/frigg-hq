@@ -30,6 +30,8 @@ class PRDeployment(models.Model):
 
     @property
     def ttl(self):
+        if self.build.project.owner == 'frigg':
+            return 86400
         # This value should be calculated based on the owner
         return 1800
 
