@@ -13,4 +13,8 @@ class PRDeploymentSerializer(serializers.ModelSerializer):
             'log',
             'port',
             'succeeded',
+            'start_time',
+            'ttl',
+            'is_pending',
+            'is_alive'
         )

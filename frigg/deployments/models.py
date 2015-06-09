@@ -1,4 +1,6 @@
 import json
+from datetime import timedelta
+from django.utils.timezone import now
 
 import redis
 from django.conf import settings
@@ -16,6 +18,7 @@ class PRDeployment(models.Model):
     log = models.TextField(blank=True)
     succeeded = models.NullBooleanField()
     docker_id = models.CharField(max_length=150, blank=True)
+    start_time = models.DateTimeField(blank=True, null=True)
 
     objects = PRDeploymentManager()
 
@@ -35,6 +38,10 @@ class PRDeployment(models.Model):
             return 86400
         # This value should be calculated based on the owner
         return 1800
+
+    @property
+    def is_alive(self):
+        return self.start_time + timedelta(self.ttl) > now()
 
     @property
     def is_pending(self):
@@ -59,6 +66,8 @@ class PRDeployment(models.Model):
         r = redis.Redis(**settings.REDIS_SETTINGS)
         r.lpush('frigg:queue:pr-deployments', json.dumps(self.queue_object))
         github.set_commit_status(self.build, pending=True, context='frigg-preview')
+        self.start_time = now()
+        self.save()
 
     def stop(self):
         r = redis.Redis(**settings.REDIS_SETTINGS)
