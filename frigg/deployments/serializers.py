@@ -10,7 +10,7 @@ class PRDeploymentSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'image',
-            'log',
+            'tasks',
             'port',
             'succeeded',
             'start_time',
