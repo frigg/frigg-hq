@@ -15,6 +15,7 @@ class PRDeployment(models.Model):
     image = models.CharField(max_length=255)
     log = models.TextField(blank=True)
     succeeded = models.NullBooleanField()
+    docker_id = models.CharField(max_length=150, blank=True)
 
     objects = PRDeploymentManager()
 
@@ -62,6 +63,8 @@ class PRDeployment(models.Model):
     def handle_report(self, payload):
         self.log = json.dumps(payload['results'])
         self.succeeded = True
+        if 'docker_id' in payload:
+            self.docker_id = payload['docker_id']
 
         for result in payload['results']:
             if 'pending' in result and result['pending']:
