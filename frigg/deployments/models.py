@@ -1,10 +1,10 @@
 import json
 from datetime import timedelta
-from django.utils.timezone import now
 
 import redis
 from django.conf import settings
 from django.db import models
+from django.utils.timezone import now
 
 from frigg.helpers import github
 

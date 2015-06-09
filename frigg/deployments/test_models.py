@@ -11,12 +11,12 @@ class PRDeploymentTestCase(TestCase):
     fixtures = ['frigg/builds/fixtures/users.json']
 
     def setUp(self):
-        project = Project.objects.create(owner='frigg', name='frigg-hq')
+        project = Project.objects.create(owner='relekang', name='photos')
         build = Build.objects.create(project=project, build_number=1)
         self.deployment = PRDeployment.objects.create(build=build, port=50000, image='ubuntu')
 
     def test___str__(self):
-        self.assertEqual(str(self.deployment), 'Deployment: frigg / frigg-hq / master #1')
+        self.assertEqual(str(self.deployment), 'Deployment: relekang / photos / master #1')
 
     def test_get_deployment_url(self):
         self.assertEqual(self.deployment.get_deployment_url(), 'http://50000.pr.frigg.io')
