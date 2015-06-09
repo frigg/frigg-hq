@@ -41,7 +41,9 @@ class PRDeployment(models.Model):
 
     @property
     def is_alive(self):
-        return self.start_time + timedelta(self.ttl) > now()
+        if self.start_time is None:
+            return False
+        return self.start_time + timedelta(seconds=self.ttl) > now()
 
     @property
     def is_pending(self):

@@ -1,7 +1,9 @@
 import json
+from datetime import timedelta
 from unittest import mock
 
 from django.test import TestCase
+from django.utils.timezone import now
 
 from frigg.builds.models import Build, Project
 from frigg.deployments.models import PRDeployment
@@ -34,6 +36,18 @@ class PRDeploymentTestCase(TestCase):
     def test_is_pending_should_be_false_if_deploy_succeeded(self):
         self.deployment.succeeded = True
         self.assertFalse(self.deployment.is_pending)
+
+    def test_is_alive_should_be_false_with_no_start_time(self):
+        self.deployment.start_time = None
+        self.assertFalse(self.deployment.is_alive)
+
+    def test_is_alive_should_be_false_with_if_it_expired(self):
+        self.deployment.start_time = now() - timedelta(seconds=self.deployment.ttl + 100)
+        self.assertFalse(self.deployment.is_alive)
+
+    def test_is_alive_should_be_true_if_it_has_not_expired(self):
+        self.deployment.start_time = now()
+        self.assertTrue(self.deployment.is_alive)
 
     def test_queue_object_should_contain_correct_information(self):
         self.assertEqual(self.deployment.queue_object['port'], 50000)
