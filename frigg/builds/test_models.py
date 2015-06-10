@@ -8,6 +8,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.utils.timezone import get_current_timezone, now
 from mockredis import mock_redis_client
+from frigg.authentication.models import User
 
 from .models import Build, BuildResult, Project
 
@@ -93,6 +94,13 @@ class ProjectTestCase(TestCase):
                              end_time=datetime(2015, 5, 5, 5, 25, tzinfo=get_current_timezone()))
         builds += [Build.objects.create(**build_options)]
         self.assertEqual(project.average_time, timedelta(minutes=15))
+
+    def test_number_of_members(self):
+        project = Project.objects.create(owner='frigg', name='frigg-worker', private=False)
+        self.assertEqual(project.number_of_members, 0)
+        project.members.add(User.objects.get(pk=1))
+        self.assertEqual(project.number_of_members, 1)
+
 
 
 class BuildTestCase(TestCase):
