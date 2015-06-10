@@ -20,7 +20,7 @@
     {% endif %}
     <script src="/static/react-version.js"></script>
     <script>
-      Raven.config({{ sentry_dsn }}, {
+      Raven.config('{{ sentry_dsn }}', {
         release: '0.1.0'
       }).install();
     </script>
