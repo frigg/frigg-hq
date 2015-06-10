@@ -12,3 +12,6 @@ class ReactViewTest(ViewTestCase):
     @override_settings(JS_SENTRY_DSN='DSN')
     def test_view_should_contain_sentry_dsn(self):
         self.assertContains(self.client.get(reverse('react_view')), 'DSN')
+
+    def test_view_should_contain_user_data(self):
+        self.assertContains(self.client.get(reverse('react_view')), 'window.user')

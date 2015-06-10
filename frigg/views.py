@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 import subprocess
 
 from django.conf import settings
@@ -6,9 +7,12 @@ from django.core.cache import cache
 from django.shortcuts import render
 from django.views.decorators.cache import cache_control
 
+from frigg.authentication.serializers import UserSerializer
+
 
 def react_view(request):
     return render(request, 'react-base.html', {
+        'user': json.dumps(UserSerializer(request.user).data),
         'sentry_dsn': getattr(settings, 'JS_SENTRY_DSN', '')
     })
 

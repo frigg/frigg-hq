@@ -13,6 +13,11 @@
   </head>
   <body>
     <div id="content"></div>
+    {% if user %}
+      <script>
+        window.user = JSON.parse('{{ user|safe }}');
+      </script>
+    {% endif %}
     <script src="/static/react-version.js"></script>
     <script>
       Raven.config({{ sentry_dsn }}, {
