@@ -85,6 +85,10 @@ class Project(TimeStampModel):
         if timings:
             return timedelta(seconds=int(sum(timings) / len(timings)))
 
+    @property
+    def number_of_members(self):
+        return self.members.count()
+
     def start_build(self, data):
         build_number = self.last_build_number + 1
         build, created = Build.objects.get_or_create(

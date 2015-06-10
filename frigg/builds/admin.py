@@ -21,8 +21,9 @@ class BuildInline(admin.TabularInline):
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'queue_name', 'average_time', 'last_build_number')
-    list_filter = ['owner', 'queue_name']
+    list_display = ('__str__', 'queue_name', 'approved', 'number_of_members', 'average_time',
+                    'last_build_number', 'can_deploy')
+    list_filter = ['owner', 'queue_name', 'approved', 'can_deploy']
     actions = ['sync_members']
 
     def sync_members(self, request, queryset):
