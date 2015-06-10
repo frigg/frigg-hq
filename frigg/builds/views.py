@@ -10,7 +10,7 @@ from .models import Build, Project
 
 
 def overview(request, page=1):
-    if request.user.is_staff:
+    if request.user.is_authenticated():
         return redirect('/beta/')
 
     projects_to_approve = cache.get('projects:unapproved:count')
@@ -43,7 +43,7 @@ def last_build(request, owner, name):
 
 
 def view_build(request, owner, name, build_number):
-    if request.user.is_staff:
+    if request.user.is_authenticated():
         return redirect('/beta/{0}/{1}/{2}'.format(owner, name, build_number))
 
     return render(request, "builds/build.html", {

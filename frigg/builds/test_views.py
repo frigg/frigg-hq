@@ -1,4 +1,6 @@
 # -*- coding: utf8 -*-
+from unittest import skip
+
 from django.core.urlresolvers import reverse
 from django.http import Http404
 
@@ -10,6 +12,7 @@ from .views import download_artifact, last_build, overview, view_build
 class BuildsViewTests(ViewTestCase):
     fixtures = ['frigg/builds/fixtures/users.json', 'frigg/builds/fixtures/test_views.yaml']
 
+    @skip('react redirect')
     def test_overview_view(self):
         request = self.factory.get(reverse('overview'))
         self.add_request_fields(request)
@@ -24,6 +27,7 @@ class BuildsViewTests(ViewTestCase):
         self.assertStatusCode(self.client.get(reverse('overview', args=[1])))
         self.assertStatusCode(self.client.get(reverse('overview', args=[10])), 404)
 
+    @skip('react redirect')
     def test_build_view(self):
         request = self.factory.get(reverse('view_build', args=['frigg', 'frigg', 1]))
         self.add_request_fields(request)

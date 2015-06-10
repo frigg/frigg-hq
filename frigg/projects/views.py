@@ -31,7 +31,7 @@ def view_organization(request, owner):
 
 
 def view_project(request, owner, name):
-    if request.user.is_staff:
+    if request.user.is_authenticated():
         return redirect('/beta/{0}/{1}'.format(owner, name))
 
     project = get_object_or_404(
