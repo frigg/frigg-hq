@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 import subprocess
 
-from django.contrib.admin.views.decorators import staff_member_required
+from django.conf import settings
 from django.core.cache import cache
 from django.shortcuts import render
 from django.views.decorators.cache import cache_control
 
 
-@staff_member_required
 def react_view(request):
-    return render(request, 'react-base.html')
+    return render(request, 'react-base.html', {
+        'sentry_dsn': getattr(settings, 'JS_SENTRY_DSN', '')
+    })
 
 
 @cache_control(private=True)

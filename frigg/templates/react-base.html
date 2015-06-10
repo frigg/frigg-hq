@@ -8,10 +8,16 @@
     <meta name='viewport' content='width=device-width, initial-scale=1' />
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="//fonts.googleapis.com/css?family=Lato:700,400,300,100" rel="stylesheet" type="text/css">
+    <script src="//cdn.ravenjs.com/1.1.15/jquery,native/raven.min.js"></script>
     <link href="/static/react-version.css" rel="stylesheet" />
   </head>
   <body>
     <div id="content"></div>
     <script src="/static/react-version.js"></script>
+    <script>
+      Raven.config({{ sentry_dsn }}, {
+        release: '0.1.0'
+      }).install();
+    </script>
   </body>
 </html>
