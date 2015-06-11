@@ -9,7 +9,6 @@ from basis.models import TimeStampModel
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
-from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
@@ -142,9 +141,11 @@ class Build(TimeStampModel):
         return '%s / %s #%s' % (self.project, self.branch, self.build_number)
 
     def get_absolute_url(self):
-        return "https://%s%s" % (
-            settings.SERVER_ADDRESS,
-            reverse('view_build', args=[self.project.owner, self.project.name, self.build_number])
+        return 'https://{domain}/{owner}/{name}/{build_number}'.format(
+            domain=settings.SERVER_ADDRESS,
+            owner=self.project.owner,
+            name=self.project.name,
+            build_number=self.build_number
         )
 
     @property

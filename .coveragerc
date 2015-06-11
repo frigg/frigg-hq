@@ -11,5 +11,6 @@ omit =
     frigg/wsgi.py
     frigg/settings/*
     frigg/*/migrations/*
+    frigg/test_*.py
     frigg/*/test_*.py
     frigg/*/management/*
