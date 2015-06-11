@@ -45,8 +45,13 @@ class PRDeploymentTestCase(TestCase):
         self.deployment.start_time = now() - timedelta(seconds=self.deployment.ttl + 100)
         self.assertFalse(self.deployment.is_alive)
 
-    def test_is_alive_should_be_true_if_it_has_not_expired(self):
+    def test_is_alive_should_be_false_if_it_has_not_expired_and_succeeded_is_none(self):
         self.deployment.start_time = now()
+        self.assertFalse(self.deployment.is_alive)
+
+    def test_is_alive_should_be_true_if_it_has_not_expired_and_succeeded(self):
+        self.deployment.start_time = now()
+        self.deployment.succeeded = True
         self.assertTrue(self.deployment.is_alive)
 
     def test_queue_object_should_contain_correct_information(self):
