@@ -34,7 +34,7 @@ class BuildViewSet(viewsets.ModelViewSet):
     def get_by_owner(self, request, owner):
         builds = Build.objects.permitted(request.user).select_related('project', 'result').filter(
             project__owner=owner
-        )
+        )[:100]
 
         if len(builds) == 0:
             raise Http404
@@ -45,7 +45,7 @@ class BuildViewSet(viewsets.ModelViewSet):
         builds = Build.objects.permitted(request.user).select_related('project', 'result').filter(
             project__owner=owner,
             project__name=name
-        )
+        )[:100]
 
         if len(builds) == 0:
             raise Http404
