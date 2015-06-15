@@ -16,6 +16,7 @@ production: venv frigg/settings/local.py
 	cp ../frigg-frontend/public/main.css frigg/files/react-version.css
 	${MANAGE} collectstatic --noinput
 	sudo supervisorctl restart frigg-hq
+	sudo supervisorctl restart frigg-hq-webhook-fetcher
 	${MANAGE} post_deploy
 
 deploy:
@@ -24,6 +25,7 @@ deploy:
 	bower install
 	${MANAGE} collectstatic --noinput
 	sudo supervisorctl restart frigg-hq
+	sudo supervisorctl restart frigg-hq-webhook-fetcher
 	${MANAGE} post_deploy
 
 clean:
