@@ -14,6 +14,8 @@ deploy_tasks:
   - npm -g install yuglify
   - make frigg/settings/local.py
   - createdb frigg
+  - cd frigg/files && wget https://ci.frigg.io/static/react-version.js
+  - cd frigg/files && wget https://ci.frigg.io/static/react-version.css
   - python3 manage.py migrate
   - python3 manage.py loaddata frigg/builds/fixtures/users.json
   - python3 manage.py loaddata frigg/builds/fixtures/test_views.yaml

@@ -1,70 +1,8 @@
-# -*- coding: utf8 -*-
-from unittest import skip
-
 from django.contrib.staticfiles import finders
 from django.core.urlresolvers import reverse
-from django.http import Http404
 from django.test import TestCase
 
 from frigg.builds.models import BuildResult
-from frigg.utils.tests import ViewTestCase
-
-from .models import Project
-from .views import approve_projects, view_organization, view_project
-
-
-class ProjectViewTests(ViewTestCase):
-    fixtures = ['frigg/builds/fixtures/users.json', 'frigg/builds/fixtures/test_views.yaml']
-
-    def test_overview_pagination(self):
-        self.assertStatusCode(self.client.get(reverse('overview', args=[1])))
-        self.assertStatusCode(self.client.get(reverse('overview', args=[10])), 404)
-
-    def test_organization_view(self):
-        request = self.factory.get(reverse('view_organization', args=['frigg']))
-        self.add_request_fields(request)
-        response = view_organization(request, 'frigg')
-        self.assertStatusCode(response)
-
-        request = self.factory.get(reverse('view_organization', args=['dumbledore']))
-        self.add_request_fields(request)
-        self.assertRaises(Http404, view_organization, request, 'dumbledore')
-
-    @skip('react redirect')
-    def test_project_view(self):
-        request = self.factory.get(reverse('view_project', args=['frigg', 'frigg']))
-        self.add_request_fields(request)
-        response = view_project(request, 'frigg', 'frigg')
-        self.assertStatusCode(response)
-
-    def test_approve_project_404(self):
-        response = self.client.get(reverse('approve_projects_overview'))
-        self.assertStatusCode(response, 404)
-
-    def test_approve_projects_view(self):
-        request = self.factory.get(reverse('approve_projects_overview'))
-        self.add_request_fields(request, superuser=True)
-        response = approve_projects(request)
-        self.assertStatusCode(response, 200)
-
-    def test_approve_projects_post_view(self):
-        Project.objects.create(pk=42)
-        request = self.factory.post(reverse('approve_project', args=[42]), data={'approve': 'yes'})
-        self.add_request_fields(request, superuser=True)
-        response = approve_projects(request, project_id=42)
-        self.assertStatusCode(response, 302)
-        self.assertTrue(Project.objects.get(pk=42).approved)
-
-    def test_approve_projects_triggers_build_last(self):
-        project = Project.objects.get(pk=2)
-        last_build_start_time = project.builds.last().start_time
-        self.assertIsNone(last_build_start_time)
-
-        request = self.factory.post(reverse('approve_project', args=[1]), data={'approve': 'yes'})
-        self.add_request_fields(request, superuser=True)
-        approve_projects(request, project_id=2)
-
-        self.assertNotEqual(last_build_start_time, project.builds.last().start_time)
 
 
 class BuildBadgeViewTests(TestCase):

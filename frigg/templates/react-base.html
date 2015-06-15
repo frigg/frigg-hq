@@ -1,3 +1,4 @@
+{% load pipeline %}
 <!DOCTYPE html>
 <html manifest="/app.manifest">
   <head>
@@ -10,6 +11,7 @@
     <link href="//fonts.googleapis.com/css?family=Lato:700,400,300,100" rel="stylesheet" type="text/css">
     <script src="//cdn.ravenjs.com/1.1.15/jquery,native/raven.min.js"></script>
     <link href="/static/react-version.css" rel="stylesheet" />
+    {% stylesheet 'react' %}
   </head>
   <body>
     <div id="content"></div>
@@ -18,11 +20,13 @@
         window.user = JSON.parse('{{ user|safe }}');
       </script>
     {% endif %}
-    <script src="/static/react-version.js"></script>
-    <script>
-      Raven.config('{{ sentry_dsn }}', {
-        release: '0.1.0'
-      }).install();
-    </script>
+    {% javascript 'react' %}
+    {% if sentry_dsn %}
+      <script>
+        Raven.config('{{ sentry_dsn }}', {
+          release: '0.1.0'
+        }).install();
+      </script>
+    {% endif %}
   </body>
 </html>

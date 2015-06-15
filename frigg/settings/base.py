@@ -30,17 +30,18 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'social.apps.django_app.default',
+    'manifesto',
     'pipeline',
     'django_extensions',
     'rest_framework',
     'cachalot',
-    'emoji',
 
     'frigg.authentication',
     'frigg.builds',
     'frigg.helpers',
     'frigg.deployments',
     'frigg.stats',
+    'frigg.utils',
     'frigg.webhooks',
 )
 
@@ -106,6 +107,7 @@ STATICFILES_FINDERS = (
 PIPELINE_COMPILERS = (
     'pipeline.compilers.sass.SASSCompiler',
 )
+
 PIPELINE_CSS = {
     'main': {
         'source_filenames': (
@@ -113,6 +115,23 @@ PIPELINE_CSS = {
         ),
         'output_filename': 'css/main.css',
     },
+    'react': {
+        'source_filenames': (
+            'react-version.css',
+        ),
+        'output_filename': 'css/bundle.css',
+        'manifest': True,
+    }
+}
+
+PIPELINE_JS = {
+    'react': {
+        'source_filenames': (
+            'react-version.js',
+        ),
+        'output_filename': 'js/bundle.js',
+        'manifest': True,
+    }
 }
 
 

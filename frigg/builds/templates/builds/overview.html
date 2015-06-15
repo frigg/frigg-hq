@@ -1,9 +1,0 @@
-{% extends "base.html" %}
-
-{% block content %}
-  <div class="pure-u-1">
-    {% for build in builds %}
-      {% include "builds/partials/build_list_element.html" %}
-    {% endfor %}
-  </div>
-{% endblock %}
