@@ -35,6 +35,7 @@ INSTALLED_APPS = (
     'django_extensions',
     'rest_framework',
     'cachalot',
+    'django_statsd',
 
     'frigg.authentication',
     'frigg.builds',
@@ -52,7 +53,12 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    # statsd
+    'django_statsd.middleware.GraphiteRequestTimingMiddleware',
+    'django_statsd.middleware.GraphiteMiddleware',
 )
+
 TEMPLATE_CONTEXT_PROCESSORS = (
     DJANGO_TEMPLATE_CONTEXT_PROCESSORS + (
         'django.core.context_processors.debug',
@@ -145,3 +151,12 @@ LOGIN_ERROR_URL = '/auth/error/'
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
 SOCIAL_AUTH_STORAGE = 'social.apps.django_app.default.models.DjangoStorage'
 SOCIAL_AUTH_GITHUB_SCOPE = ['repo', 'read:org']
+
+
+# statsd
+STATSD_PATCHES = [
+    'django_statsd.patches.db',
+    'django_statsd.patches.cache',
+]
+STATSD_MODEL_SIGNALS = True
+STATSD_PREFIX = 'frigg_hq.'

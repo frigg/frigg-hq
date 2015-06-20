@@ -12,3 +12,4 @@ django-cachalot==1.0.2
 django-flat-theme==0.9.3
 manifesto==0.5
 psycopg2
+django-statsd-mozilla==0.3.15
