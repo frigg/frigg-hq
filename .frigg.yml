@@ -4,8 +4,8 @@ services:
 
 tasks:
   - flake8
-  - isort -c -rc frigg
-  - tox
+  - tox -e isort
+  - tox -e tests
   - coverage report --fail-under=90
   - coverage xml
  
