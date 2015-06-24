@@ -36,9 +36,11 @@
   <div class="pure-u-1-3"></div>
   <div class="pure-u-1-3 text-center stats-pending-builds">
     <h2>Pending builds</h2>
-    {% for build in pending_builds %}
-      {% include "builds/partials/build_list_element.html" %}
-    {% endfor %}
+    <ul>
+      {% for build in pending_builds %}
+        <li>{{ build.pk }}: {{ build }}</li>
+      {% endfor %}
+    </ul>
   </div>
 
 {% endblock %}
