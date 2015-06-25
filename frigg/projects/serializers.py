@@ -16,5 +16,6 @@ class ProjectSerializer(serializers.ModelSerializer):
             'name',
             'private',
             'approved',
+            'should_clone_with_ssh',
             'builds'
         )

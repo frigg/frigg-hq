@@ -33,6 +33,7 @@ class Project(TimeStampModel):
     members = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name='projects')
     queue_name = models.CharField(max_length=200, default=settings.FRIGG_WORKER_QUEUE)
     can_deploy = models.BooleanField(default=False, db_index=True)
+    should_clone_with_ssh = models.BooleanField(default=False)
 
     objects = ProjectManager()
 
@@ -62,10 +63,14 @@ class Project(TimeStampModel):
 
     @property
     def clone_url(self):
-        if self.private:
-            return "https://%s@github.com/%s/%s" % (self.github_token, self.owner, self.name)
+        if self.should_clone_with_ssh:
+            url = 'git@github.com:{project.owner}/{project.name}.git'
+        elif self.private:
+            url = 'https://{project.github_token}@github.com/{project.owner}/{project.name}.git'
         else:
-            return "https://github.com/%s/%s" % (self.owner, self.name)
+            url = 'https://github.com/{project.owner}/{project.name}.git'
+
+        return url.format(project=self)
 
     @property
     def last_build_number(self):

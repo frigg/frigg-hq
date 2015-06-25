@@ -21,12 +21,19 @@ class ProjectTestCase(TestCase):
         project = Project.objects.create(owner='frigg', name='frigg-worker')
         self.assertEqual(str(project), 'frigg / frigg-worker')
 
-    @mock.patch('frigg.builds.models.Project.github_token', '')
-    def test_clone_url(self):
+    def test_clone_url_public(self):
         project = Project(owner='frigg', name='frigg-worker', private=False)
-        self.assertEqual(project.clone_url, 'https://github.com/frigg/frigg-worker')
+        self.assertEqual(project.clone_url, 'https://github.com/frigg/frigg-worker.git')
+
+    @mock.patch('frigg.builds.models.Project.github_token', '')
+    def test_clone_url_private(self):
         project = Project(owner='frigg', name='chewie', private=True)
-        self.assertEqual(project.clone_url, 'https://@github.com/frigg/chewie')
+        self.assertEqual(project.clone_url, 'https://@github.com/frigg/chewie.git')
+
+    @mock.patch('frigg.builds.models.Project.github_token', '')
+    def test_clone_url_ssh(self):
+        project = Project(owner='frigg', name='chewie', should_clone_with_ssh=True)
+        self.assertEqual(project.clone_url, 'git@github.com:frigg/chewie.git')
 
     def test_last_build_number(self):
         project = Project.objects.create(owner='frigg', name='frigg-worker', private=False)
