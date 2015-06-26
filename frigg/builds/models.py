@@ -250,8 +250,8 @@ class Build(TimeStampModel):
             self.save()
 
             if self.project.can_deploy and self.pull_request_id:
-                if 'deployment' in payload['settings']:
-                    self.initiate_deployment(payload['settings']['deployment'])
+                if 'preview' in payload['settings']:
+                    self.initiate_deployment(payload['settings']['preview'])
 
             if 'webhooks' in payload:
                 for url in payload['webhooks']:
