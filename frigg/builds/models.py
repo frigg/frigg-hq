@@ -266,6 +266,7 @@ class Build(TimeStampModel):
         }), headers={'content-type': 'application/json'})
 
     def initiate_deployment(self, options):
+        logger.info('Initiate deployment', extra=options)
         if options['image'].startswith('frigg/'):
             PRDeployment.objects.get_or_create(
                 build=self,
