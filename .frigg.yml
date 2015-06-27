@@ -3,25 +3,12 @@ services:
   - postgresql
 
 tasks:
-  - flake8
+  - tox -e flake8
   - tox -e isort
   - tox -e tests
   - coverage report --fail-under=90
   - coverage xml
  
-deploy_tasks:
-  - pip3 install gunicorn -r requirements/base.txt
-  - npm -g install yuglify
-  - make frigg/settings/local.py
-  - createdb frigg
-  - cd frigg/files && wget https://ci.frigg.io/static/react-version.js
-  - cd frigg/files && wget https://ci.frigg.io/static/react-version.css
-  - python3 manage.py migrate
-  - python3 manage.py loaddata frigg/builds/fixtures/users.json
-  - python3 manage.py loaddata frigg/builds/fixtures/test_views.yaml
-  - python3 manage.py collectstatic --noinput
-  - gunicorn -D -b 0.0.0.0:8000 frigg.wsgi
-
 verbose_tasks:
   - coverage report --fail-under=90
 
@@ -29,5 +16,17 @@ coverage:
   path: coverage.xml
   parser: python
 
-deployment:
+preview:
   image: frigg/frigg-test-base
+  tasks:
+    - pip3 install gunicorn -r requirements/base.txt
+    - npm -g install yuglify
+    - make frigg/settings/local.py
+    - createdb frigg
+    - cd frigg/files && wget https://ci.frigg.io/static/react-version.js
+    - cd frigg/files && wget https://ci.frigg.io/static/react-version.css
+    - python3 manage.py migrate
+    - python3 manage.py loaddata frigg/builds/fixtures/users.json
+    - python3 manage.py loaddata frigg/builds/fixtures/test_views.yaml
+    - python3 manage.py collectstatic --noinput
+    - gunicorn -D -b 0.0.0.0:8000 frigg.wsgi
