@@ -7,7 +7,7 @@ from .models import Build, BuildResult, Project
 
 class BuildResultInline(admin.StackedInline):
     model = BuildResult
-    readonly_fields = ('result_log', 'succeeded')
+    readonly_fields = ('setup_log', 'result_log', 'succeeded', 'still_running')
     extra = 0
     max_num = 0
 
@@ -41,6 +41,8 @@ class ProjectAdmin(admin.ModelAdmin):
 @admin.register(Build)
 class BuildAdmin(admin.ModelAdmin):
     list_display = ('build_number', 'project', 'branch', 'pull_request_id', 'sha', 'color')
+    readonly_fields = ('build_number', 'project', 'branch', 'pull_request_id', 'sha', 'color',
+                       'message', 'start_time', 'end_time', 'author')
     inlines = [BuildResultInline]
     list_filter = ['project']
     actions = ['restart_build']
@@ -59,4 +61,5 @@ class BuildAdmin(admin.ModelAdmin):
 
 @admin.register(BuildResult)
 class BuildResultAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'succeeded', 'coverage')
+    list_display = ('__str__', 'succeeded', 'still_running', 'coverage')
+    readonly_fields = ('build', 'setup_log', 'result_log', 'succeeded', 'still_running')
