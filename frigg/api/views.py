@@ -31,10 +31,6 @@ class BuildViewSet(viewsets.ModelViewSet):
     filter_backends = [BuildPermissionFilter]
     permission_classes = ReadOnly, permissions.DjangoModelPermissionsOrAnonReadOnly
 
-    def get_builds(self, request):
-        builds = Build.objects.permitted(request.user).select_related('project', 'result')[:50]
-        return Response(BuildSerializer(builds, many=True).data)
-
     def get_by_owner(self, request, owner):
         builds = Build.objects.permitted(request.user).select_related('project', 'result').filter(
             project__owner=owner
