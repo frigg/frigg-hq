@@ -31,6 +31,11 @@ urlpatterns = [
         name='builds_by_owner'
     ),
     url(
+        r'^builds/$',
+        BuildViewSet.as_view({'get': 'get_builds'}),
+        name='builds'
+    ),
+    url(
         r'^workers/report/$',
         'frigg.api.views.report_build',
         name='worker_api_report_build'
