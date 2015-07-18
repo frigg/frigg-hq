@@ -2,7 +2,7 @@ import logging
 
 from basis.compat import get_user_model
 
-from frigg.builds.models import Build, Project
+from frigg.builds.models import Build, BuildResult, Project
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +28,8 @@ class Event(object):
 
     @property
     def should_build(self):
+        if self.event_type == 'delete':
+            return False
         if self.event_type == 'ping':
             return False
         if self.event_type == 'push':
@@ -91,6 +93,16 @@ class Event(object):
 
         if self.should_build:
             self.start_build()
+        else:
+            if self.event_type == 'delete':
+
+                for build in Build.objects.filter(end_time=None,
+                                                  branch=self.branch,
+                                                  project=self.project):
+
+                    if build.is_pending:
+                        BuildResult.objects.create(build=build, succeeded=False,
+                                                   result_log="Branch deleted before built")
 
     def update_users(self):
         try:

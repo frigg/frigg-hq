@@ -8,7 +8,6 @@ from frigg.helpers import github
 
 
 class User(AbstractUser):
-
     @cached_property
     def github_token(self):
         try:

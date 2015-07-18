@@ -5,7 +5,7 @@ from .base import Event
 
 class GithubEvent(Event):
     REPOSITORY_URL = 'git@github.com:{event.repository_owner}/{event.repository_name}.git'
-    ALLOWED_EVENT_TYPES = ['ping', 'push', 'pull_request', 'issue_comment']
+    ALLOWED_EVENT_TYPES = ['ping', 'push', 'delete', 'pull_request', 'issue_comment']
     ALLOWED_PULL_REQUEST_ACTIONS = ['opened', 'synchronize']
     ALLOWED_COMMENT_EVENTS = ['issue_comment']
 
@@ -40,6 +40,8 @@ class GithubEvent(Event):
             return self.data['ref'][11:]
         elif self.event_type == 'pull_request':
             return self.data['pull_request']['head']['ref']
+        elif self.event_type == 'delete':
+            return self.data['ref']
 
     @property
     def hash(self):
@@ -101,6 +103,6 @@ class GithubEvent(Event):
     @property
     def is_retest_comment_event(self):
         if self.event_type in self.ALLOWED_COMMENT_EVENTS:
-            return 'pull_request' in self.data['issue'] and\
+            return 'pull_request' in self.data['issue'] and \
                    is_retest_comment(self.data['comment']['body'])
         return False
