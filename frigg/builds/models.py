@@ -281,6 +281,7 @@ class BuildResult(TimeStampModel):
     setup_log = models.TextField(blank=True)
     succeeded = models.BooleanField(default=False)
     still_running = models.BooleanField(default=False)
+    worker_host = models.CharField(max_length=250, null=True, blank=True)
     coverage = models.DecimalField(max_digits=5, decimal_places=2, editable=False, null=True,
                                    blank=True)
 
@@ -327,6 +328,9 @@ class BuildResult(TimeStampModel):
         if 'setup_results' in payload:
             result.setup_log = json.dumps(payload['setup_results'])
         result.succeeded = BuildResult.evaluate_results(payload['results'])
+
+        if 'worker_host' in payload:
+            result.worker_host = payload['worker_host']
 
         if 'finished' in payload:
             result.still_running = not payload['finished']
