@@ -268,6 +268,31 @@ class BuildTestCase(TestCase):
 
     @mock.patch('frigg.builds.models.Build.send_webhook')
     @mock.patch('frigg.helpers.github.set_commit_status')
+    def test_handle_worker_host(self, mock_set_commit_status, mock_send_webhook):
+        build = Build.objects.create(
+            project=self.project,
+            branch='master',
+            build_number=1,
+        )
+        build.handle_worker_report({
+            'sha': 'superbhash',
+            'clone_url': 'https://github.com/frigg/frigg-worker.git',
+            'name': 'frigg-worker',
+            'branch': 'master',
+            'owner': 'frigg',
+            'id': 1,
+            'results': [
+                {'task': 'make test', 'return_code': 0, 'succeeded': True, 'log': 'log'},
+                {'task': 'make test'}
+            ],
+            'webhooks': ['http://example.com']
+        })
+        self.assertIsNotNone(Build.objects.get(pk=build.id).end_time)
+        mock_set_commit_status.assert_called_once_with(build)
+        mock_send_webhook.assert_called_once_with('http://example.com')
+
+    @mock.patch('frigg.builds.models.Build.send_webhook')
+    @mock.patch('frigg.helpers.github.set_commit_status')
     def test_handle_worker_report_still_running(self, mock_set_commit_status, mock_send_webhook):
         build = Build.objects.create(
             project=self.project,
@@ -280,6 +305,7 @@ class BuildTestCase(TestCase):
             'name': 'frigg-worker',
             'branch': 'master',
             'owner': 'frigg',
+            'worker_host': 'albus.frigg.io',
             'finished': False,
             'id': 1,
             'results': [
@@ -290,8 +316,7 @@ class BuildTestCase(TestCase):
             'webhooks': ['http://example.com']
         })
         self.assertIsNone(Build.objects.get(pk=build.id).end_time)
-        self.assertFalse(mock_set_commit_status.called)
-        self.assertFalse(mock_send_webhook.called)
+        self.assertEqual(build.result.worker_host, 'albus.frigg.io')
 
     @mock.patch('frigg.builds.models.Project.average_time', timedelta(minutes=10))
     def test_estimated_finish_time(self):
