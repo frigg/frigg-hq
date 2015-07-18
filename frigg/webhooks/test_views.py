@@ -131,6 +131,21 @@ class GithubWebhookViewTests(WebhookViewTestCase):
         self.assertStatusCode(response)
         self.assertFalse(mock_start_build.called)
 
+    def test_push_delete_mark_builds_as_not_succeeded(self, mock_start_build):
+        project = Project.objects.get_or_create(owner='frigg', name='frigg-hq', private=False)[0]
+        Build.objects.get_or_create(
+            project=project,
+            branch="frecar/add-worker-host"
+        )
+
+        response = self.post_webhook('delete', fixture='push_delete_branch.json')
+        self.assertStatusCode(response)
+        self.assertFalse(mock_start_build.called)
+
+        project = Project.objects.get(owner='frigg', name='frigg-hq', private=False)
+        self.assertEqual(project.builds.all().count(), 1)
+        self.assertEqual(project.builds.first().result.succeeded, False)
+
     def test_pull_request_handling(self, mock_start_build):
         response = self.post_webhook('pull_request', fixture='pull_request.json')
         self.assertStatusCode(response)
