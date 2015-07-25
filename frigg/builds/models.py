@@ -267,12 +267,20 @@ class Build(TimeStampModel):
 
     def initiate_deployment(self, options):
         logger.info('Initiate deployment', extra=options)
-        if options['image'].startswith('frigg/'):
-            PRDeployment.objects.get_or_create(
-                build=self,
-                image=options['image'],
-                port=(self.pk % 64510) + 1024
-            )[0].start()
+
+        image = settings.FRIGG_PREVIEW_IMAGE
+
+        if 'image' in options and options['image'].startswith('frigg/'):
+            image = options['image']
+
+        deployment = PRDeployment.objects.get_or_create(
+            build=self,
+            image=image,
+            port=(self.pk % 64510) + 1024
+        )[0]
+
+        deployment.start()
+        return deployment
 
 
 class BuildResult(TimeStampModel):

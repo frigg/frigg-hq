@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from unittest import mock
 
 import responses
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.utils.timezone import get_current_timezone, now
@@ -387,3 +388,27 @@ class BuildResultTestCase(TestCase):
                                   start_time=start_time)
         no_change = BuildResult.objects.create(build=b3, coverage=20)
         self.assertEqual(no_change.coverage_diff, 0)
+
+    @mock.patch('frigg.deployments.models.PRDeployment.start')
+    def test_initiate_deployment_with_specified_image(self, mock_deployment_start):
+        start_time = datetime(2012, 12, 12, tzinfo=get_current_timezone())
+
+        b1 = Build.objects.create(project=self.project, branch='master',
+                                  build_number=4, start_time=start_time)
+
+        deployment = b1.initiate_deployment({'image': 'frigg/super-image'})
+        self.assertEqual(deployment.image, 'frigg/super-image')
+
+        self.assertTrue(mock_deployment_start.called_once)
+
+    @mock.patch('frigg.deployments.models.PRDeployment.start')
+    def test_initiate_deployment_without_specified_image(self, mock_deployment_start):
+        start_time = datetime(2012, 12, 12, tzinfo=get_current_timezone())
+
+        b1 = Build.objects.create(project=self.project, branch='master',
+                                  build_number=4, start_time=start_time)
+
+        deployment = b1.initiate_deployment({})
+        self.assertEqual(deployment.image, settings.FRIGG_PREVIEW_IMAGE)
+
+        self.assertTrue(mock_deployment_start.called_once)
