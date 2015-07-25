@@ -14,7 +14,7 @@ from .managers import PRDeploymentManager
 class PRDeployment(models.Model):
     build = models.OneToOneField('builds.Build', related_name='deployment', unique=True)
     port = models.IntegerField()
-    image = models.CharField(max_length=255)
+    image = models.CharField(max_length=255, default=settings.FRIGG_PREVIEW_IMAGE)
     log = models.TextField(blank=True)
     succeeded = models.NullBooleanField()
     docker_id = models.CharField(max_length=150, blank=True)
@@ -53,15 +53,10 @@ class PRDeployment(models.Model):
     def queue_object(self):
         obj = self.build.queue_object
 
-        if self.image and self.image != '':
-            image = self.image
-        else:
-            image = settings.FRIGG_PREVIEW_IMAGE
-
         obj.update({
             'id': self.pk,
             'port': self.port,
-            'image': image,
+            'image': self.image,
             'ttl': self.ttl
         })
         return obj
