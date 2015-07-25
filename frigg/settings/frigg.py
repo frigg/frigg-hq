@@ -12,6 +12,8 @@ FRIGG_WORKER_QUEUE = 'frigg:queue'
 FRIGG_WEBHOOK_QUEUE = 'frigg:webhooks'
 FRIGG_WEBHOOK_FAILED_QUEUE = 'frigg:webhooks:failed'
 
+FRIGG_PREVIEW_IMAGE = 'frigg/frigg-test-base'
+
 REDIS_SETTINGS = {
     'host': '127.0.0.1',
     'port': '6379',

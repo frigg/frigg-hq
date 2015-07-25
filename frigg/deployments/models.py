@@ -52,10 +52,16 @@ class PRDeployment(models.Model):
     @property
     def queue_object(self):
         obj = self.build.queue_object
+
+        if self.image and self.image != '':
+            image = self.image
+        else:
+            image = settings.FRIGG_PREVIEW_IMAGE
+
         obj.update({
             'id': self.pk,
             'port': self.port,
-            'image': self.image,
+            'image': image,
             'ttl': self.ttl
         })
         return obj

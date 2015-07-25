@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.test import TestCase
 
 from frigg.builds.models import Build, Project
@@ -6,7 +7,6 @@ from .models import PRDeployment
 
 
 class PRDeploymentManagerTests(TestCase):
-
     def setUp(self):
         project = Project.objects.create(owner='frigg', name='frigg-hq')
         build = Build.objects.create(project=project, build_number=1)
@@ -28,3 +28,11 @@ class PRDeploymentManagerTests(TestCase):
     def test_create_should_set_port_to_49152_if_it_is_to_low(self):
         deployment = PRDeployment.objects.create(build=self.build, image='ubuntu', port=49151)
         self.assertEqual(deployment.port, 49152)
+
+    def test_create_with_image(self):
+        deployment = PRDeployment.objects.create(build=self.build, image='ubuntu', port=49151)
+        self.assertEqual(deployment.queue_object['image'], 'ubuntu')
+
+    def test_create_without_image_should_fallback_to_default(self):
+        deployment = PRDeployment.objects.create(build=self.build, port=49151)
+        self.assertEqual(deployment.queue_object['image'], settings.FRIGG_PREVIEW_IMAGE)
