@@ -310,7 +310,10 @@ class BuildResult(TimeStampModel):
 
     @property
     def tasks(self):
-        return json.loads(self.result_log)
+        try:
+            return json.loads(self.result_log)
+        except ValueError:
+            return None
 
     @property
     def setup_tasks(self):
