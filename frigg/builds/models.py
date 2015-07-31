@@ -312,14 +312,16 @@ class BuildResult(TimeStampModel):
     def tasks(self):
         try:
             return json.loads(self.result_log)
-        except ValueError:
+        except ValueError as error:
+            logger.exception(error)
             return []
 
     @property
     def setup_tasks(self):
         try:
             return json.loads(self.setup_log)
-        except ValueError:
+        except ValueError as error:
+            logger.exception(error)
             return []
 
     @classmethod
