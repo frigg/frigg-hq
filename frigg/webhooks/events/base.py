@@ -101,8 +101,9 @@ class Event(object):
                                                   project=self.project):
 
                     if build.is_pending:
+                        result_log = '[{"task": "", "error": "Branch deleted before built"}]'
                         BuildResult.objects.create(build=build, succeeded=False,
-                                                   result_log="Branch deleted before built")
+                                                   result_log=result_log)
 
     def update_users(self):
         try:
