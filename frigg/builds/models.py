@@ -313,14 +313,14 @@ class BuildResult(TimeStampModel):
         try:
             return json.loads(self.result_log)
         except ValueError:
-            return None
+            return []
 
     @property
     def setup_tasks(self):
         try:
             return json.loads(self.setup_log)
         except ValueError:
-            return None
+            return []
 
     @classmethod
     def create_not_approved(cls, build):
