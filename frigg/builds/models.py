@@ -206,6 +206,7 @@ class Build(TimeStampModel):
             'clone_url': self.project.clone_url,
             'owner': self.project.owner,
             'name': self.project.name,
+            'gh_token': self.project.github_token,
         }
         if self.pull_request_id > 0:
             obj['pull_request_id'] = self.pull_request_id
