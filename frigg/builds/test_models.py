@@ -121,6 +121,7 @@ class BuildTestCase(TestCase):
         build = Build.objects.create(project=self.project, branch='master', build_number=1)
         self.assertEqual(str(build), 'frigg / frigg-worker / master #1')
 
+    @mock.patch('frigg.builds.models.Project.github_token', 'token')
     def test_queue_object(self):
         build = Build.objects.create(project=self.project, branch='master', sha='s', build_number=1)
         obj = build.queue_object
@@ -130,6 +131,7 @@ class BuildTestCase(TestCase):
         self.assertEqual(obj['clone_url'], build.project.clone_url)
         self.assertEqual(obj['owner'], build.project.owner)
         self.assertEqual(obj['name'], build.project.name)
+        self.assertEqual(obj['gh_token'], 'token')
         self.assertFalse('pull_request_id' in obj)
         build.pull_request_id = 42
         obj = build.queue_object
