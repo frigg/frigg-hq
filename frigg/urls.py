@@ -50,5 +50,8 @@ urlpatterns = [
     url(r'^', include('frigg.builds.urls')),
     url(r'^offline.html$', 'frigg.views.react_view'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + [
-    url(r'^', 'frigg.views.react_view', name='react_view'),
+    url(r'^[^/]+/[^/]+/[^/]+/$', 'frigg.views.react_view'),
+    url(r'^[^/]+/[^/]+/$', 'frigg.views.react_view'),
+    url(r'^[^/]+/$', 'frigg.views.react_view'),
+    url(r'^$', 'frigg.views.react_view', name='react_view'),
 ]
