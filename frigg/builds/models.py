@@ -288,6 +288,7 @@ class BuildResult(TimeStampModel):
     build = models.OneToOneField(Build, related_name='result')
     result_log = models.TextField()
     setup_log = models.TextField(blank=True)
+    service_log = models.TextField(blank=True)
     succeeded = models.BooleanField(default=False)
     still_running = models.BooleanField(default=False)
     worker_host = models.CharField(max_length=250, null=True, blank=True)
@@ -322,7 +323,17 @@ class BuildResult(TimeStampModel):
         try:
             return json.loads(self.setup_log)
         except ValueError as error:
-            logger.exception(error)
+            if not settings.DEBUG:
+                logger.exception(error)
+            return []
+
+    @property
+    def service_tasks(self):
+        try:
+            return json.loads(self.service_log)
+        except ValueError as error:
+            if not settings.DEBUG:
+                logger.exception(error)
             return []
 
     @classmethod
@@ -341,6 +352,10 @@ class BuildResult(TimeStampModel):
         result.result_log = json.dumps(payload['results'])
         if 'setup_results' in payload:
             result.setup_log = json.dumps(payload['setup_results'])
+
+        if 'service_results' in payload:
+            result.service_log = json.dumps(payload['service_results'])
+
         result.succeeded = BuildResult.evaluate_results(payload['results'])
 
         if 'worker_host' in payload:

@@ -241,6 +241,10 @@ class ReportBuildAPITests(APITestCase):
             "branch": "master",
             "owner": "frigg",
             "id": 2,
+            "service_results": [
+                {"task": "service redis-server start", "return_code": 0, "succeeded": True,
+                 "log": "setup done"},
+            ],
             "setup_results": [
                 {"task": "make install", "return_code": 0, "succeeded": True, "log": "setup done"},
             ],
@@ -279,6 +283,10 @@ class ReportBuildAPITests(APITestCase):
         self.assertEquals(
             json.loads(build.result.setup_log),
             self.payload['setup_results']
+        )
+        self.assertEquals(
+            json.loads(build.result.service_log),
+            self.payload['service_results']
         )
 
     @override_settings(FRIGG_WORKER_TOKENS=['supertoken'])
