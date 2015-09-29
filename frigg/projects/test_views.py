@@ -45,13 +45,13 @@ class BuildBadgeViewTests(TestCase):
         self.assertStatusCode(response, code=404)
 
 
+@skip("service is down")
 class CoverageBadgeViewTests(TestCase):
     fixtures = ['frigg/builds/fixtures/users.json', 'frigg/builds/fixtures/test_views.yaml']
 
     def assertStatusCode(self, response, code=200):
         self.assertEqual(response.status_code, code)
 
-    @skip("service is down")
     def test_coverage(self):
         BuildResult.objects.all().update(coverage=92.5)
         response = self.client.get(reverse('coverage_badge', args=['frigg', 'frigg']))
