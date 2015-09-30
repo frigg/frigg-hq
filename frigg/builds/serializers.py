@@ -31,6 +31,7 @@ class BuildResultSerializer(serializers.ModelSerializer):
             'setup_tasks',
             'service_tasks',
             'still_running',
+            'worker_host',
         )
 
 
