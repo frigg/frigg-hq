@@ -35,6 +35,7 @@ class APITestMixin(object):
         result = BuildResult.objects.get(pk=build_result_id)
         self.assertEqual(obj['id'], result.id)
         self.assertEqual(obj['coverage'], result.coverage)
+        self.assertEqual(obj['worker_host'], result.worker_host)
         self.assertEqual(obj['succeeded'], result.succeeded)
         self.assertEqual(obj['tasks'], result.tasks)
         self.assertEqual(obj['setup_tasks'], result.setup_tasks)
