@@ -62,5 +62,5 @@ class BuildAdmin(admin.ModelAdmin):
 @admin.register(BuildResult)
 class BuildResultAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'worker_host', 'succeeded', 'still_running', 'coverage')
-    readonly_fields = ('worker_host', 'build', 'setup_log', 'result_log', 'succeeded',
-                       'still_running')
+    readonly_fields = ('worker_host', 'build', 'service_log', 'setup_log', 'result_log',
+                       'succeeded', 'still_running')
