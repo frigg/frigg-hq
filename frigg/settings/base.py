@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     'frigg.stats',
     'frigg.utils',
     'frigg.webhooks',
+    'frigg.workers',
 )
 
 MIDDLEWARE_CLASSES = (
