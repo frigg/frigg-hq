@@ -128,6 +128,7 @@ class BuildTestCase(TestCase):
         self.assertEqual(obj['id'], build.pk)
         self.assertEqual(obj['branch'], build.branch)
         self.assertEqual(obj['sha'], build.sha)
+        self.assertEqual(obj['image'], settings.DEFAULT_BUILD_IMAGE)
         self.assertEqual(obj['clone_url'], build.project.clone_url)
         self.assertEqual(obj['owner'], build.project.owner)
         self.assertEqual(obj['name'], build.project.name)
