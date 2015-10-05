@@ -128,6 +128,7 @@ class BuildTestCase(TestCase):
         self.assertEqual(obj['id'], build.pk)
         self.assertEqual(obj['branch'], build.branch)
         self.assertEqual(obj['sha'], build.sha)
+        self.assertEqual(obj['image'], settings.DEFAULT_BUILD_IMAGE)
         self.assertEqual(obj['clone_url'], build.project.clone_url)
         self.assertEqual(obj['owner'], build.project.owner)
         self.assertEqual(obj['name'], build.project.name)
@@ -136,6 +137,14 @@ class BuildTestCase(TestCase):
         build.pull_request_id = 42
         obj = build.queue_object
         self.assertEqual(obj['pull_request_id'], 42)
+
+    def test_queue_set_custom_image(self):
+        custom_docker_image = 'frigg/frigg-test-dind'
+        project = Project.objects.create(image=custom_docker_image)
+        build = Build.objects.create(project=project)
+        obj = build.queue_object
+        self.assertEqual(obj['id'], build.pk)
+        self.assertEqual(obj['image'], custom_docker_image)
 
     def test_color(self):
         build = Build.objects.create(project=self.project, branch='master', build_number=1)

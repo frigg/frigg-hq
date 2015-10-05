@@ -23,3 +23,5 @@ REDIS_SETTINGS = {
 AUTO_APPROVE_OWNERS = ['frigg', 'frecar', 'relekang']
 
 OVERVIEW_PAGINATION_COUNT = 100
+
+DEFAULT_BUILD_IMAGE = "frigg/frigg-test-base"

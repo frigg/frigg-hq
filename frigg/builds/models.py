@@ -34,6 +34,7 @@ class Project(TimeStampModel):
     queue_name = models.CharField(max_length=200, default=settings.FRIGG_WORKER_QUEUE)
     can_deploy = models.BooleanField(default=False, db_index=True)
     should_clone_with_ssh = models.BooleanField(default=False)
+    image = models.CharField(max_length=200, default="", blank=True)
 
     objects = ProjectManager()
 
@@ -203,6 +204,7 @@ class Build(TimeStampModel):
             'id': self.pk,
             'branch': self.branch,
             'sha': self.sha,
+            'image': self.project.image or settings.DEFAULT_BUILD_IMAGE,
             'clone_url': self.project.clone_url,
             'owner': self.project.owner,
             'name': self.project.name,
