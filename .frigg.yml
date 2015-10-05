@@ -9,7 +9,7 @@ tasks:
   - tox -e coverage
 
 verbose_tasks:
-  - coverage report --fail-under=85
+  - tox -e coverage
 
 coverage:
   path: coverage.xml
