@@ -138,6 +138,14 @@ class BuildTestCase(TestCase):
         obj = build.queue_object
         self.assertEqual(obj['pull_request_id'], 42)
 
+    def test_queue_set_custom_image(self):
+        custom_docker_image = 'frigg/frigg-test-dind'
+        project = Project.objects.create(image=custom_docker_image)
+        build = Build.objects.create(project=project)
+        obj = build.queue_object
+        self.assertEqual(obj['id'], build.pk)
+        self.assertEqual(obj['image'], custom_docker_image)
+
     def test_color(self):
         build = Build.objects.create(project=self.project, branch='master', build_number=1)
         self.assertEqual(build.color, 'orange')
