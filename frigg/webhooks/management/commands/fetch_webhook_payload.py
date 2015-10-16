@@ -45,6 +45,6 @@ class Command(BaseCommand):
             event = EVENT_SERVICES[parsed['service']](parsed['type'], parsed['payload'])
             event.handle()
             self.stdout.write(event.response)
-        except Exception as e:
-            logger.exception(e)
+        except Exception as error:
             self.redis.lpush(settings.FRIGG_WEBHOOK_FAILED_QUEUE, item)
+            raise error
