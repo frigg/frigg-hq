@@ -22,6 +22,10 @@ class Command(BaseCommand):
         parser.add_argument('--number', action='store', type=int, dest='number', default='-1')
 
     def handle(self, *args, **options):
+        self.stdout.write('Starting handler\n{}\n'.format(''.join(['-' for i in range(60)])))
+        self.stdout.write('Redis settings: {host}:{port}/{db}\n\n'.format(
+            **settings.REDIS_SETTINGS
+        ))
         self.redis = redis.Redis(**settings.REDIS_SETTINGS)
         counter = 0
 
