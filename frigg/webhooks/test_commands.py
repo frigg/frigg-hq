@@ -19,13 +19,13 @@ class FetchWebhookPayloadCommandTests(TestCase):
 
     def setUp(self):
         self.maxDiff = None
-        self.r = redis.Redis(**settings.REDIS_SETTINGS)
+        self.redis = redis.Redis(**settings.REDIS_SETTINGS)
         self.item = {
             'service': 'github',
             'type': 'ping',
             'payload': self.load_fixture('ping.json'),
         }
-        self.r.lpush(settings.FRIGG_WEBHOOK_QUEUE, json.dumps(self.item))
+        self.redis.lpush(settings.FRIGG_WEBHOOK_QUEUE, json.dumps(self.item))
 
     def test_command(self):
         out = StringIO()
@@ -37,5 +37,5 @@ class FetchWebhookPayloadCommandTests(TestCase):
         out = StringIO()
         with self.assertRaises(RuntimeError):
             call_command('fetch_webhook_payload', number=1, stdout=out)
-        item = self.r.rpop(settings.FRIGG_WEBHOOK_FAILED_QUEUE).decode()
+        item = self.redis.rpop(settings.FRIGG_WEBHOOK_FAILED_QUEUE).decode()
         self.assertEqual(json.loads(item), self.item)
