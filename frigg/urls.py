@@ -2,7 +2,11 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.auth import views as auth_views
 from django.views.generic import RedirectView
+
+from .projects import views as project_views
+from . import views
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
@@ -10,22 +14,22 @@ urlpatterns = [
 
     url(
         r'^badges/coverage/(?P<owner>[^/]+)/(?P<name>[^/]+)/$',
-        'frigg.projects.views.coverage_badge',
+        project_views.coverage_badge,
         name='coverage_badge'
     ),
     url(
         r'^badges/coverage/(?P<owner>[^/]+)/(?P<name>[^/]+)/(?P<branch>[^/]+)/$',
-        'frigg.projects.views.coverage_badge',
+        project_views.coverage_badge,
         name='coverage_badge'
     ),
     url(
         r'^badges/(?P<owner>[^/]+)/(?P<name>[^/]+)/$',
-        'frigg.projects.views.build_badge',
+        project_views.build_badge,
         name='build_badge'
     ),
     url(
         r'^badges/(?P<owner>[^/]+)/(?P<name>[^/]+)/(?P<branch>[^/]+)/$',
-        'frigg.projects.views.build_badge',
+        project_views.build_badge,
         name='build_badge'
     ),
 
@@ -36,7 +40,7 @@ urlpatterns = [
     ),
     url(
         r'^auth/logout/$',
-        'django.contrib.auth.views.logout',
+        auth_views.logout,
         {'next_page': '/'},
         name='logout'
     ),
@@ -48,8 +52,8 @@ urlpatterns = [
     url(r'^', include('frigg.builds.urls')),
     url(r'^offline.html$', 'frigg.views.react_view'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + [
-    url(r'^[^/]+/[^/]+/[^/]+/$', 'frigg.views.react_view'),
-    url(r'^[^/]+/[^/]+/$', 'frigg.views.react_view'),
-    url(r'^[^/]+/$', 'frigg.views.react_view'),
-    url(r'^$', 'frigg.views.react_view', name='react_view'),
+    url(r'^[^/]+/[^/]+/[^/]+/$', views.react_view),
+    url(r'^[^/]+/[^/]+/$', views.react_view),
+    url(r'^[^/]+/$', views.react_view),
+    url(r'^$', views.react_view, name='react_view'),
 ]
