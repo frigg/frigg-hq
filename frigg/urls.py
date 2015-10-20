@@ -5,8 +5,8 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.views.generic import RedirectView
 
-from .projects import views as project_views
 from . import views
+from .projects import views as project_views
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
