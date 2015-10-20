@@ -36,14 +36,18 @@
   pk: 1
   fields:
     build: 1
-    result_log: 'All ok'
+    result_log: '[]'
+    setup_log: '[]'
+    service_log: '[]'
     succeeded: true
 
 - model: builds.buildresult
   pk: 2
   fields:
     build: 3
-    result_log: 'All ok'
+    result_log: '[]'
+    setup_log: '[]'
+    service_log: '[]'
     succeeded: true
 
 - model: builds.project

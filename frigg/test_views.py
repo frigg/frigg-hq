@@ -15,6 +15,3 @@ class ReactViewTest(ViewTestCase):
 
     def test_view_should_contain_user_data(self):
         self.assertContains(self.client.get(reverse('react_view')), 'window.user')
-
-    def test_cache_manifest(self):
-        self.assertStatusCode(self.client.get(reverse('manifest')))

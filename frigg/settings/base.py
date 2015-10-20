@@ -3,25 +3,19 @@ import os
 
 from django.contrib import messages
 
-from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as DJANGO_TEMPLATE_CONTEXT_PROCESSORS  # noqa isort:skip
-
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 SECRET_KEY = 'v8aa$cb0knx6)vyo!%tn6k6_g($!n1yq_v+4bg9v4*n@&dpu0w'
 DEBUG = True
-TEMPLATE_DEBUG = True
 ALLOWED_HOSTS = []
-INTERNAL_IPS = ('127.0.0.1',)
+INTERNAL_IPS = ['127.0.0.1']
 
 MESSAGE_TAGS = {
     messages.ERROR: 'danger'  # Makes messages play nice with bootstrap 3
 }
 
 
-# Application definition
-
-INSTALLED_APPS = (
-    'flat',
+INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -30,8 +24,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'social.apps.django_app.default',
-    'manifesto',
-    'pipeline',
     'django_extensions',
     'rest_framework',
     'django_statsd',
@@ -44,9 +36,9 @@ INSTALLED_APPS = (
     'frigg.utils',
     'frigg.webhooks',
     'frigg.workers',
-)
+]
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -57,26 +49,41 @@ MIDDLEWARE_CLASSES = (
     # statsd
     'django_statsd.middleware.GraphiteRequestTimingMiddleware',
     'django_statsd.middleware.GraphiteMiddleware',
-)
+]
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    DJANGO_TEMPLATE_CONTEXT_PROCESSORS + (
-        'django.core.context_processors.debug',
-        'django.core.context_processors.request',
-        'social.apps.django_app.context_processors.backends',
-        'social.apps.django_app.context_processors.login_redirect',
-    )
-)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'),
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
+                'django.core.context_processors.request',
+                'social.apps.django_app.context_processors.backends',
+                'social.apps.django_app.context_processors.login_redirect',
+            ],
+        },
+    },
+]
 
 ROOT_URLCONF = 'frigg.urls'
 
 WSGI_APPLICATION = 'frigg.wsgi.application'
 
 AUTH_USER_MODEL = 'authentication.User'
-AUTHENTICATION_BACKENDS = (
+AUTHENTICATION_BACKENDS = [
     'social.backends.github.GithubOAuth2',
     'django.contrib.auth.backends.ModelBackend',
-)
+]
 
 DATABASES = {
     'default': {
@@ -85,10 +92,6 @@ DATABASES = {
         'HOST': '127.0.0.1'
     }
 }
-
-TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR, 'templates'),
-)
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
@@ -102,44 +105,11 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, '../uploads')
 MEDIA_URL = '/uploads/'
 STATICFILES_DIRS = os.path.join(BASE_DIR, 'files/'),
-STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
 
-STATICFILES_FINDERS = (
+STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'pipeline.finders.PipelineFinder',
-)
-
-PIPELINE_COMPILERS = (
-    'pipeline.compilers.sass.SASSCompiler',
-)
-
-PIPELINE_CSS = {
-    'main': {
-        'source_filenames': (
-            'sass/main.sass',
-        ),
-        'output_filename': 'css/main.css',
-    },
-    'react': {
-        'source_filenames': (
-            'react-version.css',
-        ),
-        'output_filename': 'css/bundle.css',
-        'manifest': True,
-    }
-}
-
-PIPELINE_JS = {
-    'react': {
-        'source_filenames': (
-            'react-version.js',
-        ),
-        'output_filename': 'js/bundle.js',
-        'manifest': True,
-    }
-}
-
+]
 
 # Social auth
 LOGIN_URL = '/auth/login/github'
