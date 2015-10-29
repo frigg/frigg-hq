@@ -110,6 +110,34 @@ class ProjectTestCase(TestCase):
         project.members.add(User.objects.get(pk=1))
         self.assertEqual(project.number_of_members, 1)
 
+    @mock.patch('frigg.builds.models.get_badge')
+    def test_get_badge_should_call_badge_with_last_build(self, mock_get_badge):
+        project = Project.objects.create(owner='frigg', name='frigg-worker', private=False)
+        build = Build.objects.create(project=project)
+        BuildResult.objects.create(build=build, succeeded=True)
+        self.assertIsNotNone(project.get_badge())
+        mock_get_badge.assert_called_once_with(True)
+
+    @mock.patch('frigg.builds.models.get_unknown_badge')
+    def test_get_badge_should_call_unknown_badge_if_no_build(self, mock_get_unknown_badge):
+        project = Project.objects.create(owner='frigg', name='frigg-worker', private=False)
+        self.assertIsNotNone(project.get_badge())
+        mock_get_unknown_badge.assert_called_once_with('build')
+
+    @mock.patch('frigg.builds.models.get_coverage_badge')
+    def test_get_coverage_badge_should_call_coverage_badge_with_last_build(self, mock_get_badge):
+        project = Project.objects.create(owner='frigg', name='frigg-worker', private=False)
+        build = Build.objects.create(project=project)
+        BuildResult.objects.create(build=build, succeeded=True, coverage=98)
+        self.assertIsNotNone(project.get_coverage_badge())
+        mock_get_badge.assert_called_once_with(98)
+
+    @mock.patch('frigg.builds.models.get_unknown_badge')
+    def test_get_coverage_badge_should_call_unknown_badge_if_no_buildt(self, mock_get_unknown):
+        project = Project.objects.create(owner='frigg', name='frigg-worker', private=False)
+        self.assertIsNotNone(project.get_coverage_badge())
+        mock_get_unknown.assert_called_once_with('coverage')
+
 
 class BuildTestCase(TestCase):
     fixtures = ['frigg/builds/fixtures/users.json']

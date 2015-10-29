@@ -17,7 +17,7 @@ from markdown import markdown
 
 from frigg.deployments.models import PRDeployment
 from frigg.helpers import github
-from frigg.helpers.badges import get_badge, get_coverage_badge
+from frigg.helpers.badges import get_badge, get_coverage_badge, get_unknown_badge
 from frigg.projects.managers import ProjectManager
 
 from .managers import BuildManager, BuildResultManager
@@ -114,11 +114,13 @@ class Project(TimeStampModel):
         build = self.builds.filter(branch=branch, pull_request_id=0).exclude(result=None).first()
         if build:
             return get_badge(build.result.succeeded)
+        return get_unknown_badge('build')
 
     def get_coverage_badge(self, branch='master'):
         build = self.builds.filter(branch=branch, pull_request_id=0).exclude(result=None).first()
         if build:
             return get_coverage_badge(build.result.coverage)
+        return get_unknown_badge('coverage')
 
     def update_members(self):
         collaborators = github.list_collaborators(self)

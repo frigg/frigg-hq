@@ -5,7 +5,7 @@ from django.core.cache import cache
 
 
 def get_badge(succeeded):
-    key = 'badge{}'.format(succeeded)
+    key = 'badge{0}'.format(succeeded)
     badge = cache.get(key)
     if badge is None:
         if succeeded:
@@ -20,16 +20,25 @@ def get_badge(succeeded):
 
 
 def get_coverage_badge(coverage):
-    key = 'badgecoverage{}'.format(coverage)
+    if coverage is None:
+        return get_unknown_badge('coverage')
+    key = 'badgecoverage{0}'.format(coverage)
     badge = cache.get(key)
     if badge is None:
-        if coverage is None:
-            url = 'https://img.shields.io/badge/coverage-unknown-lightgrey.svg'
-        else:
-            url = 'https://img.shields.io/badge/coverage-{}%-{}.svg?style=flat'.format(
-                coverage,
-                _coverage_color(coverage)
-            )
+        url = 'https://img.shields.io/badge/coverage-{}%-{}.svg?style=flat'.format(
+            coverage,
+            _coverage_color(coverage)
+        )
+        badge = requests.get(url).text
+        cache.set(key, badge)
+    return badge
+
+
+def get_unknown_badge(badge_type):
+    key = 'badgeunknown{0}'.format(badge_type)
+    badge = cache.get(key)
+    if badge is None:
+        url = 'https://img.shields.io/badge/{0}-unknown-lightgrey.svg'.format(badge_type)
         badge = requests.get(url).text
         cache.set(key, badge)
     return badge
