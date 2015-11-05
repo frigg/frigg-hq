@@ -1,4 +1,4 @@
-{% load pipeline %}
+{% load staticfiles %}
 <!DOCTYPE html>
 <html>
   <head>
@@ -10,8 +10,6 @@
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="//fonts.googleapis.com/css?family=Lato:700,400,300,100" rel="stylesheet" type="text/css">
     <script src="//cdn.ravenjs.com/1.1.15/jquery,native/raven.min.js"></script>
-    <link href="/static/react-version.css" rel="stylesheet" />
-    {% stylesheet 'react' %}
   </head>
   <body>
     <div id="content"></div>
@@ -20,7 +18,7 @@
         window.user = JSON.parse('{{ user|safe }}');
       </script>
     {% endif %}
-    {% javascript 'react' %}
+    <script src="{% static 'js/react-version.js' %}"></script>
     {% if sentry_dsn %}
       <script>
         Raven.config('{{ sentry_dsn }}', {

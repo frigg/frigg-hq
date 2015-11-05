@@ -3,7 +3,6 @@ from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.generic import RedirectView
-from manifesto.views import ManifestView
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
@@ -45,7 +44,6 @@ urlpatterns = [
     url(r'^auth/', include('django.contrib.auth.urls')),
     url(r'^stats/', include('frigg.stats.urls', namespace='stats')),
     url(r'^api/', include('frigg.api.urls', namespace='api')),
-    url(r'^app.manifest', ManifestView.as_view(), name='manifest'),
     url(r'^', include('frigg.projects.urls')),
     url(r'^', include('frigg.builds.urls')),
     url(r'^offline.html$', 'frigg.views.react_view'),

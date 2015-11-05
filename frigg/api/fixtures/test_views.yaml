@@ -41,18 +41,18 @@
 - fields: {branch: master, build_number: 1, project: 4, pull_request_id: 0, sha: fjkds}
   model: builds.build
   pk: 5
-- fields: {build: 1, result_log: '[]', succeeded: true, worker_host: "ron"}
+- fields: {build: 1, result_log: '[]', setup_log: '[]', service_log: '[]',  succeeded: true, worker_host: "ron"}
   model: builds.buildresult
   pk: 1
-- fields: {build: 2, result_log: '[]', succeeded: true}
+- fields: {build: 2, result_log: '[]', setup_log: '[]', service_log: '[]',  succeeded: true}
   model: builds.buildresult
   pk: 2
-- fields: {build: 3, result_log: '[]', succeeded: true}
+- fields: {build: 3, result_log: '[]', setup_log: '[]', service_log: '[]',  succeeded: true}
   model: builds.buildresult
   pk: 3
-- fields: {build: 4, result_log: '[]', succeeded: true}
+- fields: {build: 4, result_log: '[]', setup_log: '[]', service_log: '[]',  succeeded: true}
   model: builds.buildresult
   pk: 4
-- fields: {build: 5, result_log: '[]', succeeded: true}
+- fields: {build: 5, result_log: '[]', setup_log: '[]', service_log: '[]',  succeeded: true}
   model: builds.buildresult
   pk: 5
