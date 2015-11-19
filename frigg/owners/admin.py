@@ -8,6 +8,7 @@ from frigg.owners.models import Owner
 class OwnerAdmin(admin.ModelAdmin):
     list_display = (
         '__str__',
+        'account_type',
         'queue_name',
         'image',
         'number_of_members',

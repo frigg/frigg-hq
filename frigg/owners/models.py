@@ -9,8 +9,8 @@ class Owner(models.Model):
     ORGANIZATION = 'organization'
     USER = 'user'
     TYPES = (
-        ('Organization', ORGANIZATION),
-        ('User', USER),
+        (ORGANIZATION, 'Organization'),
+        (USER, 'User'),
     )
 
     name = models.CharField(max_length=100)
@@ -38,6 +38,9 @@ class Owner(models.Model):
         return self.members.count()
 
     def update_members(self):
-        collaborators = github.list_collaborators(self)
-        users = get_user_model().objects.filter(username__in=collaborators)
-        self.members = users
+        if self.account_type == self.ORGANIZATION:
+            members = github.list_members(self)
+            self.members = get_user_model().objects.filter(username__in=members)
+
+        elif self.account_type == self.USER:
+            self.members = get_user_model().objects.filter(username=self.name)
