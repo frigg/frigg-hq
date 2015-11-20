@@ -4,3 +4,7 @@ django-debug-toolbar
 responses
 mockredispy
 flake8
+coverage
+pytest
+pytest-django
+pytest-xdist
