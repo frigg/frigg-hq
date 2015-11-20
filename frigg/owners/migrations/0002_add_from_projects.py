@@ -1,4 +1,4 @@
-from django.db import models, migrations
+from django.db import migrations
 
 
 def create_owners_from_projects(apps, schema_editor):
