@@ -2,7 +2,7 @@ django==1.8.7
 requests==2.8.1
 pyyaml==3.11
 redis==2.10.5
-markdown==2.6.4
+markdown==2.6.5
 python-social-auth==0.2.13
 django-pipeline==1.5.4
 django-extensions==1.5.9
