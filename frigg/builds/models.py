@@ -2,6 +2,7 @@
 import json
 import logging
 from datetime import timedelta
+from decimal import Decimal
 
 import redis
 import requests
@@ -371,7 +372,13 @@ class BuildResult(TimeStampModel):
             result.still_running = False
 
         if 'coverage' in payload:
-            result.coverage = payload['coverage']
+            try:
+                result.coverage = Decimal(payload['coverage'])
+            except TypeError as error:
+                logger.warn('Could not convert coverage to decimal', extra={
+                    'error': error,
+                    'payload': payload,
+                })
 
         result.save()
         return result
