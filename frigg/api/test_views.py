@@ -59,7 +59,7 @@ class ProjectAPITestCase(APITestCase, APITestMixin):
     def test_get_projects_anonymous(self):
         response = self.client.get('/api/projects/')
         self.assertEqual(response.status_code, 200)
-        json_response = json.loads(response.content.decode())
+        json_response = response.json()
         self.assertEqual(len(json_response), 2)
         self.assertProject(json_response[0], 3)
         self.assertProject(json_response[1], 4)
@@ -68,7 +68,7 @@ class ProjectAPITestCase(APITestCase, APITestMixin):
         self.client.force_authenticate(user=self.user)
         response = self.client.get('/api/projects/')
         self.assertEqual(response.status_code, 200)
-        json_response = json.loads(response.content.decode())
+        json_response = response.json()
         self.assertEqual(len(json_response), 3)
         self.assertProject(json_response[0], 1)
         self.assertProject(json_response[1], 3)
@@ -79,7 +79,7 @@ class ProjectAPITestCase(APITestCase, APITestMixin):
     def test_get_project_anonymous(self):
         response = self.client.get('/api/projects/4/')
         self.assertEqual(response.status_code, 200)
-        json_response = json.loads(response.content.decode())
+        json_response = response.json()
         self.assertProject(json_response, 4)
         response = self.client.get('/api/projects/1/')
         self.assertEqual(response.status_code, 404)
@@ -90,7 +90,7 @@ class ProjectAPITestCase(APITestCase, APITestMixin):
         self.client.force_authenticate(user=self.user)
         response = self.client.get('/api/projects/1/')
         self.assertEqual(response.status_code, 200)
-        json_response = json.loads(response.content.decode())
+        json_response = response.json()
         self.assertProject(json_response, 1)
 
     def test_get_project_404(self):
@@ -119,7 +119,7 @@ class BuildAPITestCase(APITestCase, APITestMixin):
 
     def test_get_builds_anonymous(self):
         response = self.client.get('/api/builds/')
-        json_response = json.loads(response.content.decode())
+        json_response = response.json()
         self.assertEqual(json_response['count'], 2)
         self.assertBuild(json_response['results'][0], 5)
         self.assertBuild(json_response['results'][1], 4)
@@ -128,7 +128,7 @@ class BuildAPITestCase(APITestCase, APITestMixin):
         self.client.force_authenticate(user=self.user)
         response = self.client.get('/api/builds/')
         self.assertEqual(response.status_code, 200)
-        json_response = json.loads(response.content.decode())
+        json_response = response.json()
         self.assertEqual(json_response['count'], 4)
         self.assertBuild(json_response['results'][0], 5)
         self.assertBuild(json_response['results'][1], 4)
@@ -138,7 +138,7 @@ class BuildAPITestCase(APITestCase, APITestMixin):
     def test_get_build_anonymous(self):
         response = self.client.get('/api/builds/5/')
         self.assertEqual(response.status_code, 200)
-        json_response = json.loads(response.content.decode())
+        json_response = response.json()
         self.assertBuild(json_response, 5)
         response = self.client.get('/api/builds/1/')
         self.assertEqual(response.status_code, 404)
@@ -147,7 +147,7 @@ class BuildAPITestCase(APITestCase, APITestMixin):
         self.client.force_authenticate(user=self.user)
         response = self.client.get('/api/builds/1/')
         self.assertEqual(response.status_code, 200)
-        json_response = json.loads(response.content.decode())
+        json_response = response.json()
         self.assertBuild(json_response, 1)
 
     def test_get_build_404(self):
@@ -183,7 +183,7 @@ class BuildAPITestCase(APITestCase, APITestMixin):
     def test_get_builds_by_owner_name(self):
         response = self.client.get('/api/builds/frigg/frigg-worker/')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(json.loads(response.content.decode())), 1)
+        self.assertEqual(len(response.json()), 1)
 
     def test_get_builds_by_owner_404(self):
         response = self.client.get('/api/builds/beaver/')
@@ -192,7 +192,7 @@ class BuildAPITestCase(APITestCase, APITestMixin):
     def test_get_builds_by_owner(self):
         response = self.client.get('/api/builds/frigg/')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(json.loads(response.content.decode())), 2)
+        self.assertEqual(len(response.json()), 2)
 
 
 class UserAPITests(TestCase):
@@ -205,7 +205,7 @@ class UserAPITests(TestCase):
     def test_me_api_view_anonymous(self):
         response = self.client.get(reverse('api:user_me'))
         self.assertEqual(response.status_code, 200)
-        data = json.loads(response.content.decode())
+        data = response.json()
         self.assertTrue(data['is_anonymous'], 'User is not anonymous')
         self.assertFalse(data['is_staff'], 'Anonymous user is staff')
 
@@ -213,7 +213,7 @@ class UserAPITests(TestCase):
         self.client.force_authenticate(user=self.user)
         response = self.client.get(reverse('api:user_me'))
         self.assertEqual(response.status_code, 200)
-        data = json.loads(response.content.decode())
+        data = response.json()
         self.assertFalse(data['is_anonymous'], 'User is anonymous')
         self.assertEqual(data['username'], 'dumbledore')
         self.assertEqual(data['email'], 'albus@hogwarts.com')
@@ -224,7 +224,7 @@ class UserAPITests(TestCase):
         self.user.save()
         self.client.force_authenticate(user=self.user)
         response = self.client.get(reverse('api:user_me'))
-        data = json.loads(response.content.decode())
+        data = response.json()
         self.assertFalse(data['is_staff'], 'Dumbledore is staff')
 
 

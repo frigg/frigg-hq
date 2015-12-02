@@ -9,6 +9,7 @@ import requests
 from basis.models import TimeStampModel
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.postgres.fields.jsonb import JSONField
 from django.core.cache import cache
 from django.db import models
 from django.utils.functional import cached_property
@@ -291,9 +292,9 @@ class Build(TimeStampModel):
 
 class BuildResult(TimeStampModel):
     build = models.OneToOneField(Build, related_name='result')
-    result_log = models.TextField()
-    setup_log = models.TextField(blank=True)
-    service_log = models.TextField(blank=True)
+    result_log = JSONField(null=True, blank=True, default=[])
+    setup_log = JSONField(null=True, blank=True, default=[])
+    service_log = JSONField(null=True, blank=True, default=[])
     succeeded = models.BooleanField(default=False)
     still_running = models.BooleanField(default=False)
     worker_host = models.CharField(max_length=250, null=True, blank=True)
@@ -317,29 +318,15 @@ class BuildResult(TimeStampModel):
 
     @property
     def tasks(self):
-        try:
-            return json.loads(self.result_log)
-        except ValueError as error:
-            logger.exception(error)
-            return []
+        return self.result_log
 
     @property
     def setup_tasks(self):
-        try:
-            return json.loads(self.setup_log)
-        except ValueError as error:
-            if not settings.DEBUG:
-                logger.exception(error)
-            return []
+        return self.setup_log
 
     @property
     def service_tasks(self):
-        try:
-            return json.loads(self.service_log)
-        except ValueError as error:
-            if not settings.DEBUG:
-                logger.exception(error)
-            return []
+        return self.service_log
 
     @classmethod
     def create_not_approved(cls, build):
