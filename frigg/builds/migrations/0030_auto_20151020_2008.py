@@ -9,7 +9,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('builds', '0028_auto_20151016_1928'),
+        ('builds', '0029_clean_results'),
     ]
 
     operations = [
