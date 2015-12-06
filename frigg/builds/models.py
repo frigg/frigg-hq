@@ -332,7 +332,7 @@ class BuildResult(TimeStampModel):
     def create_not_approved(cls, build):
         result = cls.objects.create(
             build=build,
-            result_log='[{"task": "", "error": "This project is not approved."}]',
+            result_log=[{"task": "", "error": "This project is not approved."}],
             succeeded=False
         )
         github.set_commit_status(build, error='This project is not approved')
@@ -341,12 +341,13 @@ class BuildResult(TimeStampModel):
     @classmethod
     def create_from_worker_payload(cls, build, payload):
         result = cls.objects.get_or_create(build_id=build.pk)[0]
-        result.result_log = json.dumps(payload['results'])
+        result.result_log = payload['results']
+
         if 'setup_results' in payload:
-            result.setup_log = json.dumps(payload['setup_results'])
+            result.setup_log = payload['setup_results']
 
         if 'service_results' in payload:
-            result.service_log = json.dumps(payload['service_results'])
+            result.service_log = payload['service_results']
 
         result.succeeded = BuildResult.evaluate_results(payload['results'])
 

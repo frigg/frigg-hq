@@ -369,6 +369,30 @@ class BuildTestCase(TestCase):
         self.assertEqual(build.estimated_finish_time.hour, (now() + timedelta(minutes=10)).hour)
         self.assertEqual(build.estimated_finish_time.minute, (now() + timedelta(minutes=10)).minute)
 
+    @mock.patch('frigg.deployments.models.PRDeployment.start')
+    def test_initiate_deployment_with_specified_image(self, mock_deployment_start):
+        start_time = datetime(2012, 12, 12, tzinfo=get_current_timezone())
+
+        b1 = Build.objects.create(project=self.project, branch='master',
+                                  build_number=4, start_time=start_time)
+
+        deployment = b1.initiate_deployment({'image': 'frigg/super-image'})
+        self.assertEqual(deployment.image, 'frigg/super-image')
+
+        self.assertTrue(mock_deployment_start.called_once)
+
+    @mock.patch('frigg.deployments.models.PRDeployment.start')
+    def test_initiate_deployment_without_specified_image(self, mock_deployment_start):
+        start_time = datetime(2012, 12, 12, tzinfo=get_current_timezone())
+
+        b1 = Build.objects.create(project=self.project, branch='master',
+                                  build_number=4, start_time=start_time)
+
+        deployment = b1.initiate_deployment({})
+        self.assertEqual(deployment.image, settings.FRIGG_PREVIEW_IMAGE)
+
+        self.assertTrue(mock_deployment_start.called_once)
+
 
 class BuildResultTestCase(TestCase):
     def setUp(self):
@@ -390,6 +414,57 @@ class BuildResultTestCase(TestCase):
         result = BuildResult.create_not_approved(self.build)
         self.assertEqual(result.build_id, self.build.pk)
         self.assertFalse(result.succeeded)
+        assert result.tasks[0]['error'] == 'This project is not approved.'
+        assert result.setup_tasks == []
+        assert result.service_tasks == []
+
+    def test_create_from_worker_payload(self):
+        BuildResult.create_from_worker_payload(self.build, {
+            'sha': 'superbhash',
+            'clone_url': 'https://github.com/frigg/frigg-worker.git',
+            'name': 'frigg-worker',
+            'branch': 'master',
+            'owner': 'frigg',
+            'worker_host': 'albus.frigg.io',
+            'finished': False,
+            'id': 1,
+            'results': [
+                {'task': 'make test', 'return_code': 0, 'succeeded': True, 'log': 'log'},
+                {'task': 'flake8', 'pending': True},
+                {'task': 'make test'}
+            ],
+            'service_results': [],
+            'setup_results': [],
+            'webhooks': ['http://example.com']
+        })
+
+        assert self.build.result.worker_host == 'albus.frigg.io'
+        assert self.build.result.still_running
+        assert isinstance(self.build.result.tasks, list)
+        assert isinstance(self.build.result.setup_log, list)
+        assert isinstance(self.build.result.service_tasks, list)
+
+    def test_create_from_worker_payload_without_optional_results(self):
+        BuildResult.create_from_worker_payload(self.build, {
+            'sha': 'superbhash',
+            'clone_url': 'https://github.com/frigg/frigg-worker.git',
+            'name': 'frigg-worker',
+            'branch': 'master',
+            'owner': 'frigg',
+            'worker_host': 'albus.frigg.io',
+            'finished': False,
+            'id': 1,
+            'results': [
+                {'task': 'make test', 'return_code': 0, 'succeeded': True, 'log': 'log'},
+                {'task': 'flake8', 'pending': True},
+                {'task': 'make test'}
+            ],
+            'webhooks': ['http://example.com']
+        })
+
+        assert isinstance(self.build.result.tasks, list)
+        assert isinstance(self.build.result.setup_log, list)
+        assert isinstance(self.build.result.service_tasks, list)
 
     def test_tasks(self):
         data = [
@@ -403,6 +478,32 @@ class BuildResultTestCase(TestCase):
         )
         self.assertEqual(len(result.tasks), 3)
         self.assertEqual(result.tasks, data)
+
+    def test_service_tasks(self):
+        data = [
+            {'task': 'tox', 'log': '{}', 'return_code': 0},
+            {'task': 'tox', 'log': 'tested all the stuff\n1!"#$%&/()=?', 'return_code': 11},
+            {'task': 'tox', 'return_log': 'fail', 'return_code': 'd'}
+        ]
+        result = BuildResult.objects.create(
+            build=self.build,
+            service_log=data
+        )
+        self.assertEqual(len(result.service_tasks), 3)
+        self.assertEqual(result.service_tasks, data)
+
+    def test_setup_tasks(self):
+        data = [
+            {'task': 'tox', 'log': '{}', 'return_code': 0},
+            {'task': 'tox', 'log': 'tested all the stuff\n1!"#$%&/()=?', 'return_code': 11},
+            {'task': 'tox', 'return_log': 'fail', 'return_code': 'd'}
+        ]
+        result = BuildResult.objects.create(
+            build=self.build,
+            setup_log=data
+        )
+        self.assertEqual(len(result.setup_tasks), 3)
+        self.assertEqual(result.setup_tasks, data)
 
     def test_coverage_diff(self):
         start_time = datetime(2012, 12, 12, tzinfo=get_current_timezone())
@@ -427,27 +528,3 @@ class BuildResultTestCase(TestCase):
                                   start_time=start_time)
         no_change = BuildResult.objects.create(build=b3, coverage=20)
         self.assertEqual(no_change.coverage_diff, 0)
-
-    @mock.patch('frigg.deployments.models.PRDeployment.start')
-    def test_initiate_deployment_with_specified_image(self, mock_deployment_start):
-        start_time = datetime(2012, 12, 12, tzinfo=get_current_timezone())
-
-        b1 = Build.objects.create(project=self.project, branch='master',
-                                  build_number=4, start_time=start_time)
-
-        deployment = b1.initiate_deployment({'image': 'frigg/super-image'})
-        self.assertEqual(deployment.image, 'frigg/super-image')
-
-        self.assertTrue(mock_deployment_start.called_once)
-
-    @mock.patch('frigg.deployments.models.PRDeployment.start')
-    def test_initiate_deployment_without_specified_image(self, mock_deployment_start):
-        start_time = datetime(2012, 12, 12, tzinfo=get_current_timezone())
-
-        b1 = Build.objects.create(project=self.project, branch='master',
-                                  build_number=4, start_time=start_time)
-
-        deployment = b1.initiate_deployment({})
-        self.assertEqual(deployment.image, settings.FRIGG_PREVIEW_IMAGE)
-
-        self.assertTrue(mock_deployment_start.called_once)
