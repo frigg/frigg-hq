@@ -390,6 +390,9 @@ class BuildResultTestCase(TestCase):
         result = BuildResult.create_not_approved(self.build)
         self.assertEqual(result.build_id, self.build.pk)
         self.assertFalse(result.succeeded)
+        assert result.tasks[0]['error'] == 'This project is not approved.'
+        assert result.setup_tasks == []
+        assert result.service_tasks == []
 
     def test_tasks(self):
         data = [
