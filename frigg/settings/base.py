@@ -88,7 +88,7 @@ AUTHENTICATION_BACKENDS = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'frigg-hq',
+        'NAME': 'frigg',
         'HOST': '127.0.0.1'
     }
 }
