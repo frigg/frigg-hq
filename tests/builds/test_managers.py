@@ -4,8 +4,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.test import TestCase
 
 from frigg.builds.models import BuildResult
-
-from .models import Build, Project
+from frigg.builds.models import Build, Project
 
 
 class PermittedObjectsTestCase(TestCase):

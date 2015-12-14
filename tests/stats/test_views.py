@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 
 from frigg.utils.tests import ViewTestCase
 
-from .views import overview
+from frigg.stats.views import overview
 
 
 class StatsSmokeViewTestCase(ViewTestCase):

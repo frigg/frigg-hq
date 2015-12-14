@@ -2,8 +2,7 @@ from django.core.urlresolvers import reverse
 from django.http import Http404
 
 from frigg.utils.tests import ViewTestCase
-
-from .views import download_artifact, last_build
+from frigg.builds.views import download_artifact, last_build
 
 
 class BuildsViewTests(ViewTestCase):

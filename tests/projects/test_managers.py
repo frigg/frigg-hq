@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from django.test import TestCase
 
-from .models import Project
+from frigg.projects.models import Project
 
 
 class ProjectManagerTests(TestCase):

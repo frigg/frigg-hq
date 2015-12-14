@@ -3,7 +3,7 @@ from django.test import TestCase
 
 from frigg.builds.models import Build, Project
 
-from .models import PRDeployment
+from frigg.deployments.models import PRDeployment
 
 
 class PRDeploymentManagerTests(TestCase):

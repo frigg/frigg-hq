@@ -12,8 +12,7 @@ from django.utils.timezone import get_current_timezone, now
 from mockredis import mock_redis_client
 
 from frigg.authentication.models import User
-
-from .models import Build, BuildResult, Project
+from frigg.builds.models import Build, BuildResult, Project
 
 r = redis.Redis(**settings.REDIS_SETTINGS)
 

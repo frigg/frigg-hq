@@ -1,7 +1,7 @@
 from frigg.utils.tests import FiltersTestCase
 
-from .filters import BuildPermissionFilter
-from .models import Build
+from frigg.builds.filters import BuildPermissionFilter
+from frigg.builds.models import Build
 
 
 class BuildsFilterTests(FiltersTestCase):

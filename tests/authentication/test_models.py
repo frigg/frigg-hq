@@ -4,7 +4,7 @@ from unittest import mock
 from django.test import TestCase
 from social.apps.django_app.default.models import UserSocialAuth
 
-from .models import User
+from frigg.authentication.models import User
 
 
 class UserTestCase(TestCase):
