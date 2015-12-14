@@ -3,6 +3,7 @@ import json
 from datetime import datetime, timedelta
 from unittest import mock
 
+import redis
 import responses
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -13,6 +14,8 @@ from mockredis import mock_redis_client
 from frigg.authentication.models import User
 
 from .models import Build, BuildResult, Project
+
+r = redis.Redis(**settings.REDIS_SETTINGS)
 
 
 class ProjectTestCase(TestCase):
@@ -143,6 +146,7 @@ class BuildTestCase(TestCase):
     fixtures = ['frigg/builds/fixtures/users.json']
 
     def setUp(self):
+        r.flushall()
         self.project = Project.objects.create(owner='frigg', name='frigg-worker', approved=True)
 
     def test___str__(self):
@@ -229,6 +233,24 @@ class BuildTestCase(TestCase):
         build = Build.objects.create(project=project, branch='master', build_number=1)
         build.start()
         self.assertTrue(mock_create_not_approved.called)
+
+    @mock.patch('frigg.builds.models.Build.start')
+    def test_restart_should_start_if_not_in_queue(self, mock_start):
+        project = Project.objects.create(owner='tind', name='frigg', approved=False)
+        build = Build.objects.create(project=project, branch='master', build_number=1)
+        build.start()
+        r.rpop(project.queue_name)
+        assert r.llen(project.queue_name) == 0
+        build.restart()
+        assert mock_start.called
+
+    @mock.patch('frigg.builds.models.Build.start')
+    def test_restart_should_not_start_if_already_in_queue(self, mock_start):
+        project = Project.objects.create(owner='tind', name='frigg', approved=False)
+        build = Build.objects.create(project=project, branch='master', build_number=1)
+        r.lpush(project.queue_name, json.dumps(build.queue_object))
+        build.restart()
+        assert not mock_start.called
 
     def test_has_timed_out(self):
         project = Project.objects.create(owner='frigg', name='frigg')

@@ -6,5 +6,6 @@ mockredispy
 flake8
 coverage
 pytest
+pytest-mock
 pytest-django
 pytest-xdist
