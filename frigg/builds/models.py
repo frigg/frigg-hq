@@ -247,7 +247,7 @@ class Build(TimeStampModel):
         """
         r = redis.Redis(**settings.REDIS_SETTINGS)
         for item in r.lrange(self.project.queue_name, 0, -1):
-            if item['id'] == self.pk:
+            if json.loads(item.decode())['id'] == self.pk:
                 return
 
         self.start()

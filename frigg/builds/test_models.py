@@ -146,6 +146,7 @@ class BuildTestCase(TestCase):
     fixtures = ['frigg/builds/fixtures/users.json']
 
     def setUp(self):
+        r.flushall()
         self.project = Project.objects.create(owner='frigg', name='frigg-worker', approved=True)
 
     def test___str__(self):
@@ -247,8 +248,7 @@ class BuildTestCase(TestCase):
     def test_restart_should_not_start_if_already_in_queue(self, mock_start):
         project = Project.objects.create(owner='tind', name='frigg', approved=False)
         build = Build.objects.create(project=project, branch='master', build_number=1)
-        build.start()
-        assert r.llen(project.queue_name) == 1
+        r.lpush(project.queue_name, json.dumps(build.queue_object))
         build.restart()
         assert not mock_start.called
 
