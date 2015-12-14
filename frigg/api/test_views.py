@@ -280,15 +280,15 @@ class ReportBuildAPITests(APITestCase):
         self.assertFalse(build.result.still_running)
         self.assertIsNone(build.result.coverage)
         self.assertEquals(
-            json.loads(build.result.result_log),
+            build.result.result_log,
             self.payload['results']
         )
         self.assertEquals(
-            json.loads(build.result.setup_log),
+            build.result.setup_log,
             self.payload['setup_results']
         )
         self.assertEquals(
-            json.loads(build.result.service_log),
+            build.result.service_log,
             self.payload['service_results']
         )
 
@@ -311,7 +311,7 @@ class ReportBuildAPITests(APITestCase):
         self.assertTrue(build.result.still_running)
         self.assertIsNone(build.result.coverage)
         self.assertEquals(
-            json.loads(build.result.result_log),
+            build.result.result_log,
             self.payload['results']
         )
 
