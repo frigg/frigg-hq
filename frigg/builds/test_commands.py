@@ -1,7 +1,7 @@
 import pytest
 from django.core.management import call_command
 
-from frigg.builds.models import Project, Build
+from frigg.builds.models import Build, Project
 
 
 @pytest.fixture

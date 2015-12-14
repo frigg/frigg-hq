@@ -15,7 +15,6 @@ from frigg.authentication.models import User
 
 from .models import Build, BuildResult, Project
 
-
 r = redis.Redis(**settings.REDIS_SETTINGS)
 
 
