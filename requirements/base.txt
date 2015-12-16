@@ -1,5 +1,5 @@
 django==1.9
-requests==2.8.1
+requests==2.9.0
 pyyaml==3.11
 redis==2.10.5
 markdown==2.6.5
