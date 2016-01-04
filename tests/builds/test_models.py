@@ -169,6 +169,20 @@ class BuildTestCase(TestCase):
         obj = build.queue_object
         self.assertEqual(obj['pull_request_id'], 42)
 
+    def test_queue_object_have_environment_variables(self):
+        self.project.environment_variables.create(key='V', value=42, is_secret=False)
+        build = Build.objects.create(project=self.project, branch='master', sha='s', build_number=1)
+        obj = build.queue_object
+        assert obj['environment_variables']['V'] == '42'
+        assert 'V' not in obj['secrets']
+
+    def test_queue_object_have_secrets(self):
+        self.project.environment_variables.create(key='V', value=40, is_secret=True)
+        build = Build.objects.create(project=self.project, branch='master', sha='s', build_number=1)
+        obj = build.queue_object
+        assert obj['secrets']['V'] == '40'
+        assert 'V' not in obj['environment_variables']
+
     def test_queue_set_custom_image(self):
         custom_docker_image = 'frigg/frigg-test-dind'
         project = Project.objects.create(image=custom_docker_image)
