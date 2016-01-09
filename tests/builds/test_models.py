@@ -454,8 +454,16 @@ class BuildResultTestCase(TestCase):
                 {'task': 'flake8', 'pending': True},
                 {'task': 'make test'}
             ],
-            'service_results': [],
-            'setup_results': [],
+            'service_results': [
+                {'task': 'service postgresql start', 'return_code': 0, 'succeeded': True,
+                 'log': 'log'},
+            ],
+            'setup_results': [
+                {'task': 'make', 'return_code': 0, 'succeeded': True, 'log': 'log'},
+            ],
+            'after_results': [
+                {'task': 'after', 'return_code': 0, 'succeeded': True, 'log': 'log'},
+            ],
             'webhooks': ['http://example.com']
         })
 
@@ -464,6 +472,7 @@ class BuildResultTestCase(TestCase):
         assert isinstance(self.build.result.tasks, list)
         assert isinstance(self.build.result.setup_log, list)
         assert isinstance(self.build.result.service_tasks, list)
+        assert isinstance(self.build.result.after_tasks, list)
 
     def test_create_from_worker_payload_without_optional_results(self):
         BuildResult.create_from_worker_payload(self.build, {
@@ -486,6 +495,7 @@ class BuildResultTestCase(TestCase):
         assert isinstance(self.build.result.tasks, list)
         assert isinstance(self.build.result.setup_log, list)
         assert isinstance(self.build.result.service_tasks, list)
+        assert isinstance(self.build.result.after_tasks, list)
 
     def test_tasks(self):
         data = [

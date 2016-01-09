@@ -5,9 +5,21 @@ from django.template.defaultfilters import pluralize
 from .models import Build, BuildResult, Project
 
 
-class BuildResultInline(admin.StackedInline):
+class BuildResultMixin(object):
+    readonly_fields = (
+        'worker_host',
+        'build',
+        'service_log',
+        'setup_log',
+        'result_log',
+        'after_log',
+        'succeeded',
+        'still_running'
+    )
+
+
+class BuildResultInline(BuildResultMixin, admin.StackedInline):
     model = BuildResult
-    readonly_fields = ('worker_host', 'setup_log', 'result_log', 'succeeded', 'still_running')
     extra = 0
     max_num = 0
 
@@ -60,7 +72,5 @@ class BuildAdmin(admin.ModelAdmin):
 
 
 @admin.register(BuildResult)
-class BuildResultAdmin(admin.ModelAdmin):
+class BuildResultAdmin(BuildResultMixin, admin.ModelAdmin):
     list_display = ('__str__', 'worker_host', 'succeeded', 'still_running', 'coverage')
-    readonly_fields = ('worker_host', 'build', 'service_log', 'setup_log', 'result_log',
-                       'succeeded', 'still_running')

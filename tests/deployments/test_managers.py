@@ -2,7 +2,6 @@ from django.conf import settings
 from django.test import TestCase
 
 from frigg.builds.models import Build, Project
-
 from frigg.deployments.models import PRDeployment
 
 

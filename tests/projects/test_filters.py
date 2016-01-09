@@ -1,7 +1,6 @@
-from frigg.utils.tests import FiltersTestCase
-
 from frigg.projects.filters import ProjectPermissionFilter
 from frigg.projects.models import Project
+from frigg.utils.tests import FiltersTestCase
 
 
 class ProjectFilterTests(FiltersTestCase):

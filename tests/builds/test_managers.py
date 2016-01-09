@@ -3,8 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from django.test import TestCase
 
-from frigg.builds.models import BuildResult
-from frigg.builds.models import Build, Project
+from frigg.builds.models import Build, BuildResult, Project
 
 
 class PermittedObjectsTestCase(TestCase):

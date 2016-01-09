@@ -1,9 +1,8 @@
 # -*- coding: utf8 -*-
 from django.core.urlresolvers import reverse
 
-from frigg.utils.tests import ViewTestCase
-
 from frigg.stats.views import overview
+from frigg.utils.tests import ViewTestCase
 
 
 class StatsSmokeViewTestCase(ViewTestCase):

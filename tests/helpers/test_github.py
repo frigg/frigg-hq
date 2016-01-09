@@ -1,7 +1,6 @@
 from django.test import TestCase
 
 from frigg.builds.models import Build, BuildResult, Project
-
 from frigg.helpers.github import _get_status_from_build, get_pull_request_url
 
 

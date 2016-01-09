@@ -1,7 +1,6 @@
-from frigg.utils.tests import FiltersTestCase
-
 from frigg.builds.filters import BuildPermissionFilter
 from frigg.builds.models import Build
+from frigg.utils.tests import FiltersTestCase
 
 
 class BuildsFilterTests(FiltersTestCase):
