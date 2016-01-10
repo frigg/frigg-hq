@@ -12,6 +12,7 @@ class EnvironmentVariableMixin:
     def get_readonly_fields(request, obj=None):
         if obj:
             return 'key', 'value', 'is_secret'
+        return tuple()
 
 
 class EnvironmentVariableInline(EnvironmentVariableMixin, admin.TabularInline):
