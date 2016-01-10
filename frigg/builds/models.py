@@ -204,6 +204,14 @@ class Build(TimeStampModel):
 
     @property
     def queue_object(self):
+        environment_variables = {}
+        secrets = {}
+        for ev in self.project.environment_variables.all():
+            if ev.is_secret:
+                secrets[ev.key] = ev.value
+            else:
+                environment_variables[ev.key] = ev.value
+
         obj = {
             'id': self.pk,
             'branch': self.branch,
@@ -213,7 +221,10 @@ class Build(TimeStampModel):
             'owner': self.project.owner,
             'name': self.project.name,
             'gh_token': self.project.github_token,
+            'environment_variables': environment_variables,
+            'secrets': secrets,
         }
+
         if self.pull_request_id > 0:
             obj['pull_request_id'] = self.pull_request_id
         return obj
