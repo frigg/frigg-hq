@@ -222,11 +222,13 @@ class Build(TimeStampModel):
             'name': self.project.name,
             'gh_token': self.project.github_token,
             'environment_variables': environment_variables,
-            'secrets': secrets,
+            'secrets': {},
         }
 
         if self.pull_request_id > 0:
             obj['pull_request_id'] = self.pull_request_id
+        elif self.branch == 'master':
+            obj['secrets'] = secrets
         return obj
 
     def start(self):

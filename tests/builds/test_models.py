@@ -176,12 +176,31 @@ class BuildTestCase(TestCase):
         assert obj['environment_variables']['V'] == '42'
         assert 'V' not in obj['secrets']
 
-    def test_queue_object_have_secrets(self):
+    def test_queue_object_have_secrets_when_no_pull_request(self):
         self.project.environment_variables.create(key='V', value=40, is_secret=True)
         build = Build.objects.create(project=self.project, branch='master', sha='s', build_number=1)
         obj = build.queue_object
         assert obj['secrets']['V'] == '40'
         assert 'V' not in obj['environment_variables']
+
+    def test_queue_object_not_have_secrets_when_no_pull_request_and_custom_branch(self):
+        self.project.environment_variables.create(key='V', value=40, is_secret=True)
+        build = Build.objects.create(project=self.project, branch='custom', sha='s', build_number=1)
+        obj = build.queue_object
+        assert 'V' not in obj['secrets']
+        assert 'V' not in obj['environment_variables']
+
+    def test_queue_object_not_have_secrets_when_pull_request(self):
+        self.project.environment_variables.create(key='V', value=40, is_secret=True)
+        build = Build.objects.create(
+            project=self.project,
+            branch='master',
+            sha='s',
+            build_number=1,
+            pull_request_id=2
+        )
+        obj = build.queue_object
+        assert 'V' not in obj['secrets']
 
     def test_queue_set_custom_image(self):
         custom_docker_image = 'frigg/frigg-test-dind'
