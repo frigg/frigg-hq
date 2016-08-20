@@ -4,6 +4,7 @@ from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import permissions, viewsets
+from rest_framework.decorators import detail_route
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -60,6 +61,12 @@ class BuildViewSet(viewsets.ModelViewSet):
             build_number=build_number
         )
         return Response(BuildSerializer(build).data)
+
+    @detail_route(methods=['post'])
+    def restart(self, request, pk):
+        build = self.get_object()
+        build.restart()
+        return Response({'status': 'restarted'})
 
 
 class UserDetailView(APIView):

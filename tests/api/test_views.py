@@ -194,6 +194,12 @@ class BuildAPITestCase(APITestCase, APITestMixin):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()), 2)
 
+    def test_restart_build(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get('/api/builds/1/restart/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['status'], 2)
+
 
 class UserAPITests(TestCase):
     fixtures = ['frigg/builds/fixtures/users.json']
